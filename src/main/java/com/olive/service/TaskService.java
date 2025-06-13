@@ -3,6 +3,7 @@ package com.olive.service;
 import com.olive.dto.TaskCreateRequest;
 import com.olive.dto.TaskResponse;
 import com.olive.dto.TaskUpdateRequest;
+import com.olive.dto.TasksSummaryResponse;
 import com.olive.model.Task;
 import com.olive.model.Teammate;
 import com.olive.repository.TaskRepository;
@@ -33,39 +34,48 @@ public class TaskService {
 
     // Helper to convert Task Entity to TaskResponse DTO
     private TaskResponse convertToDto(Task task) {
-        List<String> assignedTeammateNames = null;
+        List<String> assignedTeammates = null;
         if (task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty()) {
-            assignedTeammateNames = Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+            assignedTeammates = Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
                     .map(String::trim)
                     .collect(Collectors.toList());
         }
 
         return new TaskResponse(
-                task.getTaskId(),
-                task.getTaskName(),
-                task.getDescription(),
-                task.getCurrentStage(), // Directly use String
-                task.getStartDate(),
-                task.getDueDate(),
-                task.getIsCompleted(),
+                task.getTaskId(), // maps to id
+                task.getTaskName(), // maps to name
                 task.getIssueType(),
                 task.getReceivedDate(),
                 task.getDevelopmentStartDate(),
-                task.getIsCodeReviewDone(),
-                task.getIsCmcDone(),
-                assignedTeammateNames,
-                task.getPriority() // Include priority
+                task.getCurrentStage(),
+                task.getDueDate(),
+                assignedTeammates, // maps to assignedTeammates
+                task.getPriority(),
+                task.getIsCompleted(),
+                task.getIsCmcDone() // maps to iscmcDone
         );
     }
 
-    // Get all tasks
-    public List<TaskResponse> getAllTasks() {
-        return taskRepository.findAll().stream()
+    // Get all tasks, now returning TasksSummaryResponse
+    public TasksSummaryResponse getAllTasks(String taskNameFilter) {
+        List<Task> allTasks;
+        if (taskNameFilter != null && !taskNameFilter.trim().isEmpty()) {
+            allTasks = taskRepository.findByTaskNameContainingIgnoreCase(taskNameFilter);
+        } else {
+            allTasks = taskRepository.findAll();
+        }
+
+        long totalTasksCount = allTasks.size(); // Total count of tasks after applying filter (if any)
+
+        List<TaskResponse> taskResponses = allTasks.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+
+        return new TasksSummaryResponse(totalTasksCount, taskResponses);
     }
 
-    // Get task by ID
+
+    // getTaskById remains but is now private/internal as it's not exposed via an API endpoint anymore
     public TaskResponse getTaskById(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + id));
@@ -80,8 +90,16 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Task Stage: " + request.getCurrentStage() + ". Valid stages are: " + String.join(", ", VALID_STAGES));
         }
 
+        // Convert name to uppercase for uniqueness check and storage consistency
+        String nameToSave = request.getTaskName() != null ? request.getTaskName().toUpperCase() : null;
+
+        // Check for task name uniqueness (case-insensitive)
+        if (nameToSave != null && taskRepository.findByTaskNameIgnoreCase(nameToSave).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Task with this name (case-insensitive) already exists. Please use a unique task name.");
+        }
+
         Task task = new Task();
-        task.setTaskName(request.getTaskName());
+        task.setTaskName(nameToSave); // Set the uppercase name
         task.setDescription(request.getDescription());
         task.setCurrentStage(request.getCurrentStage());
         task.setStartDate(request.getStartDate());
@@ -96,10 +114,11 @@ public class TaskService {
         if (request.getAssignedTeammateNames() != null && !request.getAssignedTeammateNames().isEmpty()) {
             Set<String> uniqueAssignedNames = new HashSet<>();
             for (String teammateName : request.getAssignedTeammateNames()) {
-                Teammate teammate = teammateRepository.findByName(teammateName)
+                // Lookup teammate using case-insensitive name
+                Teammate teammate = teammateRepository.findByNameIgnoreCase(teammateName)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate not found with name: " + teammateName));
-                // Add to unique names set to avoid duplicates in string
-                uniqueAssignedNames.add(teammate.getName());
+                // Add to unique names set to avoid duplicates in string (store uppercase in task as well)
+                uniqueAssignedNames.add(teammate.getName()); // Teammate.getName() will return uppercase
             }
             task.setAssignedTeammateNames(String.join(ASSIGNED_NAMES_DELIMITER, uniqueAssignedNames));
         } else {
@@ -118,11 +137,12 @@ public class TaskService {
         return convertToDto(savedTask);
     }
 
-    // Update an existing task
+    // Update an existing task by name (formerly by ID)
     @Transactional
-    public TaskResponse updateTask(Long id, TaskUpdateRequest request) {
-        Task existingTask = taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + id));
+    public TaskResponse updateTask(String name, TaskUpdateRequest request) {
+        // Find existing task using case-insensitive name
+        Task existingTask = taskRepository.findByTaskNameIgnoreCase(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with name: " + name));
 
         // Keep track of old assigned teammates for availability update
         Set<String> oldAssignedNames = new HashSet<>();
@@ -135,8 +155,17 @@ public class TaskService {
         // Store original completion status
         Boolean wasCompleted = existingTask.getIsCompleted();
 
-        // Update basic fields if provided
-        Optional.ofNullable(request.getTaskName()).ifPresent(existingTask::setTaskName);
+        // Handle task name update: convert to uppercase and check for uniqueness
+        if (request.getTaskName() != null && !request.getTaskName().equalsIgnoreCase(existingTask.getTaskName())) {
+            String newNameToSave = request.getTaskName().toUpperCase();
+            Optional<Task> taskWithNewName = taskRepository.findByTaskNameIgnoreCase(newNameToSave);
+            if (taskWithNewName.isPresent() && !taskWithNewName.get().getTaskId().equals(existingTask.getTaskId())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Task with new name '" + request.getTaskName() + "' (case-insensitive) already exists.");
+            }
+            existingTask.setTaskName(newNameToSave);
+        }
+
+        // Update other fields if provided
         Optional.ofNullable(request.getDescription()).ifPresent(existingTask::setDescription);
 
         if (request.getCurrentStage() != null) {
@@ -154,23 +183,22 @@ public class TaskService {
         Optional.ofNullable(request.getDevelopmentStartDate()).ifPresent(existingTask::setDevelopmentStartDate);
         Optional.ofNullable(request.getIsCodeReviewDone()).ifPresent(existingTask::setIsCodeReviewDone);
         Optional.ofNullable(request.getIsCmcDone()).ifPresent(existingTask::setIsCmcDone);
-        Optional.ofNullable(request.getPriority()).ifPresent(existingTask::setPriority); // Set priority
+        Optional.ofNullable(request.getPriority()).ifPresent(existingTask::setPriority);
 
         // Handle assigned teammates update
         Set<String> newAssignedNames = new HashSet<>();
         if (request.getAssignedTeammateNames() != null) {
             for (String teammateName : request.getAssignedTeammateNames()) {
-                Teammate teammate = teammateRepository.findByName(teammateName)
+                Teammate teammate = teammateRepository.findByNameIgnoreCase(teammateName)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate not found with name: " + teammateName));
                 newAssignedNames.add(teammate.getName());
             }
             existingTask.setAssignedTeammateNames(String.join(ASSIGNED_NAMES_DELIMITER, newAssignedNames));
         } else {
-            existingTask.setAssignedTeammateNames(""); // Clear assignments if null list is sent
+            existingTask.setAssignedTeammateNames("");
         }
 
-
-        Task updatedTask = taskRepository.save(existingTask); // Save task first to ensure updated assignments are persisted
+        Task updatedTask = taskRepository.save(existingTask);
 
         // Collect all unique teammate names involved in this task (old and new assignments)
         Set<String> allAffectedTeammates = new HashSet<>(oldAssignedNames);
@@ -189,7 +217,7 @@ public class TaskService {
     // Helper to update a teammate's availability based on all their active tasks
     // This is crucial because availability is now derived from the 'tasks' table directly.
     private void updateTeammateAvailability(String teammateName) {
-        teammateRepository.findByName(teammateName).ifPresent(teammate -> {
+        teammateRepository.findByNameIgnoreCase(teammateName).ifPresent(teammate -> { // Use case-insensitive find
             // A teammate is 'Occupied' if they are assigned to any NON-COMPLETED task.
             boolean isOccupied = taskRepository.findAll().stream()
                     .filter(task -> !task.getIsCompleted()) // Only consider non-completed tasks
@@ -197,9 +225,10 @@ public class TaskService {
                         if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
                             return false;
                         }
+                        // Compare with stored uppercase name (which is what .getName() will return now)
                         return Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
                                 .map(String::trim)
-                                .anyMatch(name -> name.equalsIgnoreCase(teammate.getName()));
+                                .anyMatch(nameInTask -> nameInTask.equalsIgnoreCase(teammate.getName()));
                     });
 
             String newStatus = isOccupied ? "Occupied" : "Free";
@@ -210,11 +239,11 @@ public class TaskService {
         });
     }
 
-    // Delete a task
+    // Delete a task by name (formerly by ID)
     @Transactional
-    public void deleteTask(Long id) {
-        Task taskToDelete = taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + id));
+    public void deleteTask(String name) {
+        Task taskToDelete = taskRepository.findByTaskNameIgnoreCase(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with name: " + name));
 
         // Get assigned teammates from the task to be deleted
         Set<String> affectedTeammates = new HashSet<>();
@@ -232,10 +261,10 @@ public class TaskService {
         }
     }
 
-    // New method for searching tasks by name
-    public List<TaskResponse> searchTasks(String taskName) {
-        return taskRepository.findByTaskNameContainingIgnoreCase(taskName).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
+    // This searchTasks method is now integrated into getAllTasks
+    // public List<TaskResponse> searchTasks(String taskName) {
+    //     return taskRepository.findByTaskNameContainingIgnoreCase(taskName).stream()
+    //             .map(this::convertToDto)
+    //             .collect(Collectors.toList());
+    // }
 }

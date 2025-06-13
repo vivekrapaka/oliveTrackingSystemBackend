@@ -11,7 +11,7 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true) // Task name should be unique
     private String taskName;
 
     @Column(columnDefinition = "TEXT")
@@ -170,5 +170,16 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(taskId);
+    }
+
+    /**
+     * JPA lifecycle callback to convert the taskName to uppercase before persisting or updating.
+     */
+    @PrePersist
+    @PreUpdate
+    public void convertTaskNameToUppercase() {
+        if (this.taskName != null) {
+            this.taskName = this.taskName.toUpperCase();
+        }
     }
 }

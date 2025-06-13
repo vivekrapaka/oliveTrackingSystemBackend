@@ -3,6 +3,7 @@ package com.olive.controller;
 import com.olive.dto.TaskCreateRequest;
 import com.olive.dto.TaskResponse;
 import com.olive.dto.TaskUpdateRequest;
+import com.olive.dto.TasksSummaryResponse;
 import com.olive.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.List;
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:8085"}) // Allow requests from frontend origin
 public class TaskController {
 
+
     private final TaskService taskService;
 
     @Autowired
@@ -23,24 +25,20 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    // GET all tasks or filter by name
-    // This endpoint handles both /api/tasks (no param) and /api/tasks?name=keyword
+    // GET all tasks (no filter parameter here)
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getTasks(@RequestParam(required = false) String name) {
-        List<TaskResponse> tasks;
-        if (name != null && !name.trim().isEmpty()) {
-            tasks = taskService.searchTasks(name);
-        } else {
-            tasks = taskService.getAllTasks();
-        }
-        return ResponseEntity.ok(tasks);
+    public ResponseEntity<TasksSummaryResponse> getAllTasks() {
+        // Pass null to indicate no specific name filter for this endpoint
+        TasksSummaryResponse summaryResponse = taskService.getAllTasks(null);
+        return ResponseEntity.ok(summaryResponse);
     }
 
-    // GET task by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id) {
-        TaskResponse task = taskService.getTaskById(id);
-        return ResponseEntity.ok(task);
+    // NEW API: GET tasks filtered by name
+    @GetMapping("/filterByName/{name}")
+    public ResponseEntity<TasksSummaryResponse> getTasksByName(@PathVariable String name) {
+        // Pass the name filter to the service
+        TasksSummaryResponse summaryResponse = taskService.getAllTasks(name);
+        return ResponseEntity.ok(summaryResponse);
     }
 
     // POST create a new task
@@ -50,22 +48,17 @@ public class TaskController {
         return new ResponseEntity<>(newTask, HttpStatus.CREATED);
     }
 
-    // PUT update an existing task
-    @PutMapping("/{id}")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @Valid @RequestBody TaskUpdateRequest request) {
-        TaskResponse updatedTask = taskService.updateTask(id, request);
+    // PUT update an existing task by name
+    @PutMapping("/{name}")
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable String name, @Valid @RequestBody TaskUpdateRequest request) {
+        TaskResponse updatedTask = taskService.updateTask(name, request);
         return ResponseEntity.ok(updatedTask);
     }
 
-    // Removed explicit assignment endpoints as they are now handled within createTask/updateTask
-    // @PostMapping("/{taskId}/assign/{teammateId}")
-    // @DeleteMapping("/{taskId}/unassign/{teammateId}")
-
-    // DELETE a task
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    // DELETE a task by name
+    @DeleteMapping("/{name}")
+    public ResponseEntity<Void> deleteTask(@PathVariable String name) {
+        taskService.deleteTask(name);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
-
 }

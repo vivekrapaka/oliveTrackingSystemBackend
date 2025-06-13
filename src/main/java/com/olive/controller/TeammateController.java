@@ -2,6 +2,7 @@ package com.olive.controller;
 
 import com.olive.dto.TeammateCreateRequest;
 import com.olive.dto.TeammateResponse;
+import com.olive.dto.TeammatesSummaryResponse;
 import com.olive.service.TeammateService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +23,17 @@ public class TeammateController {
         this.teammateService = teammateService;
     }
 
-    // GET all teammates
+    // GET all teammates with summary statistics
     @GetMapping
-    public ResponseEntity<List<TeammateResponse>> getAllTeammates() {
-        List<TeammateResponse> teammates = teammateService.getAllTeammates();
-        return ResponseEntity.ok(teammates);
+    public ResponseEntity<TeammatesSummaryResponse> getAllTeammatesSummary() {
+        TeammatesSummaryResponse summaryResponse = teammateService.getAllTeammatesSummary();
+        return ResponseEntity.ok(summaryResponse);
     }
 
-    // GET teammate by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<TeammateResponse> getTeammateById(@PathVariable Long id) {
-        TeammateResponse teammate = teammateService.getTeammateById(id);
+    // GET teammate by Name (changed from ID)
+    @GetMapping("/{name}")
+    public ResponseEntity<TeammateResponse> getTeammateByName(@PathVariable String name) {
+        TeammateResponse teammate = teammateService.getTeammateByName(name);
         return ResponseEntity.ok(teammate);
     }
 
@@ -43,21 +44,18 @@ public class TeammateController {
         return new ResponseEntity<>(newTeammate, HttpStatus.CREATED);
     }
 
-    // PUT update an existing teammate (full update or specific fields like name/email)
-    @PutMapping("/{id}")
-    public ResponseEntity<TeammateResponse> updateTeammate(@PathVariable Long id, @Valid @RequestBody TeammateCreateRequest request) {
-        TeammateResponse updatedTeammate = teammateService.updateTeammate(id, request);
+    // PUT update an existing teammate by Name (changed from ID)
+    @PutMapping("/{name}")
+    public ResponseEntity<TeammateResponse> updateTeammate(@PathVariable String name, @Valid @RequestBody TeammateCreateRequest request) {
+        TeammateResponse updatedTeammate = teammateService.updateTeammate(name, request);
         return ResponseEntity.ok(updatedTeammate);
     }
 
-    // Removed PATCH update teammate availability status as it's now derived or handled by TaskService
-    // @PatchMapping("/{id}/availability")
 
-
-    // DELETE a teammate
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTeammate(@PathVariable Long id) {
-        teammateService.deleteTeammate(id);
+    // DELETE a teammate by Name (changed from ID)
+    @DeleteMapping("/{name}")
+    public ResponseEntity<Void> deleteTeammate(@PathVariable String name) {
+        teammateService.deleteTeammate(name);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
 }

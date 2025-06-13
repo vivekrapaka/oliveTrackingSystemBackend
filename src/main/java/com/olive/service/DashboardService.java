@@ -39,6 +39,14 @@ public class DashboardService {
 
         List<Task> allTasks = taskRepository.findAll();
 
+        // Total tasks count
+        long totalTasks = allTasks.size();
+
+        // Active tasks count (not in "Development" stage)
+        long activeTasksCount = allTasks.stream()
+                .filter(task -> !task.getCurrentStage().equalsIgnoreCase("Development"))
+                .count();
+
         // Tasks by Stage
         Map<String, Long> tasksByStage = allTasks.stream()
                 .collect(Collectors.groupingBy(Task::getCurrentStage, Collectors.counting()));
@@ -56,23 +64,47 @@ public class DashboardService {
                 .filter(task -> !task.getIsCompleted() && !task.getIsCmcDone())
                 .count();
 
-        // New: Recent Tasks (e.g., top 5 uncompleted tasks by start date descending)
-        List<DashboardTaskDTO> recentTasks = taskRepository.findTop10ByIsCompletedFalseOrderByStartDateDesc()
-                .stream()
-                .map(task -> new DashboardTaskDTO(
-                        task.getTaskId(),
-                        task.getTaskName(),
-                        task.getCurrentStage(),
-                        task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty() ?
-                                Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
-                                        .map(String::trim)
-                                        .collect(Collectors.joining(", ")) : "Unassigned",
-                        task.getDueDate(),
-                        task.getPriority()
-                ))
+        // Recent Tasks - now gets all tasks and sorts by due date
+        List<DashboardTaskDTO> recentTasks = allTasks.stream()
+                .map(task -> {
+                    String assigneeNames = (task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty()) ?
+                            Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                                    .map(String::trim)
+                                    .collect(Collectors.joining(", ")) : "Unassigned";
+                    return new DashboardTaskDTO(
+                            task.getTaskId(),
+                            task.getTaskName(),
+                            task.getCurrentStage(),
+                            assigneeNames,
+                            task.getDueDate(),
+                            task.getPriority()
+                    );
+                })
+                .sorted(Comparator.comparing(DashboardTaskDTO::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))) // Sort by dueDate
                 .collect(Collectors.toList());
 
-        // New: Team Members Summary
+        // NEW: Active Tasks List (not in Development)
+        List<DashboardTaskDTO> activeTasksList = allTasks.stream()
+                .filter(task -> !task.getCurrentStage().equalsIgnoreCase("Development"))
+                .map(task -> {
+                    String assigneeNames = (task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty()) ?
+                            Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                                    .map(String::trim)
+                                    .collect(Collectors.joining(", ")) : "Unassigned";
+                    return new DashboardTaskDTO(
+                            task.getTaskId(),
+                            task.getTaskName(),
+                            task.getCurrentStage(),
+                            assigneeNames,
+                            task.getDueDate(),
+                            task.getPriority()
+                    );
+                })
+                .sorted(Comparator.comparing(DashboardTaskDTO::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))) // Sort by dueDate
+                .collect(Collectors.toList());
+
+
+        // Team Members Summary
         List<DashboardTeammateDTO> teamMembersSummary = allTeammates.stream()
                 .map(teammate -> {
                     long tasksAssignedCount = allTasks.stream()
@@ -100,12 +132,15 @@ public class DashboardService {
                 totalTeammates,
                 freeTeammates,
                 occupiedTeammates,
+                totalTasks,
+                activeTasksCount, // Pass active tasks count
                 tasksByStage,
                 tasksByIssueType,
                 tasksPendingCodeReview,
                 tasksPendingCmcApproval,
                 recentTasks,
-                teamMembersSummary
+                teamMembersSummary,
+                activeTasksList // Pass the new active tasks list
         );
     }
 }

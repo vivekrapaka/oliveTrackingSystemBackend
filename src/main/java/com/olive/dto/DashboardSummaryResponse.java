@@ -7,6 +7,8 @@ public class DashboardSummaryResponse {
     private long totalTeammates;
     private long freeTeammates;
     private long occupiedTeammates;
+    private long totalTasks; // New: Total tasks count
+    private long activeTasks; // New: Active tasks count (not in Development)
     private Map<String, Long> tasksByStage; // e.g., {"SIT": 5, "DEV": 10}
     private Map<String, Long> tasksByIssueType; // e.g., {"BRD": 7, "Production Issue": 3}
     private long tasksPendingCodeReview;
@@ -18,23 +20,56 @@ public class DashboardSummaryResponse {
     // New: Team Members Summary based on user's requested structure
     private List<DashboardTeammateDTO> teamMembersSummary;
 
+    private List<DashboardTaskDTO> activeTasksList; // NEW FIELD: Active tasks list
+
 
     public DashboardSummaryResponse(long totalTeammates, long freeTeammates, long occupiedTeammates,
+                                    long totalTasks, long activeTasks, // Added new fields to constructor
                                     Map<String, Long> tasksByStage, Map<String, Long> tasksByIssueType,
                                     long tasksPendingCodeReview, long tasksPendingCmcApproval,
-                                    List<DashboardTaskDTO> recentTasks, List<DashboardTeammateDTO> teamMembersSummary) {
+                                    List<DashboardTaskDTO> recentTasks, List<DashboardTeammateDTO> teamMembersSummary,
+                                    List<DashboardTaskDTO> activeTasksList) { // Added to constructor
         this.totalTeammates = totalTeammates;
         this.freeTeammates = freeTeammates;
         this.occupiedTeammates = occupiedTeammates;
+        this.totalTasks = totalTasks; // Initialize
+        this.activeTasks = activeTasks; // Initialize
         this.tasksByStage = tasksByStage;
         this.tasksByIssueType = tasksByIssueType;
         this.tasksPendingCodeReview = tasksPendingCodeReview;
         this.tasksPendingCmcApproval = tasksPendingCmcApproval;
         this.recentTasks = recentTasks;
         this.teamMembersSummary = teamMembersSummary;
+        this.activeTasksList = activeTasksList; // Initialize
     }
 
-    // Getters and Setters
+    // Getters and Setters for new fields
+    public long getTotalTasks() {
+        return totalTasks;
+    }
+
+    public void setTotalTasks(long totalTasks) {
+        this.totalTasks = totalTasks;
+    }
+
+    public long getActiveTasks() {
+        return activeTasks;
+    }
+
+    public void setActiveTasks(long activeTasks) {
+        this.activeTasks = activeTasks;
+    }
+
+    public List<DashboardTaskDTO> getActiveTasksList() { // New getter
+        return activeTasksList;
+    }
+
+    public void setActiveTasksList(List<DashboardTaskDTO> activeTasksList) { // New setter
+        this.activeTasksList = activeTasksList;
+    }
+
+
+    // Existing Getters and Setters
     public long getTotalTeammates() {
         return totalTeammates;
     }

@@ -124,4 +124,15 @@ public class Teammate {
     public int hashCode() {
         return Objects.hash(teammateId);
     }
+
+    /**
+     * JPA lifecycle callback to convert the name to uppercase before persisting or updating.
+     */
+    @PrePersist
+    @PreUpdate
+    public void convertNameToUppercase() {
+        if (this.name != null) {
+            this.name = this.name.toUpperCase();
+        }
+    }
 }

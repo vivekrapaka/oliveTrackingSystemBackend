@@ -2,6 +2,7 @@ package com.olive.service;
 
 import com.olive.dto.TeammateCreateRequest;
 import com.olive.dto.TeammateResponse;
+import com.olive.dto.TeammatesSummaryResponse;
 import com.olive.model.Task;
 import com.olive.model.Teammate;
 import com.olive.repository.TaskRepository;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class TeammateService {
     private final TeammateRepository teammateRepository;
-    private final TaskRepository taskRepository; // Inject TaskRepository to check assignments
+    private final TaskRepository taskRepository;
     private static final String ASSIGNED_NAMES_DELIMITER = ",";
 
     @Autowired
@@ -38,6 +39,7 @@ public class TeammateService {
                     if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
                         return false;
                     }
+                    // Compare with stored uppercase name
                     return Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
                             .map(String::trim)
                             .anyMatch(name -> name.equalsIgnoreCase(teammate.getName()));
@@ -50,6 +52,7 @@ public class TeammateService {
                     if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
                         return false;
                     }
+                    // Compare with stored uppercase name
                     return Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
                             .map(String::trim)
                             .anyMatch(name -> name.equalsIgnoreCase(teammate.getName()));
@@ -79,33 +82,58 @@ public class TeammateService {
         );
     }
 
-    // Get all teammates
-    public List<TeammateResponse> getAllTeammates() {
-        return teammateRepository.findAll().stream()
-                .map(this::convertToDto) // Now converts and updates status
+    // Get all teammates with summary
+    public TeammatesSummaryResponse getAllTeammatesSummary() {
+        List<Teammate> allTeammates = teammateRepository.findAll();
+        List<Task> allTasks = taskRepository.findAll(); // Fetch all tasks for global counts
+
+        long totalMembersInTeamCount = allTeammates.size();
+        long availableTeamMembersCount = allTeammates.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
+        long occupiedTeamMembersCount = allTeammates.stream().filter(t -> "Occupied".equals(t.getAvailabilityStatus())).count();
+
+        // Active tasks count (not in "Development" stage, global count)
+        long activeTasksCount = allTasks.stream()
+                .filter(task -> !task.getIsCompleted() && !task.getCurrentStage().equalsIgnoreCase("Development"))
+                .count();
+
+        List<TeammateResponse> teammateResponses = allTeammates.stream()
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
+
+        return new TeammatesSummaryResponse(
+                totalMembersInTeamCount,
+                availableTeamMembersCount,
+                occupiedTeamMembersCount,
+                activeTasksCount,
+                teammateResponses
+        );
     }
 
-    // Get teammate by ID
-    public TeammateResponse getTeammateById(Long id) {
-        Teammate teammate = teammateRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with ID: " + id));
+
+    // Get teammate by Name (changed from ID)
+    public TeammateResponse getTeammateByName(String name) {
+        // Use findByNameIgnoreCase for lookup
+        Teammate teammate = teammateRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with name: " + name));
         return convertToDto(teammate); // Now converts and updates status
     }
 
     // Create a new teammate
     public TeammateResponse createTeammate(TeammateCreateRequest request) {
+        // Convert name to uppercase for uniqueness check and storage consistency
+        String nameToSave = request.getName() != null ? request.getName().toUpperCase() : null;
+
         // Check for email uniqueness
         if (request.getEmail() != null && teammateRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Teammate with this email already exists.");
         }
-        // Check for name uniqueness (since assignments rely on names)
-        if (teammateRepository.findByName(request.getName()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Teammate with this name already exists. Please use a unique name.");
+        // Check for name uniqueness (case-insensitive)
+        if (nameToSave != null && teammateRepository.findByNameIgnoreCase(nameToSave).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Teammate with this name (case-insensitive) already exists. Please use a unique name.");
         }
 
         Teammate teammate = new Teammate();
-        teammate.setName(request.getName());
+        teammate.setName(nameToSave); // Set the uppercase name
         teammate.setEmail(request.getEmail());
         teammate.setRole(request.getRole());
         teammate.setPhone(request.getPhone());
@@ -115,26 +143,27 @@ public class TeammateService {
         return convertToDto(teammateRepository.save(teammate)); // convertToDto will calculate initial tasksAssigned/Completed
     }
 
-    // Update teammate details
-    public TeammateResponse updateTeammate(Long id, TeammateCreateRequest request) { // Reusing create request for update
-        Teammate existingTeammate = teammateRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with ID: " + id));
+    // Update teammate details by Name (formerly updateTeammate using ID)
+    public TeammateResponse updateTeammate(String name, TeammateCreateRequest request) {
+        // Find existing teammate using case-insensitive name
+        Teammate existingTeammate = teammateRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with name: " + name));
 
-        // Check for name change and uniqueness if changed
+        // If the name is being changed, ensure the new name is unique (case-insensitive)
         if (request.getName() != null && !request.getName().equalsIgnoreCase(existingTeammate.getName())) {
-            if (teammateRepository.findByName(request.getName()).isPresent()) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Teammate with this name already exists.");
+            String newNameToSave = request.getName().toUpperCase(); // Convert new name to uppercase for check
+            Optional<Teammate> existingTeammateWithNewName = teammateRepository.findByNameIgnoreCase(newNameToSave);
+
+            if (existingTeammateWithNewName.isPresent() && !existingTeammateWithNewName.get().getTeammateId().equals(existingTeammate.getTeammateId())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Teammate with new name '" + request.getName() + "' (case-insensitive) already exists.");
             }
-            // IMPORTANT: If name changes, you'd ideally update all tasks that reference this old name.
-            // In this simplified model, tasks store names directly, making this complex.
-            // For now, we update the teammate name. Re-calculating availability below ensures consistency.
-            existingTeammate.setName(request.getName());
+            existingTeammate.setName(newNameToSave); // Set the new uppercase name
         }
 
         // Check for email uniqueness if updated
         if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(existingTeammate.getEmail())) {
             Optional<Teammate> teammateWithSameEmail = teammateRepository.findByEmail(request.getEmail());
-            if (teammateWithSameEmail.isPresent() && !teammateWithSameEmail.get().getTeammateId().equals(id)) {
+            if (teammateWithSameEmail.isPresent() && !teammateWithSameEmail.get().getTeammateId().equals(existingTeammate.getTeammateId())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Teammate with this email already exists.");
             }
             existingTeammate.setEmail(request.getEmail());
@@ -151,10 +180,11 @@ public class TeammateService {
         return convertToDto(existingTeammate);
     }
 
-    // Delete a teammate
-    public void deleteTeammate(Long id) {
-        Teammate teammateToDelete = teammateRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with ID: " + id));
+    // Delete a teammate by Name (formerly deleteTeammate using ID)
+    public void deleteTeammate(String name) {
+        // Find teammate using case-insensitive name
+        Teammate teammateToDelete = teammateRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with name: " + name));
 
         // Before deleting, check if this teammate is assigned to any active (uncompleted) tasks.
         // If so, throw an error.
@@ -164,6 +194,7 @@ public class TeammateService {
                     if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
                         return false;
                     }
+                    // Compare with stored uppercase name
                     return Arrays.asList(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER)).contains(teammateToDelete.getName());
                 });
 
@@ -171,6 +202,31 @@ public class TeammateService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate is currently assigned to active tasks and cannot be deleted. Please unassign them first.");
         }
 
-        teammateRepository.deleteById(id);
+        teammateRepository.delete(teammateToDelete);
+    }
+
+    // Helper to update a teammate's availability based on all their active tasks
+    // This is crucial because availability is now derived from the 'tasks' table directly.
+    private void updateTeammateAvailability(String teammateName) {
+        teammateRepository.findByNameIgnoreCase(teammateName).ifPresent(teammate -> { // Use case-insensitive find
+            // A teammate is 'Occupied' if they are assigned to any NON-COMPLETED task.
+            boolean isOccupied = taskRepository.findAll().stream()
+                    .filter(task -> !task.getIsCompleted()) // Only consider non-completed tasks
+                    .anyMatch(task -> {
+                        if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
+                            return false;
+                        }
+                        // Compare with stored uppercase name (which is what .getName() will return now)
+                        return Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                                .map(String::trim)
+                                .anyMatch(nameInTask -> nameInTask.equalsIgnoreCase(teammate.getName()));
+                    });
+
+            String newStatus = isOccupied ? "Occupied" : "Free";
+            if (!teammate.getAvailabilityStatus().equals(newStatus)) {
+                teammate.setAvailabilityStatus(newStatus);
+                teammateRepository.save(teammate);
+            }
+        });
     }
 }
