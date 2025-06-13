@@ -11,11 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/tasks")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"}) // Allow requests from frontend origin
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:8085"}) // Allow requests from frontend origin
 public class TaskController {
+
     private final TaskService taskService;
 
     @Autowired
@@ -23,10 +23,16 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    // GET all tasks
+    // GET all tasks or filter by name
+    // This endpoint handles both /api/tasks (no param) and /api/tasks?name=keyword
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getAllTasks() {
-        List<TaskResponse> tasks = taskService.getAllTasks();
+    public ResponseEntity<List<TaskResponse>> getTasks(@RequestParam(required = false) String name) {
+        List<TaskResponse> tasks;
+        if (name != null && !name.trim().isEmpty()) {
+            tasks = taskService.searchTasks(name);
+        } else {
+            tasks = taskService.getAllTasks();
+        }
         return ResponseEntity.ok(tasks);
     }
 
@@ -51,19 +57,9 @@ public class TaskController {
         return ResponseEntity.ok(updatedTask);
     }
 
-    // POST assign a teammate to a task
-    @PostMapping("/{taskId}/assign/{teammateId}")
-    public ResponseEntity<TaskResponse> assignTeammate(@PathVariable Long taskId, @PathVariable Long teammateId) {
-        TaskResponse updatedTask = taskService.assignTeammateToTask(taskId, teammateId);
-        return ResponseEntity.ok(updatedTask);
-    }
-
-    // DELETE unassign a teammate from a task
-    @DeleteMapping("/{taskId}/unassign/{teammateId}")
-    public ResponseEntity<TaskResponse> unassignTeammate(@PathVariable Long taskId, @PathVariable Long teammateId) {
-        TaskResponse updatedTask = taskService.unassignTeammateFromTask(taskId, teammateId);
-        return ResponseEntity.ok(updatedTask);
-    }
+    // Removed explicit assignment endpoints as they are now handled within createTask/updateTask
+    // @PostMapping("/{taskId}/assign/{teammateId}")
+    // @DeleteMapping("/{taskId}/unassign/{teammateId}")
 
     // DELETE a task
     @DeleteMapping("/{id}")
@@ -71,4 +67,5 @@ public class TaskController {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
 }

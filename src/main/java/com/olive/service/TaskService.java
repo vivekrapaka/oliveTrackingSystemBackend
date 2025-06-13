@@ -3,14 +3,9 @@ package com.olive.service;
 import com.olive.dto.TaskCreateRequest;
 import com.olive.dto.TaskResponse;
 import com.olive.dto.TaskUpdateRequest;
-import com.olive.dto.TeammateResponse;
 import com.olive.model.Task;
-import com.olive.model.TaskAssignment;
-import com.olive.model.TaskStage;
 import com.olive.model.Teammate;
-import com.olive.repository.TaskAssignmentRepository;
 import com.olive.repository.TaskRepository;
-import com.olive.repository.TaskStageRepository;
 import com.olive.repository.TeammateRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,44 +13,38 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final TaskStageRepository taskStageRepository;
     private final TeammateRepository teammateRepository;
-    private final TaskAssignmentRepository taskAssignmentRepository;
+
+    // Hardcoded list of valid task stages
+    private static final List<String> VALID_STAGES = List.of("SIT", "DEV", "Pre-Prod", "Prod");
+    private static final String ASSIGNED_NAMES_DELIMITER = ",";
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, TaskStageRepository taskStageRepository,
-                       TeammateRepository teammateRepository, TaskAssignmentRepository taskAssignmentRepository) {
+    public TaskService(TaskRepository taskRepository, TeammateRepository teammateRepository) {
         this.taskRepository = taskRepository;
-        this.taskStageRepository = taskStageRepository;
         this.teammateRepository = teammateRepository;
-        this.taskAssignmentRepository = taskAssignmentRepository;
     }
 
     // Helper to convert Task Entity to TaskResponse DTO
     private TaskResponse convertToDto(Task task) {
-        List<TeammateResponse> assignedTeammates = taskAssignmentRepository.findByTask(task).stream()
-                .filter(TaskAssignment::getIsActive) // Only active assignments
-                .map(assignment -> new TeammateResponse(
-                        assignment.getTeammate().getTeammateId(),
-                        assignment.getTeammate().getName(),
-                        assignment.getTeammate().getEmail(),
-                        assignment.getTeammate().getAvailabilityStatus()
-                ))
-                .collect(Collectors.toList());
+        List<String> assignedTeammateNames = null;
+        if (task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty()) {
+            assignedTeammateNames = Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+        }
 
         return new TaskResponse(
                 task.getTaskId(),
                 task.getTaskName(),
                 task.getDescription(),
-                task.getCurrentStage().getStageName(),
+                task.getCurrentStage(), // Directly use String
                 task.getStartDate(),
                 task.getDueDate(),
                 task.getIsCompleted(),
@@ -64,7 +53,8 @@ public class TaskService {
                 task.getDevelopmentStartDate(),
                 task.getIsCodeReviewDone(),
                 task.getIsCmcDone(),
-                assignedTeammates
+                assignedTeammateNames,
+                task.getPriority() // Include priority
         );
     }
 
@@ -85,29 +75,44 @@ public class TaskService {
     // Create a new task
     @Transactional
     public TaskResponse createTask(TaskCreateRequest request) {
-        // Validate Task Stage
-        TaskStage currentStage = taskStageRepository.findByStageName(request.getCurrentStageName())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Task Stage: " + request.getCurrentStageName()));
+        // Validate Task Stage against hardcoded list
+        if (!VALID_STAGES.contains(request.getCurrentStage())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Task Stage: " + request.getCurrentStage() + ". Valid stages are: " + String.join(", ", VALID_STAGES));
+        }
 
-        // Create Task entity
         Task task = new Task();
         task.setTaskName(request.getTaskName());
         task.setDescription(request.getDescription());
-        task.setCurrentStage(currentStage);
+        task.setCurrentStage(request.getCurrentStage());
         task.setStartDate(request.getStartDate());
         task.setDueDate(request.getDueDate());
         task.setIssueType(request.getIssueType());
         task.setReceivedDate(request.getReceivedDate());
         task.setDevelopmentStartDate(request.getDevelopmentStartDate());
-        // Default booleans are handled by entity definition
+        task.setPriority(request.getPriority()); // Set priority
+        // isCompleted, isCodeReviewDone, isCmcDone default to false in entity
+
+        // Handle assigned teammates by name
+        if (request.getAssignedTeammateNames() != null && !request.getAssignedTeammateNames().isEmpty()) {
+            Set<String> uniqueAssignedNames = new HashSet<>();
+            for (String teammateName : request.getAssignedTeammateNames()) {
+                Teammate teammate = teammateRepository.findByName(teammateName)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate not found with name: " + teammateName));
+                // Add to unique names set to avoid duplicates in string
+                uniqueAssignedNames.add(teammate.getName());
+            }
+            task.setAssignedTeammateNames(String.join(ASSIGNED_NAMES_DELIMITER, uniqueAssignedNames));
+        } else {
+            task.setAssignedTeammateNames(""); // Ensure it's not null
+        }
 
         Task savedTask = taskRepository.save(task);
 
-        // Handle assignments if provided
-        if (request.getAssignedTeammateIds() != null && !request.getAssignedTeammateIds().isEmpty()) {
-            for (Long teammateId : request.getAssignedTeammateIds()) {
-                assignTeammateToTask(savedTask.getTaskId(), teammateId);
-            }
+        // Update availability of newly assigned teammates after task is saved
+        if (savedTask.getAssignedTeammateNames() != null && !savedTask.getAssignedTeammateNames().isEmpty()) {
+            Arrays.stream(savedTask.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                    .map(String::trim)
+                    .forEach(this::updateTeammateAvailability);
         }
 
         return convertToDto(savedTask);
@@ -119,14 +124,26 @@ public class TaskService {
         Task existingTask = taskRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + id));
 
-        // Update fields if provided
+        // Keep track of old assigned teammates for availability update
+        Set<String> oldAssignedNames = new HashSet<>();
+        if (existingTask.getAssignedTeammateNames() != null && !existingTask.getAssignedTeammateNames().isEmpty()) {
+            oldAssignedNames.addAll(Arrays.stream(existingTask.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                    .map(String::trim)
+                    .collect(Collectors.toSet()));
+        }
+
+        // Store original completion status
+        Boolean wasCompleted = existingTask.getIsCompleted();
+
+        // Update basic fields if provided
         Optional.ofNullable(request.getTaskName()).ifPresent(existingTask::setTaskName);
         Optional.ofNullable(request.getDescription()).ifPresent(existingTask::setDescription);
 
-        if (request.getCurrentStageName() != null) {
-            TaskStage newStage = taskStageRepository.findByStageName(request.getCurrentStageName())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Task Stage: " + request.getCurrentStageName()));
-            existingTask.setCurrentStage(newStage);
+        if (request.getCurrentStage() != null) {
+            if (!VALID_STAGES.contains(request.getCurrentStage())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Task Stage: " + request.getCurrentStage() + ". Valid stages are: " + String.join(", ", VALID_STAGES));
+            }
+            existingTask.setCurrentStage(request.getCurrentStage());
         }
 
         Optional.ofNullable(request.getStartDate()).ifPresent(existingTask::setStartDate);
@@ -137,119 +154,88 @@ public class TaskService {
         Optional.ofNullable(request.getDevelopmentStartDate()).ifPresent(existingTask::setDevelopmentStartDate);
         Optional.ofNullable(request.getIsCodeReviewDone()).ifPresent(existingTask::setIsCodeReviewDone);
         Optional.ofNullable(request.getIsCmcDone()).ifPresent(existingTask::setIsCmcDone);
+        Optional.ofNullable(request.getPriority()).ifPresent(existingTask::setPriority); // Set priority
 
-        // Handle re-assignment: Simplistic approach - remove all active and re-add provided ones.
-        // For production, you'd compare lists and only add/remove differences.
-        if (request.getAssignedTeammateIds() != null) {
-            // Deactivate all current assignments for this task
-            taskAssignmentRepository.findByTask(existingTask).forEach(assignment -> {
-                assignment.setIsActive(false);
-                taskAssignmentRepository.save(assignment);
-                // Also update teammate availability back to 'Free' if they have no other active tasks
-                updateTeammateAvailabilityIfFree(assignment.getTeammate().getTeammateId());
-            });
+        // Handle assigned teammates update
+        Set<String> newAssignedNames = new HashSet<>();
+        if (request.getAssignedTeammateNames() != null) {
+            for (String teammateName : request.getAssignedTeammateNames()) {
+                Teammate teammate = teammateRepository.findByName(teammateName)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate not found with name: " + teammateName));
+                newAssignedNames.add(teammate.getName());
+            }
+            existingTask.setAssignedTeammateNames(String.join(ASSIGNED_NAMES_DELIMITER, newAssignedNames));
+        } else {
+            existingTask.setAssignedTeammateNames(""); // Clear assignments if null list is sent
+        }
 
-            // Create new assignments
-            for (Long teammateId : request.getAssignedTeammateIds()) {
-                assignTeammateToTask(id, teammateId); // This method will create new or reactivate existing
+
+        Task updatedTask = taskRepository.save(existingTask); // Save task first to ensure updated assignments are persisted
+
+        // Collect all unique teammate names involved in this task (old and new assignments)
+        Set<String> allAffectedTeammates = new HashSet<>(oldAssignedNames);
+        allAffectedTeammates.addAll(newAssignedNames);
+
+        // If the task completion status changed, or assignments changed, update availability for all affected teammates
+        if (!Objects.equals(wasCompleted, updatedTask.getIsCompleted()) || !oldAssignedNames.equals(newAssignedNames)) {
+            for (String teammateName : allAffectedTeammates) {
+                updateTeammateAvailability(teammateName);
             }
         }
 
-        return convertToDto(taskRepository.save(existingTask));
+        return convertToDto(updatedTask);
     }
 
-    // Assign a teammate to a task
-    @Transactional
-    public TaskResponse assignTeammateToTask(Long taskId, Long teammateId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + taskId));
-        Teammate teammate = teammateRepository.findById(teammateId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with ID: " + teammateId));
+    // Helper to update a teammate's availability based on all their active tasks
+    // This is crucial because availability is now derived from the 'tasks' table directly.
+    private void updateTeammateAvailability(String teammateName) {
+        teammateRepository.findByName(teammateName).ifPresent(teammate -> {
+            // A teammate is 'Occupied' if they are assigned to any NON-COMPLETED task.
+            boolean isOccupied = taskRepository.findAll().stream()
+                    .filter(task -> !task.getIsCompleted()) // Only consider non-completed tasks
+                    .anyMatch(task -> {
+                        if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
+                            return false;
+                        }
+                        return Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                                .map(String::trim)
+                                .anyMatch(name -> name.equalsIgnoreCase(teammate.getName()));
+                    });
 
-        // Check if an active assignment already exists
-        Optional<TaskAssignment> existingActiveAssignment = taskAssignmentRepository.findByTaskAndTeammate(task, teammate)
-                .filter(TaskAssignment::getIsActive);
-
-        if (existingActiveAssignment.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Teammate is already actively assigned to this task.");
-        }
-
-        // Check for existing inactive assignment to reactivate
-        Optional<TaskAssignment> existingInactiveAssignment = taskAssignmentRepository.findByTaskAndTeammate(task, teammate)
-                .filter(assignment -> !assignment.getIsActive());
-
-        TaskAssignment assignment;
-        if (existingInactiveAssignment.isPresent()) {
-            assignment = existingInactiveAssignment.get();
-            assignment.setIsActive(true);
-            assignment.setAssignedDate(LocalDate.now()); // Update assigned date on reactivation
-        } else {
-            assignment = new TaskAssignment(task, teammate);
-        }
-
-        taskAssignmentRepository.save(assignment);
-
-        // Update teammate status to Occupied
-        teammate.setAvailabilityStatus("Occupied");
-        teammateRepository.save(teammate);
-
-        return convertToDto(task);
-    }
-
-    // Unassign a teammate from a task (sets assignment to inactive)
-    @Transactional
-    public TaskResponse unassignTeammateFromTask(Long taskId, Long teammateId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + taskId));
-        Teammate teammate = teammateRepository.findById(teammateId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with ID: " + teammateId));
-
-        TaskAssignment assignment = taskAssignmentRepository.findByTaskAndTeammate(task, teammate)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found for task " + taskId + " and teammate " + teammateId));
-
-        if (!assignment.getIsActive()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Teammate is not actively assigned to this task.");
-        }
-
-        assignment.setIsActive(false);
-        taskAssignmentRepository.save(assignment);
-
-        // Update teammate availability back to 'Free' if they have no other active tasks
-        updateTeammateAvailabilityIfFree(teammateId);
-
-        return convertToDto(task);
-    }
-
-    // Helper to set teammate to 'Free' if they have no other active assignments
-    private void updateTeammateAvailabilityIfFree(Long teammateId) {
-        Teammate teammate = teammateRepository.findById(teammateId)
-                .orElse(null); // Should not be null if called from unassign
-
-        if (teammate != null) {
-            long activeAssignmentsCount = taskAssignmentRepository.findByTeammate(teammate).stream()
-                    .filter(TaskAssignment::getIsActive)
-                    .count();
-
-            if (activeAssignmentsCount == 0) {
-                teammate.setAvailabilityStatus("Free");
+            String newStatus = isOccupied ? "Occupied" : "Free";
+            if (!teammate.getAvailabilityStatus().equals(newStatus)) {
+                teammate.setAvailabilityStatus(newStatus);
                 teammateRepository.save(teammate);
             }
+        });
+    }
+
+    // Delete a task
+    @Transactional
+    public void deleteTask(Long id) {
+        Task taskToDelete = taskRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + id));
+
+        // Get assigned teammates from the task to be deleted
+        Set<String> affectedTeammates = new HashSet<>();
+        if (taskToDelete.getAssignedTeammateNames() != null && !taskToDelete.getAssignedTeammateNames().isEmpty()) {
+            affectedTeammates.addAll(Arrays.stream(taskToDelete.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                    .map(String::trim)
+                    .collect(Collectors.toSet()));
+        }
+
+        taskRepository.delete(taskToDelete);
+
+        // Update availability of affected teammates after deletion
+        for (String teammateName : affectedTeammates) {
+            updateTeammateAvailability(teammateName);
         }
     }
 
-    // Delete a task (also removes associated assignments)
-    @Transactional
-    public void deleteTask(Long id) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + id));
-
-        // Deactivate associated assignments and update teammate statuses
-        taskAssignmentRepository.findByTask(task).forEach(assignment -> {
-            assignment.setIsActive(false);
-            taskAssignmentRepository.save(assignment);
-            updateTeammateAvailabilityIfFree(assignment.getTeammate().getTeammateId());
-        });
-
-        taskRepository.delete(task);
+    // New method for searching tasks by name
+    public List<TaskResponse> searchTasks(String taskName) {
+        return taskRepository.findByTaskNameContainingIgnoreCase(taskName).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 }

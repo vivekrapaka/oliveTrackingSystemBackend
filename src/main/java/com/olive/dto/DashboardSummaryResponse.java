@@ -12,13 +12,17 @@ public class DashboardSummaryResponse {
     private long tasksPendingCodeReview;
     private long tasksPendingCmcApproval;
 
-    // Optional: List of active assignments for a quick glance on dashboard
-    private List<AssignmentSummaryDTO> activeAssignments;
+    // New: Recent Tasks based on user's requested structure
+    private List<DashboardTaskDTO> recentTasks;
+
+    // New: Team Members Summary based on user's requested structure
+    private List<DashboardTeammateDTO> teamMembersSummary;
+
 
     public DashboardSummaryResponse(long totalTeammates, long freeTeammates, long occupiedTeammates,
                                     Map<String, Long> tasksByStage, Map<String, Long> tasksByIssueType,
                                     long tasksPendingCodeReview, long tasksPendingCmcApproval,
-                                    List<AssignmentSummaryDTO> activeAssignments) {
+                                    List<DashboardTaskDTO> recentTasks, List<DashboardTeammateDTO> teamMembersSummary) {
         this.totalTeammates = totalTeammates;
         this.freeTeammates = freeTeammates;
         this.occupiedTeammates = occupiedTeammates;
@@ -26,7 +30,8 @@ public class DashboardSummaryResponse {
         this.tasksByIssueType = tasksByIssueType;
         this.tasksPendingCodeReview = tasksPendingCodeReview;
         this.tasksPendingCmcApproval = tasksPendingCmcApproval;
-        this.activeAssignments = activeAssignments;
+        this.recentTasks = recentTasks;
+        this.teamMembersSummary = teamMembersSummary;
     }
 
     // Getters and Setters
@@ -86,11 +91,19 @@ public class DashboardSummaryResponse {
         this.tasksPendingCmcApproval = tasksPendingCmcApproval;
     }
 
-    public List<AssignmentSummaryDTO> getActiveAssignments() {
-        return activeAssignments;
+    public List<DashboardTaskDTO> getRecentTasks() {
+        return recentTasks;
     }
 
-    public void setActiveAssignments(List<AssignmentSummaryDTO> activeAssignments) {
-        this.activeAssignments = activeAssignments;
+    public void setRecentTasks(List<DashboardTaskDTO> recentTasks) {
+        this.recentTasks = recentTasks;
+    }
+
+    public List<DashboardTeammateDTO> getTeamMembersSummary() {
+        return teamMembersSummary;
+    }
+
+    public void setTeamMembersSummary(List<DashboardTeammateDTO> teamMembersSummary) {
+        this.teamMembersSummary = teamMembersSummary;
     }
 }

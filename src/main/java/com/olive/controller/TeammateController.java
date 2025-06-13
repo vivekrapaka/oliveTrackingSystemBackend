@@ -1,6 +1,5 @@
 package com.olive.controller;
 
-import com.olive.dto.TeammateAvailabilityUpdateRequest;
 import com.olive.dto.TeammateCreateRequest;
 import com.olive.dto.TeammateResponse;
 import com.olive.service.TeammateService;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/teammates")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"}) // Allow requests from frontend origin
@@ -52,14 +50,8 @@ public class TeammateController {
         return ResponseEntity.ok(updatedTeammate);
     }
 
-    // PATCH update teammate availability status (more specific update)
-    @PatchMapping("/{id}/availability")
-    public ResponseEntity<TeammateResponse> updateTeammateAvailability(@PathVariable Long id, @Valid @RequestBody TeammateAvailabilityUpdateRequest request) {
-        // Service method returns Teammate, convert to DTO for response
-        TeammateResponse updatedTeammate = teammateService.updateTeammateAvailability(id, request.getAvailabilityStatus())
-                .convertToDto(); // Assuming convertToDto is accessible or add a public static method in TeammateResponse
-        return ResponseEntity.ok(updatedTeammate);
-    }
+    // Removed PATCH update teammate availability status as it's now derived or handled by TaskService
+    // @PatchMapping("/{id}/availability")
 
 
     // DELETE a teammate

@@ -9,7 +9,7 @@ public class TaskResponse {
     private Long taskId;
     private String taskName;
     private String description;
-    private String currentStageName;
+    private String currentStage; // Now a String
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -22,13 +22,14 @@ public class TaskResponse {
     private LocalDate developmentStartDate;
     private Boolean isCodeReviewDone;
     private Boolean isCmcDone;
-    private List<TeammateResponse> assignedTeammates; // List of DTOs for assigned teammates
+    private List<String> assignedTeammateNames; // Now a list of names
+    private String priority; // New field
 
-    public TaskResponse(Long taskId, String taskName, String description, String currentStageName, LocalDate startDate, LocalDate dueDate, Boolean isCompleted, String issueType, LocalDate receivedDate, LocalDate developmentStartDate, Boolean isCodeReviewDone, Boolean isCmcDone, List<TeammateResponse> assignedTeammates) {
+    public TaskResponse(Long taskId, String taskName, String description, String currentStage, LocalDate startDate, LocalDate dueDate, Boolean isCompleted, String issueType, LocalDate receivedDate, LocalDate developmentStartDate, Boolean isCodeReviewDone, Boolean isCmcDone, List<String> assignedTeammateNames, String priority) {
         this.taskId = taskId;
         this.taskName = taskName;
         this.description = description;
-        this.currentStageName = currentStageName;
+        this.currentStage = currentStage;
         this.startDate = startDate;
         this.dueDate = dueDate;
         this.isCompleted = isCompleted;
@@ -37,7 +38,8 @@ public class TaskResponse {
         this.developmentStartDate = developmentStartDate;
         this.isCodeReviewDone = isCodeReviewDone;
         this.isCmcDone = isCmcDone;
-        this.assignedTeammates = assignedTeammates;
+        this.assignedTeammateNames = assignedTeammateNames;
+        this.priority = priority;
     }
 
     // Getters and Setters
@@ -65,12 +67,12 @@ public class TaskResponse {
         this.description = description;
     }
 
-    public String getCurrentStageName() {
-        return currentStageName;
+    public String getCurrentStage() {
+        return currentStage;
     }
 
-    public void setCurrentStageName(String currentStageName) {
-        this.currentStageName = currentStageName;
+    public void setCurrentStage(String currentStage) {
+        this.currentStage = currentStage;
     }
 
     public LocalDate getStartDate() {
@@ -137,11 +139,19 @@ public class TaskResponse {
         isCmcDone = cmcDone;
     }
 
-    public List<TeammateResponse> getAssignedTeammates() {
-        return assignedTeammates;
+    public List<String> getAssignedTeammateNames() {
+        return assignedTeammateNames;
     }
 
-    public void setAssignedTeammates(List<TeammateResponse> assignedTeammates) {
-        this.assignedTeammates = assignedTeammates;
+    public void setAssignedTeammateNames(List<String> assignedTeammateNames) {
+        this.assignedTeammateNames = assignedTeammateNames;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 }
