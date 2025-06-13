@@ -16,7 +16,7 @@ public class TaskCreateRequest {
     private String description;
 
     @NotBlank(message = "Current stage is required")
-    private String currentStageName; // Use stage name from frontend
+    private String currentStage; // Now a String directly
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
@@ -33,7 +33,9 @@ public class TaskCreateRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate developmentStartDate;
 
-    private List<Long> assignedTeammateIds; // IDs of teammates to assign
+    private List<String> assignedTeammateNames; // Now a list of names
+
+    private String priority; // New field
 
     // Getters and Setters
     public String getTaskName() {
@@ -52,12 +54,12 @@ public class TaskCreateRequest {
         this.description = description;
     }
 
-    public String getCurrentStageName() {
-        return currentStageName;
+    public String getCurrentStage() {
+        return currentStage;
     }
 
-    public void setCurrentStageName(String currentStageName) {
-        this.currentStageName = currentStageName;
+    public void setCurrentStage(String currentStage) {
+        this.currentStage = currentStage;
     }
 
     public LocalDate getStartDate() {
@@ -100,11 +102,19 @@ public class TaskCreateRequest {
         this.developmentStartDate = developmentStartDate;
     }
 
-    public List<Long> getAssignedTeammateIds() {
-        return assignedTeammateIds;
+    public List<String> getAssignedTeammateNames() {
+        return assignedTeammateNames;
     }
 
-    public void setAssignedTeammateIds(List<Long> assignedTeammateIds) {
-        this.assignedTeammateIds = assignedTeammateIds;
+    public void setAssignedTeammateNames(List<String> assignedTeammateNames) {
+        this.assignedTeammateNames = assignedTeammateNames;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 }

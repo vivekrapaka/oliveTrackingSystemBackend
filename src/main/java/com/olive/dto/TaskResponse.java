@@ -5,96 +5,55 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-public class TaskResponse {
-    private Long taskId;
-    private String taskName;
-    private String description;
-    private String currentStageName;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dueDate;
-    private Boolean isCompleted;
+public class TaskResponse { private Long id; // Renamed from taskId
+    private String name; // Renamed from taskName
     private String issueType;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate receivedDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate developmentStartDate;
-    private Boolean isCodeReviewDone;
-    private Boolean isCmcDone;
-    private List<TeammateResponse> assignedTeammates; // List of DTOs for assigned teammates
+    private String currentStage;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dueDate;
+    private List<String> assignedTeammates; // Renamed from assignedTeammateNames
+    private String priority;
+    private Boolean isCompleted;
+    private Boolean iscmcDone; // Renamed from isCmcDone
 
-    public TaskResponse(Long taskId, String taskName, String description, String currentStageName, LocalDate startDate, LocalDate dueDate, Boolean isCompleted, String issueType, LocalDate receivedDate, LocalDate developmentStartDate, Boolean isCodeReviewDone, Boolean isCmcDone, List<TeammateResponse> assignedTeammates) {
-        this.taskId = taskId;
-        this.taskName = taskName;
-        this.description = description;
-        this.currentStageName = currentStageName;
-        this.startDate = startDate;
-        this.dueDate = dueDate;
-        this.isCompleted = isCompleted;
+
+    // Updated constructor
+    public TaskResponse(Long id, String name, String issueType, LocalDate receivedDate,
+                        LocalDate developmentStartDate, String currentStage, LocalDate dueDate,
+                        List<String> assignedTeammates, String priority, Boolean isCompleted,
+                        Boolean iscmcDone) {
+        this.id = id;
+        this.name = name;
         this.issueType = issueType;
         this.receivedDate = receivedDate;
         this.developmentStartDate = developmentStartDate;
-        this.isCodeReviewDone = isCodeReviewDone;
-        this.isCmcDone = isCmcDone;
-        this.assignedTeammates = assignedTeammates;
-    }
-
-    // Getters and Setters
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCurrentStageName() {
-        return currentStageName;
-    }
-
-    public void setCurrentStageName(String currentStageName) {
-        this.currentStageName = currentStageName;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
+        this.currentStage = currentStage;
         this.dueDate = dueDate;
+        this.assignedTeammates = assignedTeammates;
+        this.priority = priority;
+        this.isCompleted = isCompleted;
+        this.iscmcDone = iscmcDone;
     }
 
-    public Boolean getIsCompleted() {
-        return isCompleted;
+    // Getters and Setters - Renamed and removed as per the request
+    public Long getId() {
+        return id;
     }
 
-    public void setIsCompleted(Boolean completed) {
-        isCompleted = completed;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getIssueType() {
@@ -121,27 +80,51 @@ public class TaskResponse {
         this.developmentStartDate = developmentStartDate;
     }
 
-    public Boolean getIsCodeReviewDone() {
-        return isCodeReviewDone;
+    public String getCurrentStage() {
+        return currentStage;
     }
 
-    public void setIsCodeReviewDone(Boolean codeReviewDone) {
-        isCodeReviewDone = codeReviewDone;
+    public void setCurrentStage(String currentStage) {
+        this.currentStage = currentStage;
     }
 
-    public Boolean getIsCmcDone() {
-        return isCmcDone;
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
-    public void setIsCmcDone(Boolean cmcDone) {
-        isCmcDone = cmcDone;
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
-    public List<TeammateResponse> getAssignedTeammates() {
+    public List<String> getAssignedTeammates() {
         return assignedTeammates;
     }
 
-    public void setAssignedTeammates(List<TeammateResponse> assignedTeammates) {
+    public void setAssignedTeammates(List<String> assignedTeammates) {
         this.assignedTeammates = assignedTeammates;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public Boolean getIsCompleted() {
+        return isCompleted;
+    }
+
+    public void setIsCompleted(Boolean completed) {
+        isCompleted = completed;
+    }
+
+    public Boolean getIscmcDone() { // Renamed getter
+        return iscmcDone;
+    }
+
+    public void setIscmcDone(Boolean iscmcDone) { // Renamed setter
+        this.iscmcDone = iscmcDone;
     }
 }
