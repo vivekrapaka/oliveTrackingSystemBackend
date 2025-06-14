@@ -4,6 +4,7 @@ import com.olive.dto.TaskCreateRequest;
 import com.olive.dto.TaskResponse;
 import com.olive.dto.TaskUpdateRequest;
 import com.olive.dto.TasksSummaryResponse;
+
 import com.olive.model.Task;
 import com.olive.model.Teammate;
 import com.olive.repository.TaskRepository;
@@ -41,9 +42,17 @@ public class TaskService {
                     .collect(Collectors.toList());
         }
 
+        // Format sequenceNumber to TSK-XXX string
+        String formattedTaskNumber = null;
+        if (task.getSequenceNumber() != null) {
+            formattedTaskNumber = String.format("TSK-%03d", task.getSequenceNumber());
+        }
+
         return new TaskResponse(
                 task.getTaskId(), // maps to id
                 task.getTaskName(), // maps to name
+                formattedTaskNumber, // NEW: formatted task number
+                task.getDescription(), // NEW: description
                 task.getIssueType(),
                 task.getReceivedDate(),
                 task.getDevelopmentStartDate(),
@@ -55,6 +64,15 @@ public class TaskService {
                 task.getIsCmcDone() // maps to iscmcDone
         );
     }
+
+    // Generate a new unique sequence number
+    public Long generateNextSequenceNumber() {
+        // Find the maximum existing sequence number
+        Optional<Long> maxSequenceNumberOptional = taskRepository.findMaxSequenceNumber();
+        // If there are no tasks yet, start from 1, otherwise increment the max
+        return maxSequenceNumberOptional.map(max -> max + 1).orElse(1L);
+    }
+
 
     // Get all tasks, now returning TasksSummaryResponse
     public TasksSummaryResponse getAllTasks(String taskNameFilter) {
@@ -100,6 +118,7 @@ public class TaskService {
 
         Task task = new Task();
         task.setTaskName(nameToSave); // Set the uppercase name
+        task.setSequenceNumber(generateNextSequenceNumber()); // Automatically generate and assign sequence number
         task.setDescription(request.getDescription());
         task.setCurrentStage(request.getCurrentStage());
         task.setStartDate(request.getStartDate());

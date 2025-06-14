@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:8085"})
 public class DashboardController {
 
+
     private final DashboardService dashboardService;
 
     @Autowired

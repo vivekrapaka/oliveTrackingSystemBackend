@@ -13,7 +13,7 @@ public class TaskCreateRequest {
     @Size(max = 255, message = "Task name cannot exceed 255 characters")
     private String taskName;
 
-    private String description;
+    private String description; // Added description here
 
     @NotBlank(message = "Current stage is required")
     private String currentStage; // Now a String directly
@@ -46,11 +46,11 @@ public class TaskCreateRequest {
         this.taskName = taskName;
     }
 
-    public String getDescription() {
+    public String getDescription() { // Getter for description
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String description) { // Setter for description
         this.description = description;
     }
 

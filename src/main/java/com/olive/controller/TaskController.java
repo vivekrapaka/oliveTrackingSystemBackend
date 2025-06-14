@@ -41,6 +41,13 @@ public class TaskController {
         return ResponseEntity.ok(summaryResponse);
     }
 
+    // NEW API: Generate a unique sequence number for a new task
+    @GetMapping("/generateSequenceNumber")
+    public ResponseEntity<Long> generateSequenceNumber() {
+        Long nextSequenceNumber = taskService.generateNextSequenceNumber();
+        return ResponseEntity.ok(nextSequenceNumber);
+    }
+
     // POST create a new task
     @PostMapping
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskCreateRequest request) {

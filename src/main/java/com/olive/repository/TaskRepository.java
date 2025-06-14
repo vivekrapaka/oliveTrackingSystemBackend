@@ -28,4 +28,8 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 
     // New: Find task by exact task name, ignoring case (for update/delete by name)
     Optional<Task> findByTaskNameIgnoreCase(String taskName);
+
+    // New: Find the maximum sequence number
+    @Query("SELECT MAX(t.sequenceNumber) FROM Task t")
+    Optional<Long> findMaxSequenceNumber();
 }

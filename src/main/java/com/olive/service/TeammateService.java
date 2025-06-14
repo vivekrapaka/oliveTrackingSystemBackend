@@ -69,13 +69,14 @@ public class TeammateService {
 
 
         return new TeammateResponse(
-                teammate.getTeammateId(),
+                teammate.getTeammateId(), // Maps to 'id' in frontend
                 teammate.getName(),
                 teammate.getEmail(),
                 teammate.getRole(),
                 teammate.getPhone(),
                 teammate.getDepartment(),
                 teammate.getLocation(),
+                teammate.getAvatar(), // NEW: include avatar
                 availabilityStatus, // Use the dynamically calculated status
                 activeTasksAssigned, // Include derived active tasks count
                 completedTasksAssigned // Include derived completed tasks count
@@ -139,6 +140,7 @@ public class TeammateService {
         teammate.setPhone(request.getPhone());
         teammate.setDepartment(request.getDepartment());
         teammate.setLocation(request.getLocation());
+        teammate.setAvatar(request.getAvatar()); // NEW: Set avatar
         teammate.setAvailabilityStatus("Free"); // Initially free, will be updated by TaskService logic
         return convertToDto(teammateRepository.save(teammate)); // convertToDto will calculate initial tasksAssigned/Completed
     }
@@ -173,6 +175,7 @@ public class TeammateService {
         Optional.ofNullable(request.getPhone()).ifPresent(existingTeammate::setPhone);
         Optional.ofNullable(request.getDepartment()).ifPresent(existingTeammate::setDepartment);
         Optional.ofNullable(request.getLocation()).ifPresent(existingTeammate::setLocation);
+        Optional.ofNullable(request.getAvatar()).ifPresent(existingTeammate::setAvatar); // NEW: Update avatar
 
         // Save updated teammate details
         teammateRepository.save(existingTeammate);

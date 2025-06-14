@@ -22,7 +22,7 @@ public class TaskResponse { private Long id; // Renamed from taskId
 
 
     // Updated constructor
-    public TaskResponse(Long id, String name, String issueType, LocalDate receivedDate,
+    public TaskResponse(Long id, String name, Long sequenceNumber, String issueType, LocalDate receivedDate,
                         LocalDate developmentStartDate, String currentStage, LocalDate dueDate,
                         List<String> assignedTeammates, String priority, Boolean isCompleted,
                         Boolean iscmcDone) {
@@ -37,6 +37,9 @@ public class TaskResponse { private Long id; // Renamed from taskId
         this.priority = priority;
         this.isCompleted = isCompleted;
         this.iscmcDone = iscmcDone;
+    }
+
+    public TaskResponse(Long taskId, String taskName, String formattedTaskNumber, String description, String issueType, LocalDate receivedDate, LocalDate developmentStartDate, String currentStage, LocalDate dueDate, List<String> assignedTeammates, String priority, Boolean isCompleted, Boolean isCmcDone) {
     }
 
     // Getters and Setters - Renamed and removed as per the request
