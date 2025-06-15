@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RestController
 @RequestMapping("/api/tasks")
-@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:8085"}) // Allow requests from frontend origin
+//@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:8085"}) // Allow requests from frontend origin
 public class TaskController {
 
 
