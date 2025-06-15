@@ -8,7 +8,7 @@ import java.util.List;
 public class TaskUpdateRequest {
     private String taskName;
     private String description;
-    private String currentStageName;
+    private String currentStage; // Now a String
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -21,7 +21,9 @@ public class TaskUpdateRequest {
     private LocalDate developmentStartDate;
     private Boolean isCodeReviewDone;
     private Boolean isCmcDone;
-    private List<Long> assignedTeammateIds; // For re-assigning or adding new assignments
+    private List<String> assignedTeammateNames; // Now a list of names
+
+    private String priority; // New field
 
     // Getters and Setters
     public String getTaskName() {
@@ -40,12 +42,12 @@ public class TaskUpdateRequest {
         this.description = description;
     }
 
-    public String getCurrentStageName() {
-        return currentStageName;
+    public String getCurrentStage() {
+        return currentStage;
     }
 
-    public void setCurrentStageName(String currentStageName) {
-        this.currentStageName = currentStageName;
+    public void setCurrentStage(String currentStage) {
+        this.currentStage = currentStage;
     }
 
     public LocalDate getStartDate() {
@@ -112,11 +114,19 @@ public class TaskUpdateRequest {
         isCmcDone = cmcDone;
     }
 
-    public List<Long> getAssignedTeammateIds() {
-        return assignedTeammateIds;
+    public List<String> getAssignedTeammateNames() {
+        return assignedTeammateNames;
     }
 
-    public void setAssignedTeammateIds(List<Long> assignedTeammateIds) {
-        this.assignedTeammateIds = assignedTeammateIds;
+    public void setAssignedTeammateNames(List<String> assignedTeammateNames) {
+        this.assignedTeammateNames = assignedTeammateNames;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 }

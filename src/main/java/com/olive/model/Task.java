@@ -1,7 +1,5 @@
 package com.olive.model;
-
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -13,15 +11,18 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true) // Task name should be unique
     private String taskName;
+
+    @Column(nullable = false, unique = true) // New: Unique sequence number
+    private Long sequenceNumber;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER) // Eagerly load stage with task
-    @JoinColumn(name = "current_stage_id", nullable = false)
-    private TaskStage currentStage;
+    // Task stage is now a String directly in the Task table
+    @Column(nullable = false, length = 50)
+    private String currentStage; // e.g., SIT, DEV, Pre-Prod, Prod
 
     private LocalDate startDate;
     private LocalDate dueDate;
@@ -36,20 +37,16 @@ public class Task {
     private Boolean isCodeReviewDone = false;
     private Boolean isCmcDone = false;
 
+    // Assigned Teammates stored as a comma-separated string of names
+    // This simplifies the schema as requested, but logic for parsing/joining will be in service.
+    @Column(columnDefinition = "TEXT")
+    private String assignedTeammateNames; // e.g., "John Doe,Jane Smith"
+
+    @Column(length = 20) // New field for task priority
+    private String priority; // e.g., "High", "Medium", "Low"
+
     // --- Constructors ---
     public Task() {
-    }
-
-    public Task(String taskName, String description, TaskStage currentStage, LocalDate startDate, LocalDate dueDate,
-                String issueType, LocalDate receivedDate, LocalDate developmentStartDate) {
-        this.taskName = taskName;
-        this.description = description;
-        this.currentStage = currentStage;
-        this.startDate = startDate;
-        this.dueDate = dueDate;
-        this.issueType = issueType;
-        this.receivedDate = receivedDate;
-        this.developmentStartDate = developmentStartDate;
     }
 
     // --- Getters and Setters ---
@@ -69,6 +66,14 @@ public class Task {
         this.taskName = taskName;
     }
 
+    public Long getSequenceNumber() { // Getter for sequenceNumber
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(Long sequenceNumber) { // Setter for sequenceNumber
+        this.sequenceNumber = sequenceNumber;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -77,11 +82,11 @@ public class Task {
         this.description = description;
     }
 
-    public TaskStage getCurrentStage() {
+    public String getCurrentStage() {
         return currentStage;
     }
 
-    public void setCurrentStage(TaskStage currentStage) {
+    public void setCurrentStage(String currentStage) {
         this.currentStage = currentStage;
     }
 
@@ -149,6 +154,22 @@ public class Task {
         isCmcDone = cmcDone;
     }
 
+    public String getAssignedTeammateNames() {
+        return assignedTeammateNames;
+    }
+
+    public void setAssignedTeammateNames(String assignedTeammateNames) {
+        this.assignedTeammateNames = assignedTeammateNames;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -160,5 +181,16 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(taskId);
+    }
+
+    /**
+     * JPA lifecycle callback to convert the taskName to uppercase before persisting or updating.
+     */
+    @PrePersist
+    @PreUpdate
+    public void convertTaskNameToUppercase() {
+        if (this.taskName != null) {
+            this.taskName = this.taskName.toUpperCase();
+        }
     }
 }
