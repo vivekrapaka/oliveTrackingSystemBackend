@@ -4,9 +4,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class TeammateCreateRequest { @NotBlank(message = "Teammate name is required")
-@Size(max = 100, message = "Name cannot exceed 100 characters")
-private String name;
+public class TeammateCreateRequest {
+
+    @NotBlank(message = "Full name is required")
+    @Size(max = 100, message = "Full name cannot exceed 100 characters")
+    private String fullName; // Changed from firstName/lastName to fullName
 
     @Email(message = "Invalid email format")
     @Size(max = 100, message = "Email cannot exceed 100 characters")
@@ -27,13 +29,14 @@ private String name;
     @Size(max = 255, message = "Avatar URL cannot exceed 255 characters") // New: Avatar field
     private String avatar;
 
+
     // Getters and Setters
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {

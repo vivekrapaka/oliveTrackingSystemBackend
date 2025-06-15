@@ -7,6 +7,8 @@ import com.olive.model.Task;
 import com.olive.model.Teammate;
 import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,128 +21,164 @@ import java.util.stream.Collectors;
 
 @Service
 public class DashboardService {
-    private final TeammateRepository teammateRepository;
+    private static final Logger logger = LoggerFactory.getLogger(DashboardService.class);
+
     private final TaskRepository taskRepository;
+    private final TeammateRepository teammateRepository;
+
     private static final String ASSIGNED_NAMES_DELIMITER = ",";
 
-
     @Autowired
-    public DashboardService(TeammateRepository teammateRepository, TaskRepository taskRepository) {
-        this.teammateRepository = teammateRepository;
+    public DashboardService(TaskRepository taskRepository, TeammateRepository teammateRepository) {
         this.taskRepository = taskRepository;
+        this.teammateRepository = teammateRepository;
     }
 
     public DashboardSummaryResponse getDashboardSummary() {
-        // Teammate Stats
+        logger.info("Generating dashboard summary.");
+
         List<Teammate> allTeammates = teammateRepository.findAll();
-        long totalTeammates = allTeammates.size();
-        long freeTeammates = allTeammates.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
-        long occupiedTeammates = allTeammates.stream().filter(t -> "Occupied".equals(t.getAvailabilityStatus())).count();
-
         List<Task> allTasks = taskRepository.findAll();
+        logger.debug("Fetched {} teammates and {} tasks for dashboard summary.", allTeammates.size(), allTasks.size());
 
-        // Total tasks count
-        long totalTasks = allTasks.size();
-
-        // Active tasks count (not in "Development" stage)
-        long activeTasksCount = allTasks.stream()
-                .filter(task -> !task.getCurrentStage().equalsIgnoreCase("Development"))
+        long totalTeammates = allTeammates.size();
+        long freeTeammates = allTeammates.stream()
+                .filter(t -> "Free".equals(t.getAvailabilityStatus()))
+                .count();
+        long occupiedTeammates = allTeammates.stream()
+                .filter(t -> "Occupied".equals(t.getAvailabilityStatus()))
                 .count();
 
-        // Tasks by Stage
+        long totalTasks = allTasks.size();
+        // Active tasks are those not completed and not in "Prod" (assuming "Prod" means completed/deployed)
+        long activeTasks = allTasks.stream()
+                .filter(task -> !task.getIsCompleted() && !task.getCurrentStage().equalsIgnoreCase("Prod"))
+                .count();
+        logger.debug("Calculated totalTasks: {}, activeTasks: {}", totalTasks, activeTasks);
+
+
         Map<String, Long> tasksByStage = allTasks.stream()
                 .collect(Collectors.groupingBy(Task::getCurrentStage, Collectors.counting()));
+        logger.debug("Tasks by stage: {}", tasksByStage);
 
-        // Tasks by Issue Type
         Map<String, Long> tasksByIssueType = allTasks.stream()
-                .filter(task -> task.getIssueType() != null && !task.getIssueType().isEmpty())
                 .collect(Collectors.groupingBy(Task::getIssueType, Collectors.counting()));
+        logger.debug("Tasks by issue type: {}", tasksByIssueType);
 
-        // Tasks pending code review/CMC (excluding completed tasks)
+
         long tasksPendingCodeReview = allTasks.stream()
-                .filter(task -> !task.getIsCompleted() && !task.getIsCodeReviewDone())
+                .filter(task -> !task.getIsCodeReviewDone())
                 .count();
+        logger.debug("Tasks pending code review: {}", tasksPendingCodeReview);
+
+
         long tasksPendingCmcApproval = allTasks.stream()
-                .filter(task -> !task.getIsCompleted() && !task.getIsCmcDone())
+                .filter(task -> !task.getIsCmcDone())
                 .count();
+        logger.debug("Tasks pending CMC approval: {}", tasksPendingCmcApproval);
 
-        // Recent Tasks - now gets all tasks and sorts by due date
-        List<DashboardTaskDTO> recentTasks = allTasks.stream()
-                .map(task -> {
-                    String assigneeNames = (task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty()) ?
-                            Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
-                                    .map(String::trim)
-                                    .collect(Collectors.joining(", ")) : "Unassigned";
-                    return new DashboardTaskDTO(
-                            task.getTaskId(),
-                            task.getTaskName(),
-                            task.getCurrentStage(),
-                            assigneeNames,
-                            task.getDueDate(),
-                            task.getPriority()
-                    );
-                })
-                .sorted(Comparator.comparing(DashboardTaskDTO::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))) // Sort by dueDate
+
+        // Recent tasks (e.g., top 5 most recently started, not completed)
+        logger.debug("Generating recent tasks list.");
+        List<DashboardTaskDTO> recentTasks = taskRepository.findTop10ByIsCompletedFalseOrderByStartDateDesc().stream()
+                .map(this::convertTaskToDashboardTaskDTO)
                 .collect(Collectors.toList());
+        logger.debug("Generated {} recent tasks: {}", recentTasks.size(), recentTasks.stream().map(DashboardTaskDTO::getName).collect(Collectors.joining(", ")));
 
-        // NEW: Active Tasks List (not in Development)
+
+        // Active tasks list for dashboard (not completed, not in Prod)
+        logger.debug("Generating active tasks list.");
         List<DashboardTaskDTO> activeTasksList = allTasks.stream()
-                .filter(task -> !task.getCurrentStage().equalsIgnoreCase("Development"))
-                .map(task -> {
-                    String assigneeNames = (task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty()) ?
-                            Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
-                                    .map(String::trim)
-                                    .collect(Collectors.joining(", ")) : "Unassigned";
-                    return new DashboardTaskDTO(
-                            task.getTaskId(),
-                            task.getTaskName(),
-                            task.getCurrentStage(),
-                            assigneeNames,
-                            task.getDueDate(),
-                            task.getPriority()
-                    );
-                })
-                .sorted(Comparator.comparing(DashboardTaskDTO::getDueDate, Comparator.nullsLast(Comparator.naturalOrder()))) // Sort by dueDate
+                .filter(task -> !task.getIsCompleted() && !task.getCurrentStage().equalsIgnoreCase("Prod"))
+                .map(this::convertTaskToDashboardTaskDTO)
                 .collect(Collectors.toList());
+        logger.debug("Generated {} active tasks list: {}", activeTasksList.size(), activeTasksList.stream().map(DashboardTaskDTO::getName).collect(Collectors.joining(", ")));
 
 
         // Team Members Summary
+        logger.debug("Generating team members summary.");
         List<DashboardTeammateDTO> teamMembersSummary = allTeammates.stream()
                 .map(teammate -> {
-                    long tasksAssignedCount = allTasks.stream()
-                            .filter(task -> !task.getIsCompleted() && task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty())
-                            .filter(task -> Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
-                                    .map(String::trim)
-                                    .anyMatch(name -> name.equalsIgnoreCase(teammate.getName())))
+                    long tasksAssignedToTeammate = allTasks.stream()
+                            .filter(task -> !task.getIsCompleted()) // Only count active tasks
+                            .filter(task -> {
+                                if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
+                                    return false;
+                                }
+                                return Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                                        .map(String::trim)
+                                        .anyMatch(name -> name.equalsIgnoreCase(teammate.getName()));
+                            })
                             .count();
-                    return new DashboardTeammateDTO(
+                    DashboardTeammateDTO teammateDTO = new DashboardTeammateDTO(
                             teammate.getTeammateId(),
                             teammate.getName(),
                             teammate.getRole(),
                             teammate.getEmail(),
-                            teammate.getPhone(), // Include phone
-                            teammate.getDepartment(), // Include department
-                            teammate.getLocation(), // Include location
-                            tasksAssignedCount
+                            teammate.getPhone(),
+                            teammate.getDepartment(),
+                            teammate.getLocation(),
+                            tasksAssignedToTeammate
                     );
+                    logger.debug("Created DashboardTeammateDTO for '{}': tasksAssigned={}", teammate.getName(), tasksAssignedToTeammate);
+                    return teammateDTO;
                 })
-                .sorted(Comparator.comparing(DashboardTeammateDTO::getName)) // Sort alphabetically
                 .collect(Collectors.toList());
+        logger.debug("Team members summary generated for {} members.", teamMembersSummary.size());
 
 
-        return new DashboardSummaryResponse(
+        DashboardSummaryResponse response = new DashboardSummaryResponse(
                 totalTeammates,
                 freeTeammates,
                 occupiedTeammates,
                 totalTasks,
-                activeTasksCount, // Pass active tasks count
+                activeTasks,
                 tasksByStage,
                 tasksByIssueType,
                 tasksPendingCodeReview,
                 tasksPendingCmcApproval,
                 recentTasks,
                 teamMembersSummary,
-                activeTasksList // Pass the new active tasks list
+                activeTasksList
         );
+        logger.info("Dashboard summary generated successfully.");
+        return response;
+    }
+
+    // Helper to convert Task Entity to DashboardTaskDTO
+    private DashboardTaskDTO convertTaskToDashboardTaskDTO(Task task) {
+        logger.debug("Converting Task '{}' (ID: {}) to DashboardTaskDTO.", task.getTaskName(), task.getTaskId());
+        String assignee = null;
+        if (task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty()) {
+            // Take the first assigned teammate as the primary assignee for display on dashboard
+            assignee = Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
+                    .map(String::trim)
+                    .findFirst()
+                    .orElse(null);
+            logger.debug("Assigned teammate extracted: {}", assignee);
+        } else {
+            logger.debug("No assigned teammates for task '{}'.", task.getTaskName());
+        }
+
+        // Format sequenceNumber to TSK-XXX string
+        String formattedTaskNumber = null;
+        if (task.getSequenceNumber() != null) {
+            formattedTaskNumber = String.format("TSK-%03d", task.getSequenceNumber());
+            logger.debug("Formatted task number: {}", formattedTaskNumber);
+        } else {
+            logger.warn("Task '{}' (ID: {}) has a null sequence number. Task number will be null.", task.getTaskName(), task.getTaskId());
+        }
+
+        DashboardTaskDTO dto = new DashboardTaskDTO(
+                task.getTaskId(),
+                task.getTaskName(),
+                task.getCurrentStage(),
+                assignee,
+                task.getDueDate(),
+                task.getPriority(),
+                formattedTaskNumber // Populating the new taskNumber field
+        );
+        logger.debug("Finished converting Task to DashboardTaskDTO: ID={}, Name={}, TaskNumber={}", dto.getId(), dto.getName(), dto.getTaskNumber());
+        return dto;
     }
 }
