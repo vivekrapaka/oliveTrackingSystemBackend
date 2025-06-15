@@ -1,0 +1,22 @@
+package com.olive.config;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class CorsConfig {
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**") // Apply CORS to all paths
+                        .allowedOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:8081", "http://localhost:8082","https://90fecb38-acb6-4af0-8018-b06ec94b9ce6.lovableproject.com") // Allow specified origins
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow specified HTTP methods
+                        .allowedHeaders("*") // Allow all headers
+                        .allowCredentials(true); // Allow sending of cookies/authentication headers
+            }
+        };
+    }
+}

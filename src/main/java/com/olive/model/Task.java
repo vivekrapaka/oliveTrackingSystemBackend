@@ -14,6 +14,9 @@ public class Task {
     @Column(nullable = false, unique = true) // Task name should be unique
     private String taskName;
 
+    @Column(nullable = false, unique = true) // New: Unique sequence number
+    private Long sequenceNumber;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -61,6 +64,14 @@ public class Task {
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+    public Long getSequenceNumber() { // Getter for sequenceNumber
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(Long sequenceNumber) { // Setter for sequenceNumber
+        this.sequenceNumber = sequenceNumber;
     }
 
     public String getDescription() {

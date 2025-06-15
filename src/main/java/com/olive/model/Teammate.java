@@ -28,6 +28,8 @@ public class Teammate {
     @Column(length = 100) // New field for location
     private String location;
 
+    @Column(length = 255) // New: Avatar field
+    private String avatar;
 
     // AvailabilityStatus: "Free" or "Occupied"
     // This status will be derived and updated by TaskService based on active assignments.
@@ -38,13 +40,14 @@ public class Teammate {
     public Teammate() {
     }
 
-    public Teammate(String name, String email, String role, String phone, String department, String location) {
+    public Teammate(String name, String email, String role, String phone, String department, String location, String avatar) {
         this.name = name;
         this.email = email;
         this.role = role;
         this.phone = phone;
         this.department = department;
         this.location = location;
+        this.avatar = avatar;
     }
 
     // --- Getters and Setters ---
@@ -102,6 +105,14 @@ public class Teammate {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getAvatar() { // Getter for avatar
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) { // Setter for avatar
+        this.avatar = avatar;
     }
 
     public String getAvailabilityStatus() {
