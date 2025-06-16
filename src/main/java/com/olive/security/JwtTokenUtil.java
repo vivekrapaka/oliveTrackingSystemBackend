@@ -1,6 +1,6 @@
 package com.olive.security;
 
-import com.olive.service.UserDetailsImpl;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

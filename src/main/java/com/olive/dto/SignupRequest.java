@@ -18,6 +18,9 @@ public class SignupRequest {
     @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
     private String password;
 
+    // REMOVED: role field, as self-signup defaults to TEAM_MEMBER
+    // REMOVED: teamId field, as self-signup defaults to unassigned (null)
+
     // Getters and Setters
     public String getFullName() {
         return fullName;

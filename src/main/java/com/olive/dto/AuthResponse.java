@@ -7,11 +7,19 @@ public class AuthResponse {
     private String email;
     private String fullName; // To return full name after login
 
-    public AuthResponse(String token, Long id, String email, String fullName) {
+    // NEW: Role and Team ID fields
+    private String role;
+    private Long teamId;
+
+
+    // Updated constructor to include role and teamId
+    public AuthResponse(String token, Long id, String email, String fullName, String role, Long teamId) {
         this.token = token;
         this.id = id;
         this.email = email;
         this.fullName = fullName;
+        this.role = role;
+        this.teamId = teamId;
     }
 
     // Getters and Setters
@@ -53,5 +61,22 @@ public class AuthResponse {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    // NEW Getters and Setters for role and teamId
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
     }
 }

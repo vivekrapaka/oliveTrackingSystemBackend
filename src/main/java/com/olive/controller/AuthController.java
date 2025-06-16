@@ -11,7 +11,6 @@ import com.olive.repository.UserRepository;
 import com.olive.security.JwtTokenUtil;
 
 import com.olive.service.AuthService;
-import com.olive.service.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

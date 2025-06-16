@@ -4,6 +4,7 @@ import com.olive.dto.*;
 import com.olive.model.User;
 import com.olive.repository.UserRepository;
 import com.olive.security.JwtTokenUtil;
+import com.olive.security.UserDetailsImpl;
 import com.olive.security.UserDetailsServiceImpl;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -40,19 +41,20 @@ public class AuthService {
     private JwtTokenUtil jwtTokenUtil;
 
     @Transactional
-    public MessageResponse registerUser(SignupRequest signUpRequest) { // Changed return type to MessageResponse
+    public MessageResponse registerUser(SignupRequest signUpRequest) {
         logger.info("Attempting to register user with email: {}", signUpRequest.getEmail());
 
-        // Check if email already exists
         if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
             logger.warn("Signup failed: Email {} is already in use.", signUpRequest.getEmail());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
         }
 
-        // Create new user's account
+        // CORRECTED: Changed 'signUp_Request' to 'signUpRequest'
         User user = new User(signUpRequest.getFullName(),
                 signUpRequest.getEmail(),
-                passwordEncoder.encode(signUpRequest.getPassword())); // Hash password
+                passwordEncoder.encode(signUpRequest.getPassword()),
+                "TEAM_MEMBER",
+                null);
 
         User savedUser = userRepository.save(user);
         logger.info("User registered successfully with email: {}", savedUser.getEmail());
@@ -60,23 +62,19 @@ public class AuthService {
         return new MessageResponse("User registered successfully!");
     }
 
-    public AuthResponse authenticateUser(LoginRequest loginRequest) { // Changed parameter type to LoginRequest
+    public AuthResponse authenticateUser(LoginRequest loginRequest) {
         logger.info("Attempting to authenticate user with email: {}", loginRequest.getEmail());
 
-        // Authenticate user using Spring Security's AuthenticationManager
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
-        // Set the authenticated object in SecurityContextHolder
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Generate JWT token
         String jwt = jwtTokenUtil.generateJwtToken(authentication);
 
-        // Get UserDetails from the authenticated object
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         logger.info("User '{}' authenticated successfully. JWT generated.", loginRequest.getEmail());
-        return new AuthResponse(jwt, userDetails.getId(), userDetails.getEmail(), userDetails.getFullName());
+        return new AuthResponse(jwt, userDetails.getId(), userDetails.getEmail(), userDetails.getFullName(), userDetails.getRole(), userDetails.getTeamId());
     }
 }

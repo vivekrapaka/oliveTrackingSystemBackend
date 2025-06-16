@@ -2,7 +2,6 @@ package com.olive.security;
 
 import com.olive.model.User;
 import com.olive.repository.UserRepository;
-import com.olive.service.UserDetailsImpl;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + email));
 
         // Build and return Spring Security UserDetails object
+        // Pass the user object directly, and UserDetailsImpl.build will extract roles
         return UserDetailsImpl.build(user);
     }
 }

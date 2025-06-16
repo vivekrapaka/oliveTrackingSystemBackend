@@ -34,7 +34,7 @@ com\olive\model\User.class
 com\olive\service\TeammateService.class
 com\olive\controller\AuthController.class
 com\olive\dto\TaskCreateRequest.class
+com\olive\security\UserDetailsImpl.class
 com\olive\service\UserService.class
 com\olive\controller\DashboardController.class
 com\olive\dto\AuthResponse.class
-com\olive\service\UserDetailsImpl.class
