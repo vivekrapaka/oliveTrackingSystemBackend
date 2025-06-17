@@ -12,7 +12,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Apply CORS to all paths
-                        .allowedOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:8081", "http://localhost:8082","https://90fecb38-acb6-4af0-8018-b06ec94b9ce6.lovableproject.com") // Allow specified origins
+                        .allowedOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:8081", "http://localhost:8082","https://90fecb38-acb6-4af0-8018-b06ec94b9ce6.lovableproject.com","https://8080-ik70sazwr93axg03wafn6-93462d36.manusvm.computer") // Allow specified origins
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow specified HTTP methods
                         .allowedHeaders("*") // Allow all headers
                         .allowCredentials(true); // Allow sending of cookies/authentication headers

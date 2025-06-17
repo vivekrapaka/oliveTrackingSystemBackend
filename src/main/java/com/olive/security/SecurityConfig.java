@@ -1,9 +1,11 @@
 package com.olive.security;
-/*
+
+import com.olive.security.jwt.AuthEntryPointJwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,76 +14,67 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsService; // Inject UserDetailsServiceImpl
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    private AuthEntryPointJwt unauthorizedHandler;
+
+    // NEW: Autowire JwtTokenUtil directly in SecurityConfig
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+
+    // Corrected: Define the JwtAuthFilter as a Spring bean without parameters,
+    // using the autowired fields of this class.
+    @Bean
+    public JwtAuthFilter authenticationJwtTokenFilter() {
+        return new JwtAuthFilter(jwtTokenUtil, userDetailsService);
     }
 
+    // Configure the authentication provider (DaoAuthenticationProvider)
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService); // Set our custom UserDetailsService
+        authProvider.setPasswordEncoder(passwordEncoder());    // Set the password encoder
+        return authProvider;
+    }
+
+    // Expose AuthenticationManager as a bean
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    // Define the password encoder (BCrypt for strong hashing)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Configure the security filter chain
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable) // Disable CSRF as we are using JWT (stateless)
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler)) // Handle unauthorized access
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use stateless sessions (no session on server)
+                .authorizeHttpRequests(auth ->
+                        auth.requestMatchers("/auth/**").permitAll() // Allow public access to authentication endpoints
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/webjars/**").permitAll() // Allow public access to Swagger UI
+                                .anyRequest().authenticated() // All other requests require authentication
+                );
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless API, though session-based usually wants it
-                .authorizeHttpRequests(authorize -> authorize
-                        // Allow registration and login without authentication
-                        .requestMatchers("/auth/**").permitAll()
-                        // Allow access to Swagger UI endpoints
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-                        // All other API requests require authentication
-                        .requestMatchers("/api/**").authenticated()
-                        // Any other requests (e.g., static content) can be permitted or denied
-                        .anyRequest().permitAll() // Adjust as needed for frontend static files
-                )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/auth/login") // The URL to which the login form submits
-                        .usernameParameter("email") // Specify email as the username parameter
-                        .passwordParameter("password") // Specify password as the password parameter
-                        .successHandler((request, response, authentication) -> {
-                            // On successful login, send a 200 OK or appropriate response
-                            // The frontend will receive a session cookie automatically
-                            response.setStatus(200);
-                            response.getWriter().write("{\"message\": \"Login successful\"}"); // Simple success message
-                            response.getWriter().flush();
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            // On failed login, send a 401 Unauthorized or appropriate response
-                            response.setStatus(401);
-                            response.getWriter().write("{\"message\": \"Invalid credentials\"}");
-                            response.getWriter().flush();
-                        })
-                        .permitAll() // Allow everyone to access the login form
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/auth/logout") // URL to trigger logout
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(200);
-                            response.getWriter().write("{\"message\": \"Logout successful\"}");
-                            response.getWriter().flush();
-                        })
-                        .permitAll() // Allow everyone to logout
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Spring Security defaults to this for session management
-                )
-                .userDetailsService(userDetailsService); // Set the custom UserDetailsService
+        http.authenticationProvider(authenticationProvider());
+        // Call the bean method *without* arguments, as its definition no longer takes them
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
-*/
