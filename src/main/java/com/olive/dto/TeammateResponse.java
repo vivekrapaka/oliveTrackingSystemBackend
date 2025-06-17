@@ -1,19 +1,21 @@
 package com.olive.dto;
 
 public class TeammateResponse {
-    private Long id; // Renamed from teammateId
+    private Long id;
     private String name;
     private String email;
-    private String role; // New field
-    private String phone; // New field
-    private String department; // New field
-    private String location; // New field
-    private String avatar; // New: Avatar field
-    private String availabilityStatus; // This will now be derived by service
-    private long tasksAssigned; // New: Number of active tasks assigned
-    private long tasksCompleted; // New: Number of completed tasks assigned
+    private String role;
+    private String phone;
+    private String department;
+    private String location;
+    private String avatar;
+    private String availabilityStatus;
+    private long tasksAssigned;
+    private long tasksCompleted;
+    private Long projectId; // NEW: projectId
+    private String projectName; // NEW: projectName
 
-    public TeammateResponse(Long id, String name, String email, String role, String phone, String department, String location, String avatar, String availabilityStatus, long tasksAssigned, long tasksCompleted) {
+    public TeammateResponse(Long id, String name, String email, String role, String phone, String department, String location, String avatar, String availabilityStatus, long tasksAssigned, long tasksCompleted, Long projectId, String projectName) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -25,14 +27,16 @@ public class TeammateResponse {
         this.availabilityStatus = availabilityStatus;
         this.tasksAssigned = tasksAssigned;
         this.tasksCompleted = tasksCompleted;
+        this.projectId = projectId;
+        this.projectName = projectName;
     }
 
     // Getters and Setters
-    public Long getId() { // Renamed getter
+    public Long getId() {
         return id;
     }
 
-    public void setId(Long id) { // Renamed setter
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -84,11 +88,11 @@ public class TeammateResponse {
         this.location = location;
     }
 
-    public String getAvatar() { // Getter for avatar
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) { // Setter for avatar
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
@@ -114,5 +118,21 @@ public class TeammateResponse {
 
     public void setTasksCompleted(long tasksCompleted) {
         this.tasksCompleted = tasksCompleted;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }

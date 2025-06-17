@@ -13,34 +13,37 @@ public class Teammate {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(unique = true, length = 100)
+    @Column(unique = true, length = 100) // Email for login/linking to User
     private String email;
 
-    @Column(length = 50) // New field for role
-    private String role;
+    @Column(length = 50)
+    private String role; // Role within the team/project (e.g., "Developer", "QA")
 
-    @Column(length = 20) // New field for phone
+    @Column(length = 20)
     private String phone;
 
-    @Column(length = 100) // New field for department
+    @Column(length = 100)
     private String department;
 
-    @Column(length = 100) // New field for location
+    @Column(length = 100)
     private String location;
 
-    @Column(length = 255) // New: Avatar field
+    @Column(length = 255)
     private String avatar;
 
-    // AvailabilityStatus: "Free" or "Occupied"
-    // This status will be derived and updated by TaskService based on active assignments.
     @Column(nullable = false, length = 20)
-    private String availabilityStatus = "Free"; // Default status
+    private String availabilityStatus = "Free"; // "Free" or "Occupied"
+
+    // NEW: projectId to link teammate to a specific project
+    @Column(name = "project_id", nullable = false)
+    private Long projectId;
 
     // --- Constructors ---
     public Teammate() {
     }
 
-    public Teammate(String name, String email, String role, String phone, String department, String location, String avatar) {
+    // Updated constructor to include projectId
+    public Teammate(String name, String email, String role, String phone, String department, String location, String avatar, Long projectId) {
         this.name = name;
         this.email = email;
         this.role = role;
@@ -48,6 +51,7 @@ public class Teammate {
         this.department = department;
         this.location = location;
         this.avatar = avatar;
+        this.projectId = projectId; // Initialize projectId
     }
 
     // --- Getters and Setters ---
@@ -107,11 +111,11 @@ public class Teammate {
         this.location = location;
     }
 
-    public String getAvatar() { // Getter for avatar
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar) { // Setter for avatar
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
@@ -121,6 +125,15 @@ public class Teammate {
 
     public void setAvailabilityStatus(String availabilityStatus) {
         this.availabilityStatus = availabilityStatus;
+    }
+
+    // NEW: Getter and Setter for projectId
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     @Override
@@ -136,9 +149,6 @@ public class Teammate {
         return Objects.hash(teammateId);
     }
 
-    /**
-     * JPA lifecycle callback to convert the name to uppercase before persisting or updating.
-     */
     @PrePersist
     @PreUpdate
     public void convertNameToUppercase() {

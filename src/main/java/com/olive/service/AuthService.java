@@ -49,12 +49,13 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use!");
         }
 
-        // CORRECTED: Changed 'signUp_Request' to 'signUpRequest'
+        // Create new user's account with default role and null projectId
+        // Self-signed-up users are always TEAM_MEMBER and unassigned initially
         User user = new User(signUpRequest.getFullName(),
                 signUpRequest.getEmail(),
                 passwordEncoder.encode(signUpRequest.getPassword()),
-                "TEAM_MEMBER",
-                null);
+                "TEAM_MEMBER", // Default role for self-signup
+                null);         // Default projectId for self-signup (unassigned)
 
         User savedUser = userRepository.save(user);
         logger.info("User registered successfully with email: {}", savedUser.getEmail());
@@ -75,6 +76,7 @@ public class AuthService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         logger.info("User '{}' authenticated successfully. JWT generated.", loginRequest.getEmail());
-        return new AuthResponse(jwt, userDetails.getId(), userDetails.getEmail(), userDetails.getFullName(), userDetails.getRole(), userDetails.getTeamId());
+        // Return full user details including role and projectId
+        return new AuthResponse(jwt, userDetails.getId(), userDetails.getEmail(), userDetails.getFullName(), userDetails.getRole(), userDetails.getProjectId());
     }
 }

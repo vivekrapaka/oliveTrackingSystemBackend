@@ -5,17 +5,19 @@ import com.olive.dto.DashboardTaskDTO;
 import com.olive.dto.DashboardTeammateDTO;
 import com.olive.model.Task;
 import com.olive.model.Teammate;
+import com.olive.repository.ProjectRepository;
 import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
+import com.olive.security.UserDetailsImpl;
 import org.slf4j.Logger;
+import com.olive.model.Project;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -25,81 +27,135 @@ public class DashboardService {
 
     private final TaskRepository taskRepository;
     private final TeammateRepository teammateRepository;
+    private final ProjectRepository projectRepository; // NEW: Inject ProjectRepository
 
     private static final String ASSIGNED_NAMES_DELIMITER = ",";
 
     @Autowired
-    public DashboardService(TaskRepository taskRepository, TeammateRepository teammateRepository) {
+    public DashboardService(TaskRepository taskRepository, TeammateRepository teammateRepository, ProjectRepository projectRepository) {
         this.taskRepository = taskRepository;
         this.teammateRepository = teammateRepository;
+        this.projectRepository = projectRepository; // Initialize
     }
 
     public DashboardSummaryResponse getDashboardSummary() {
         logger.info("Generating dashboard summary.");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        List<Teammate> allTeammates = teammateRepository.findAll();
-        List<Task> allTasks = taskRepository.findAll();
-        logger.debug("Fetched {} teammates and {} tasks for dashboard summary.", allTeammates.size(), allTasks.size());
+        List<Teammate> teammatesForSummary;
+        List<Task> tasksForSummary;
+        Long userProjectId = userDetails.getProjectId();
+        String userRole = userDetails.getRole();
 
-        long totalTeammates = allTeammates.size();
-        long freeTeammates = allTeammates.stream()
+        // Determine scope of data based on user role and project ID
+        if ("ADMIN".equalsIgnoreCase(userRole)) {
+            logger.info("User is ADMIN, fetching global data for dashboard summary.");
+            teammatesForSummary = teammateRepository.findAll();
+            tasksForSummary = taskRepository.findAll();
+        } else if (userProjectId != null) {
+            logger.info("User is {} from project ID {}. Fetching project-specific data for dashboard summary.", userRole, userProjectId);
+            teammatesForSummary = teammateRepository.findByProjectId(userProjectId);
+            tasksForSummary = taskRepository.findByProjectId(userProjectId);
+        } else {
+            logger.warn("User {} with role {} has no projectId assigned. Dashboard summary will be empty.", userDetails.getEmail(), userRole);
+            teammatesForSummary = Collections.emptyList();
+            tasksForSummary = Collections.emptyList();
+        }
+
+        logger.debug("Fetched {} teammates and {} tasks for dashboard summary based on user scope.", teammatesForSummary.size(), tasksForSummary.size());
+
+        long totalTeammates = teammatesForSummary.size();
+        long freeTeammates = teammatesForSummary.stream()
                 .filter(t -> "Free".equals(t.getAvailabilityStatus()))
                 .count();
-        long occupiedTeammates = allTeammates.stream()
+        long occupiedTeammates = teammatesForSummary.stream()
                 .filter(t -> "Occupied".equals(t.getAvailabilityStatus()))
                 .count();
 
-        long totalTasks = allTasks.size();
-        // Active tasks are those not completed and not in "Prod" (assuming "Prod" means completed/deployed)
-        long activeTasks = allTasks.stream()
+        long totalTasks = tasksForSummary.size();
+        long activeTasks = tasksForSummary.stream()
                 .filter(task -> !task.getIsCompleted() && !task.getCurrentStage().equalsIgnoreCase("Prod"))
                 .count();
         logger.debug("Calculated totalTasks: {}, activeTasks: {}", totalTasks, activeTasks);
 
 
-        Map<String, Long> tasksByStage = allTasks.stream()
-                .collect(Collectors.groupingBy(Task::getCurrentStage, Collectors.counting()));
+        // Tasks by stage: now using repository query if not ADMIN
+        Map<String, Long> tasksByStage;
+        if ("ADMIN".equalsIgnoreCase(userRole)) {
+            tasksByStage = tasksForSummary.stream()
+                    .collect(Collectors.groupingBy(Task::getCurrentStage, Collectors.counting()));
+        } else if (userProjectId != null) {
+            tasksByStage = taskRepository.countTasksByStageAndProjectId(userProjectId).stream() // Use project-specific query
+                    .collect(Collectors.toMap(
+                            array -> (String) array[0],
+                            array -> (Long) array[1]
+                    ));
+        } else {
+            tasksByStage = Collections.emptyMap();
+        }
         logger.debug("Tasks by stage: {}", tasksByStage);
 
-        Map<String, Long> tasksByIssueType = allTasks.stream()
-                .collect(Collectors.groupingBy(Task::getIssueType, Collectors.counting()));
+        // Tasks by issue type: now using repository query if not ADMIN
+        Map<String, Long> tasksByIssueType;
+        if ("ADMIN".equalsIgnoreCase(userRole)) {
+            tasksByIssueType = tasksForSummary.stream()
+                    .collect(Collectors.groupingBy(Task::getIssueType, Collectors.counting()));
+        } else if (userProjectId != null) {
+            tasksByIssueType = taskRepository.countTasksByIssueTypeAndProjectId(userProjectId).stream() // Use project-specific query
+                    .collect(Collectors.toMap(
+                            array -> (String) array[0],
+                            array -> (Long) array[1]
+                    ));
+        } else {
+            tasksByIssueType = Collections.emptyMap();
+        }
         logger.debug("Tasks by issue type: {}", tasksByIssueType);
 
 
-        long tasksPendingCodeReview = allTasks.stream()
+        long tasksPendingCodeReview = tasksForSummary.stream()
                 .filter(task -> !task.getIsCodeReviewDone())
                 .count();
         logger.debug("Tasks pending code review: {}", tasksPendingCodeReview);
 
 
-        long tasksPendingCmcApproval = allTasks.stream()
+        long tasksPendingCmcApproval = tasksForSummary.stream()
                 .filter(task -> !task.getIsCmcDone())
                 .count();
         logger.debug("Tasks pending CMC approval: {}", tasksPendingCmcApproval);
 
 
-        // Recent tasks (e.g., top 5 most recently started, not completed)
+        // Recent tasks (e.g., top 5 most recently started, not completed, for the user's scope)
         logger.debug("Generating recent tasks list.");
-        List<DashboardTaskDTO> recentTasks = taskRepository.findTop10ByIsCompletedFalseOrderByStartDateDesc().stream()
-                .map(this::convertTaskToDashboardTaskDTO)
-                .collect(Collectors.toList());
+        List<DashboardTaskDTO> recentTasks;
+        if ("ADMIN".equalsIgnoreCase(userRole)) {
+            recentTasks = taskRepository.findTop10ByIsCompletedFalseOrderByStartDateDesc().stream()
+                    .map(this::convertTaskToDashboardTaskDTO)
+                    .collect(Collectors.toList());
+        } else if (userProjectId != null) {
+            recentTasks = taskRepository.findTop10ByProjectIdAndIsCompletedFalseOrderByStartDateDesc(userProjectId).stream()
+                    .map(this::convertTaskToDashboardTaskDTO)
+                    .collect(Collectors.toList());
+        } else {
+            recentTasks = Collections.emptyList();
+        }
         logger.debug("Generated {} recent tasks: {}", recentTasks.size(), recentTasks.stream().map(DashboardTaskDTO::getName).collect(Collectors.joining(", ")));
 
 
         // Active tasks list for dashboard (not completed, not in Prod)
         logger.debug("Generating active tasks list.");
-        List<DashboardTaskDTO> activeTasksList = allTasks.stream()
+        List<DashboardTaskDTO> activeTasksList = tasksForSummary.stream()
                 .filter(task -> !task.getIsCompleted() && !task.getCurrentStage().equalsIgnoreCase("Prod"))
                 .map(this::convertTaskToDashboardTaskDTO)
                 .collect(Collectors.toList());
         logger.debug("Generated {} active tasks list: {}", activeTasksList.size(), activeTasksList.stream().map(DashboardTaskDTO::getName).collect(Collectors.joining(", ")));
 
 
-        // Team Members Summary
+        // Team Members Summary (only for the user's scope)
         logger.debug("Generating team members summary.");
-        List<DashboardTeammateDTO> teamMembersSummary = allTeammates.stream()
+        List<DashboardTeammateDTO> teamMembersSummary = teammatesForSummary.stream()
                 .map(teammate -> {
-                    long tasksAssignedToTeammate = allTasks.stream()
+                    long tasksAssignedToTeammate = tasksForSummary.stream() // Filter from tasks within user's scope
                             .filter(task -> !task.getIsCompleted()) // Only count active tasks
                             .filter(task -> {
                                 if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
@@ -110,6 +166,11 @@ public class DashboardService {
                                         .anyMatch(name -> name.equalsIgnoreCase(teammate.getName()));
                             })
                             .count();
+                    // Fetch project name for the teammate's project (should be the same as user's project if non-admin)
+                    String teammateProjectName = projectRepository.findById(teammate.getProjectId())
+                            .map(Project::getProjectName)
+                            .orElse("Unknown Project");
+
                     DashboardTeammateDTO teammateDTO = new DashboardTeammateDTO(
                             teammate.getTeammateId(),
                             teammate.getName(),
@@ -118,9 +179,11 @@ public class DashboardService {
                             teammate.getPhone(),
                             teammate.getDepartment(),
                             teammate.getLocation(),
-                            tasksAssignedToTeammate
+                            tasksAssignedToTeammate,
+                            teammate.getProjectId(), // Include projectId
+                            teammateProjectName // Include projectName
                     );
-                    logger.debug("Created DashboardTeammateDTO for '{}': tasksAssigned={}", teammate.getName(), tasksAssignedToTeammate);
+                    logger.debug("Created DashboardTeammateDTO for '{}': tasksAssigned={}, ProjectName={}", teammate.getName(), tasksAssignedToTeammate, teammateProjectName);
                     return teammateDTO;
                 })
                 .collect(Collectors.toList());
@@ -145,29 +208,28 @@ public class DashboardService {
         return response;
     }
 
-    // Helper to convert Task Entity to DashboardTaskDTO
+    // Helper to convert Task Entity to DashboardTaskDTO (now includes project name)
     private DashboardTaskDTO convertTaskToDashboardTaskDTO(Task task) {
         logger.debug("Converting Task '{}' (ID: {}) to DashboardTaskDTO.", task.getTaskName(), task.getTaskId());
         String assignee = null;
         if (task.getAssignedTeammateNames() != null && !task.getAssignedTeammateNames().isEmpty()) {
-            // Take the first assigned teammate as the primary assignee for display on dashboard
             assignee = Arrays.stream(task.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
                     .map(String::trim)
                     .findFirst()
                     .orElse(null);
             logger.debug("Assigned teammate extracted: {}", assignee);
-        } else {
-            logger.debug("No assigned teammates for task '{}'.", task.getTaskName());
         }
 
-        // Format sequenceNumber to TSK-XXX string
         String formattedTaskNumber = null;
         if (task.getSequenceNumber() != null) {
             formattedTaskNumber = String.format("TSK-%03d", task.getSequenceNumber());
             logger.debug("Formatted task number: {}", formattedTaskNumber);
-        } else {
-            logger.warn("Task '{}' (ID: {}) has a null sequence number. Task number will be null.", task.getTaskName(), task.getTaskId());
         }
+
+        // Fetch project name for the task
+        String projectName = projectRepository.findById(task.getProjectId())
+                .map(Project::getProjectName)
+                .orElse("Unknown Project");
 
         DashboardTaskDTO dto = new DashboardTaskDTO(
                 task.getTaskId(),
@@ -176,9 +238,11 @@ public class DashboardService {
                 assignee,
                 task.getDueDate(),
                 task.getPriority(),
-                formattedTaskNumber // Populating the new taskNumber field
+                formattedTaskNumber,
+                task.getProjectId(), // Include projectId
+                projectName // Include projectName
         );
-        logger.debug("Finished converting Task to DashboardTaskDTO: ID={}, Name={}, TaskNumber={}", dto.getId(), dto.getName(), dto.getTaskNumber());
+        logger.debug("Finished converting Task to DashboardTaskDTO: ID={}, Name={}, TaskNumber={}, ProjectName={}", dto.getId(), dto.getName(), dto.getTaskNumber(), dto.getProjectName());
         return dto;
     }
 }

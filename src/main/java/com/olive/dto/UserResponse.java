@@ -1,58 +1,29 @@
 package com.olive.dto;
 
-public class AuthResponse {
-    private String token;
-    private String type = "Bearer";
+public class UserResponse {
     private Long id;
-    private String email;
     private String fullName;
-
-    // UPDATED: Replaced teamId with projectId
+    private String email;
     private String role;
     private Long projectId;
+    private String projectName; // To show the project name for frontend display
 
-
-    // Updated constructor to use projectId
-    public AuthResponse(String token, Long id, String email, String fullName, String role, Long projectId) {
-        this.token = token;
+    public UserResponse(Long id, String fullName, String email, String role, Long projectId, String projectName) {
         this.id = id;
-        this.email = email;
         this.fullName = fullName;
+        this.email = email;
         this.role = role;
         this.projectId = projectId;
+        this.projectName = projectName;
     }
 
     // Getters and Setters
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getFullName() {
@@ -63,6 +34,14 @@ public class AuthResponse {
         this.fullName = fullName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getRole() {
         return role;
     }
@@ -71,12 +50,19 @@ public class AuthResponse {
         this.role = role;
     }
 
-    // UPDATED: Getter and Setter for projectId
     public Long getProjectId() {
         return projectId;
     }
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }

@@ -20,28 +20,25 @@ public class User {
     @Column(nullable = false, length = 255) // Store hashed password
     private String password;
 
-    // NEW: Role field
-    // Using String to allow flexibility for now, but enum is also a good option.
     @Column(nullable = false, length = 50)
     private String role; // e.g., "ADMIN", "MANAGER", "BA", "TEAM_MEMBER"
 
-    // NEW: Team ID field
-    // This will be null if the user is an ADMIN or currently unassigned.
-    @Column(name = "team_id")
-    private Long teamId; // Foreign Key to Team entity (if Team entity exists, otherwise just an ID)
-
+    // UPDATED: Replaced teamId with projectId
+    // ADMINs will have projectId as null. Managers/BAs/Team Members will have a specific projectId.
+    @Column(name = "project_id")
+    private Long projectId;
 
     // Default constructor
     public User() {
     }
 
-    // Updated constructor to include role and teamId
-    public User(String fullName, String email, String password, String role, Long teamId) {
+    // Updated constructor to use projectId
+    public User(String fullName, String email, String password, String role, Long projectId) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.teamId = teamId;
+        this.projectId = projectId;
     }
 
     // Getters and Setters
@@ -77,7 +74,6 @@ public class User {
         this.password = password;
     }
 
-    // NEW Getters and Setters for role and teamId
     public String getRole() {
         return role;
     }
@@ -86,12 +82,13 @@ public class User {
         this.role = role;
     }
 
-    public Long getTeamId() {
-        return teamId;
+    // UPDATED: Getter and Setter for projectId
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     @Override
@@ -105,6 +102,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-
     }
 }

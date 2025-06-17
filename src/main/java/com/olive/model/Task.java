@@ -11,45 +11,44 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
 
-    @Column(nullable = false, unique = true) // Task name should be unique
+    @Column(nullable = false, unique = true)
     private String taskName;
 
-    @Column(nullable = false, unique = true) // New: Unique sequence number
+    @Column(nullable = false, unique = true)
     private Long sequenceNumber;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // Task stage is now a String directly in the Task table
     @Column(nullable = false, length = 50)
-    private String currentStage; // e.g., SIT, DEV, Pre-Prod, Prod
+    private String currentStage;
 
     private LocalDate startDate;
     private LocalDate dueDate;
     private Boolean isCompleted = false;
 
-    // New Fields for Issue/BRD Tracking
-    private String issueType; // e.g., 'BRD', 'Production Issue', 'Enhancement', 'Bug'
+    private String issueType;
     private LocalDate receivedDate;
     private LocalDate developmentStartDate;
 
-    // New Fields for Development Lifecycle Checkpoints
     private Boolean isCodeReviewDone = false;
     private Boolean isCmcDone = false;
 
-    // Assigned Teammates stored as a comma-separated string of names
-    // This simplifies the schema as requested, but logic for parsing/joining will be in service.
     @Column(columnDefinition = "TEXT")
-    private String assignedTeammateNames; // e.g., "John Doe,Jane Smith"
+    private String assignedTeammateNames;
 
-    @Column(length = 20) // New field for task priority
-    private String priority; // e.g., "High", "Medium", "Low"
+    @Column(length = 20)
+    private String priority;
+
+    // UPDATED: Renamed teamId to projectId
+    @Column(name = "project_id", nullable = false)
+    private Long projectId;
 
     // --- Constructors ---
     public Task() {
     }
 
-    // --- Getters and Setters ---
+    // Getters and Setters
     public Long getTaskId() {
         return taskId;
     }
@@ -66,11 +65,11 @@ public class Task {
         this.taskName = taskName;
     }
 
-    public Long getSequenceNumber() { // Getter for sequenceNumber
+    public Long getSequenceNumber() {
         return sequenceNumber;
     }
 
-    public void setSequenceNumber(Long sequenceNumber) { // Setter for sequenceNumber
+    public void setSequenceNumber(Long sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }
 
@@ -151,7 +150,7 @@ public class Task {
     }
 
     public void setIsCmcDone(Boolean cmcDone) {
-        isCmcDone = cmcDone;
+        this.isCmcDone = cmcDone;
     }
 
     public String getAssignedTeammateNames() {
@@ -170,6 +169,15 @@ public class Task {
         this.priority = priority;
     }
 
+    // UPDATED: Getter and Setter for projectId
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -183,9 +191,6 @@ public class Task {
         return Objects.hash(taskId);
     }
 
-    /**
-     * JPA lifecycle callback to convert the taskName to uppercase before persisting or updating.
-     */
     @PrePersist
     @PreUpdate
     public void convertTaskNameToUppercase() {

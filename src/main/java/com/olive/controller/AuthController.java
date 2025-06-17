@@ -40,7 +40,6 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         logger.info("Received sign-in request for email: {}", loginRequest.getEmail());
-        // Delegate authentication logic to AuthService, which returns AuthResponse
         AuthResponse response = authService.authenticateUser(loginRequest);
         return ResponseEntity.ok(response);
     }
