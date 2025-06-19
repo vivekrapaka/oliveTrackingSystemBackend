@@ -22,14 +22,15 @@ public class TaskResponse {
     private String priority;
     private Boolean isCompleted;
     private Boolean isCmcDone;
-    private Long projectId; // NEW: projectId
-    private String projectName; // NEW: projectName
+    private Long projectId;
+    private String projectName;
+    private String documentPath; // NEW: documentPath
 
 
     public TaskResponse(Long id, String name, String taskNumber, String description, String issueType, LocalDate receivedDate,
                         LocalDate developmentStartDate, String currentStage, LocalDate dueDate,
                         List<String> assignedTeammates, String priority, Boolean isCompleted,
-                        Boolean isCmcDone, Long projectId, String projectName) {
+                        Boolean isCmcDone, Long projectId, String projectName, String documentPath) {
         this.id = id;
         this.name = name;
         this.taskNumber = taskNumber;
@@ -45,6 +46,7 @@ public class TaskResponse {
         this.isCmcDone = isCmcDone;
         this.projectId = projectId;
         this.projectName = projectName;
+        this.documentPath = documentPath;
     }
 
     // Getters and Setters
@@ -166,5 +168,13 @@ public class TaskResponse {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getDocumentPath() {
+        return documentPath;
+    }
+
+    public void setDocumentPath(String documentPath) {
+        this.documentPath = documentPath;
     }
 }

@@ -15,12 +15,15 @@ public interface TeammateRepository extends JpaRepository<Teammate,Long> {
     Optional<Teammate> findByEmail(String email);
     Optional<Teammate> findByNameIgnoreCase(String name);
 
-    // UPDATED: Find teammates by project ID (replaces findByTeamId)
+    // Find teammates by project ID
     List<Teammate> findByProjectId(Long projectId);
 
-    // NEW: Find teammate by name and projectId
+    // Find teammate by name and projectId
     Optional<Teammate> findByNameIgnoreCaseAndProjectId(String name, Long projectId);
 
-    // NEW: Find teammate by email and projectId
+    // Find teammate by email and projectId
     Optional<Teammate> findByEmailAndProjectId(String email, Long projectId);
+
+    // NEW: Find teammates by multiple project IDs (for MANAGER/BA views)
+    List<Teammate> findByProjectIdIn(List<Long> projectIds);
 }

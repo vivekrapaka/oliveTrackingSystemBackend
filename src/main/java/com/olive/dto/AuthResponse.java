@@ -1,25 +1,26 @@
 package com.olive.dto;
 
+import java.util.List;
+
 public class AuthResponse {
     private String token;
     private String type = "Bearer";
     private Long id;
     private String email;
     private String fullName;
-
-    // UPDATED: Replaced teamId with projectId
     private String role;
-    private Long projectId;
+    private List<Long> projectIds; // UPDATED: List of project IDs
+    private List<String> projectNames; // NEW: List of project names
 
-
-    // Updated constructor to use projectId
-    public AuthResponse(String token, Long id, String email, String fullName, String role, Long projectId) {
+    // Updated constructor to use List<Long> for projectIds and List<String> for projectNames
+    public AuthResponse(String token, Long id, String email, String fullName, String role, List<Long> projectIds, List<String> projectNames) {
         this.token = token;
         this.id = id;
         this.email = email;
         this.fullName = fullName;
         this.role = role;
-        this.projectId = projectId;
+        this.projectIds = projectIds;
+        this.projectNames = projectNames;
     }
 
     // Getters and Setters
@@ -71,12 +72,21 @@ public class AuthResponse {
         this.role = role;
     }
 
-    // UPDATED: Getter and Setter for projectId
-    public Long getProjectId() {
-        return projectId;
+    // UPDATED: Getter and Setter for projectIds (List<Long>)
+    public List<Long> getProjectIds() {
+        return projectIds;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectIds(List<Long> projectIds) {
+        this.projectIds = projectIds;
+    }
+
+    // NEW: Getter and Setter for projectNames (List<String>)
+    public List<String> getProjectNames() {
+        return projectNames;
+    }
+
+    public void setProjectNames(List<String> projectNames) {
+        this.projectNames = projectNames;
     }
 }

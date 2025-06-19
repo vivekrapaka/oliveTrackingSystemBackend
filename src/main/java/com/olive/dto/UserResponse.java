@@ -1,20 +1,22 @@
 package com.olive.dto;
 
+import java.util.List;
+
 public class UserResponse {
     private Long id;
     private String fullName;
     private String email;
     private String role;
-    private Long projectId;
-    private String projectName; // To show the project name for frontend display
+    private List<Long> projectIds; // UPDATED: List of project IDs
+    private List<String> projectNames; // NEW: List of project names (comma-separated for display)
 
-    public UserResponse(Long id, String fullName, String email, String role, Long projectId, String projectName) {
+    public UserResponse(Long id, String fullName, String email, String role, List<Long> projectIds, List<String> projectNames) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
         this.role = role;
-        this.projectId = projectId;
-        this.projectName = projectName;
+        this.projectIds = projectIds;
+        this.projectNames = projectNames;
     }
 
     // Getters and Setters
@@ -50,19 +52,21 @@ public class UserResponse {
         this.role = role;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    // UPDATED: Getter and Setter for projectIds (List<Long>)
+    public List<Long> getProjectIds() {
+        return projectIds;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectIds(List<Long> projectIds) {
+        this.projectIds = projectIds;
     }
 
-    public String getProjectName() {
-        return projectName;
+    // NEW: Getter and Setter for projectNames (List<String>)
+    public List<String> getProjectNames() {
+        return projectNames;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectNames(List<String> projectNames) {
+        this.projectNames = projectNames;
     }
 }

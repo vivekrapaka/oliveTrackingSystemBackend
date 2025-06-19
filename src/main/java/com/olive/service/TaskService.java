@@ -29,18 +29,20 @@ public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
     private final TaskRepository taskRepository;
     private final TeammateRepository teammateRepository;
-    private final ProjectRepository projectRepository; // NEW: Inject ProjectRepository
+    private final ProjectRepository projectRepository;
     private final TeammateService teammateService;
+    private final FileStorageService fileStorageService; // NEW: Inject FileStorageService
 
     private static final List<String> VALID_STAGES = List.of("SIT", "DEV", "Pre-Prod", "Prod");
     private static final String ASSIGNED_NAMES_DELIMITER = ",";
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, TeammateRepository teammateRepository, ProjectRepository projectRepository, TeammateService teammateService) {
+    public TaskService(TaskRepository taskRepository, TeammateRepository teammateRepository, ProjectRepository projectRepository, TeammateService teammateService, FileStorageService fileStorageService) {
         this.taskRepository = taskRepository;
         this.teammateRepository = teammateRepository;
-        this.projectRepository = projectRepository; // Initialize ProjectRepository
+        this.projectRepository = projectRepository;
         this.teammateService = teammateService;
+        this.fileStorageService = fileStorageService; // Initialize
     }
 
     // Helper to convert Task Entity to TaskResponse DTO
@@ -84,8 +86,9 @@ public class TaskService {
                 task.getPriority(),
                 task.getIsCompleted(),
                 task.getIsCmcDone(),
-                task.getProjectId(), // NEW: projectId
-                projectName // NEW: projectName
+                task.getProjectId(),
+                projectName,
+                task.getDocumentPath() // NEW: Include documentPath
         );
         logger.info("Converted Task entity to DTO: {}", response);
         return response;
@@ -98,15 +101,18 @@ public class TaskService {
         return nextNumber;
     }
 
-    // Get all tasks, now returning TasksSummaryResponse - UPDATED (Project-aware filtering)
+    // Get all tasks, now returning TasksSummaryResponse - UPDATED (Project-aware filtering for all roles)
     public TasksSummaryResponse getAllTasks(String taskNameFilter) {
         logger.info("Fetching all tasks with filter: {}", taskNameFilter);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         List<Task> tasksToReturn;
+        String userRole = userDetails.getRole();
+        List<Long> userProjectIds = userDetails.getProjectIds(); // This will be null for ADMIN, list for MANAGER/BA/TEAMLEAD/TEAMMEMBER
 
-        if ("ADMIN".equalsIgnoreCase(userDetails.getRole())) {
+        // Determine the scope of tasks based on user role and project IDs
+        if ("ADMIN".equalsIgnoreCase(userRole)) {
             logger.info("User is ADMIN, fetching all tasks globally.");
             if (taskNameFilter != null && !taskNameFilter.trim().isEmpty()) {
                 tasksToReturn = taskRepository.findByTaskNameContainingIgnoreCase(taskNameFilter);
@@ -114,16 +120,16 @@ public class TaskService {
                 tasksToReturn = taskRepository.findAll();
             }
             logger.info("Found {} tasks matching filter '{}' globally.", tasksToReturn.size(), taskNameFilter);
-        } else if (userDetails.getProjectId() != null) {
-            logger.info("User is {} from project ID {}. Fetching tasks for project ID: {}", userDetails.getRole(), userDetails.getProjectId(), userDetails.getProjectId());
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            logger.info("User is {} from project IDs {}. Fetching tasks for these projects.", userRole, userProjectIds);
             if (taskNameFilter != null && !taskNameFilter.trim().isEmpty()) {
-                tasksToReturn = taskRepository.findByProjectIdAndTaskNameContainingIgnoreCase(userDetails.getProjectId(), taskNameFilter);
+                tasksToReturn = taskRepository.findByProjectIdInAndTaskNameContainingIgnoreCase(userProjectIds, taskNameFilter);
             } else {
-                tasksToReturn = taskRepository.findByProjectId(userDetails.getProjectId());
+                tasksToReturn = taskRepository.findByProjectIdIn(userProjectIds);
             }
-            logger.info("Found {} tasks matching filter '{}' for project ID {}.", tasksToReturn.size(), taskNameFilter, userDetails.getProjectId());
+            logger.info("Found {} tasks matching filter '{}' for project IDs {}.", tasksToReturn.size(), taskNameFilter, userProjectIds);
         } else {
-            logger.warn("User {} has role {} but no projectId assigned. Returning empty list for tasks.", userDetails.getEmail(), userDetails.getRole());
+            logger.warn("User {} has role {} but no projectIds assigned. Returning empty list for tasks.", userDetails.getEmail(), userRole);
             tasksToReturn = Collections.emptyList();
         }
 
@@ -139,36 +145,61 @@ public class TaskService {
     }
 
     // getTaskEntityByNameAndProject - Helper for internal use, project-aware
-    private Task getTaskEntityByNameAndProject(String taskName, Long projectId) {
+    // This helper now takes List<Long> projectIds for finding tasks across multiple projects
+    private Task getTaskEntityByNameAndProject(String taskName, List<Long> projectIds) {
         Optional<Task> taskOptional;
-        if (projectId == null) { // This implies ADMIN user or unassigned, ADMIN has global view.
+        if (projectIds == null || projectIds.isEmpty()) { // This implies ADMIN user (global view)
             taskOptional = taskRepository.findByTaskNameIgnoreCase(taskName);
             logger.debug("Searching for task '{}' globally (likely Admin user).", taskName);
-        } else {
-            taskOptional = taskRepository.findByProjectIdAndTaskNameIgnoreCase(projectId, taskName);
-            logger.debug("Searching for task '{}' within project ID {}.", taskName, projectId);
+        } else if (projectIds.size() == 1) { // Single project user (TeamLead, TeamMember)
+            taskOptional = taskRepository.findByProjectIdAndTaskNameIgnoreCase(projectIds.get(0), taskName);
+            logger.debug("Searching for task '{}' within single project ID {}.", taskName, projectIds.get(0));
+        } else { // Multi-project user (Manager, BA)
+            taskOptional = taskRepository.findByProjectIdInAndTaskNameContainingIgnoreCase(projectIds, taskName)
+                    .stream().filter(task -> task.getTaskName().equalsIgnoreCase(taskName)) // Exact match for unique task name across selected projects
+                    .findFirst();
+            logger.debug("Searching for task '{}' within multiple project IDs {}.", taskName, projectIds);
         }
         return taskOptional.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with name: " + taskName));
     }
 
 
-    // Create a new task - UPDATED (Project-aware)
+    // Create a new task - UPDATED (Project-aware: Manager/BA selects project from their assigned list)
     @Transactional
     public TaskResponse createTask(TaskCreateRequest request) {
         logger.info("Received request to create task: {}", request.getTaskName());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        Long projectIdForNewTask = userDetails.getProjectId();
+        String userRole = userDetails.getRole();
+        List<Long> userProjectIds = userDetails.getProjectIds();
 
-        // Managers, BAs can only create tasks within their assigned project.
-        // Admins can create tasks for any project (but for now, we'll assign to the Admin's assigned project, if any)
-        // If an ADMIN has no projectId (meaning global admin), they still must assign the task to *some* project.
-        // For simplicity, we enforce that any user creating a task must have a projectId.
-        if (projectIdForNewTask == null) {
-            logger.error("User {} (Role {}) attempted to create a task but has no projectId. Task creation requires a project assignment. Access denied.", userDetails.getEmail(), userDetails.getRole());
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You must be assigned to a project to create tasks.");
+        Long projectIdForNewTask = request.getProjectId(); // Project ID comes from the request for Manager/BA
+
+        // Validate current user's authorization to create tasks in the requested projectId
+        if ("ADMIN".equalsIgnoreCase(userRole)) {
+            // ADMIN can create tasks for any valid project, so projectIdForNewTask from request is fine
+            if (projectIdForNewTask == null || !projectRepository.existsById(projectIdForNewTask)) {
+                logger.error("Admin user attempted to create task with invalid or missing projectId: {}", projectIdForNewTask);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or missing Project ID for task creation.");
+            }
+        } else if (userProjectIds != null && userProjectIds.contains(projectIdForNewTask)) {
+            // MANAGER, BA, TEAMLEAD must create tasks only for projects they are assigned to
+            // TEAMMEMBER cannot create tasks (handled by @PreAuthorize)
+            if (projectIdForNewTask == null) {
+                logger.error("User {} (Role {}) attempted to create a task but no projectId was specified in the request. Access denied.", userDetails.getEmail(), userRole);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project ID is required for task creation for your role.");
+            }
+            if (!userProjectIds.contains(projectIdForNewTask)) {
+                logger.error("User {} (Role {}, Projects {}) attempted to create task in project {} which is not assigned to them. Access denied.",
+                        userDetails.getEmail(), userRole, userProjectIds, projectIdForNewTask);
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You can only create tasks within projects you are assigned to.");
+            }
+        } else {
+            logger.error("User {} (Role {}) has no projectIds assigned or is not authorized to create tasks. Access denied.", userDetails.getEmail(), userRole);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You are not authorized to create tasks.");
         }
+
 
         if (!VALID_STAGES.contains(request.getCurrentStage())) {
             logger.warn("Invalid Task Stage received: {}", request.getCurrentStage());
@@ -177,7 +208,7 @@ public class TaskService {
 
         String nameToSave = request.getTaskName() != null ? request.getTaskName().toUpperCase() : null;
 
-        // Check for task name uniqueness within the assigned project
+        // Check for task name uniqueness within the *specified* project (projectIdForNewTask)
         if (nameToSave != null && taskRepository.findByProjectIdAndTaskNameIgnoreCase(projectIdForNewTask, nameToSave).isPresent()) {
             logger.warn("Attempted to create task with duplicate name '{}' in project ID {}.", nameToSave, projectIdForNewTask);
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Task with this name (case-insensitive) already exists in this project. Please use a unique task name.");
@@ -194,16 +225,17 @@ public class TaskService {
         task.setReceivedDate(request.getReceivedDate());
         task.setDevelopmentStartDate(request.getDevelopmentStartDate());
         task.setPriority(request.getPriority());
-        task.setProjectId(projectIdForNewTask); // Assign projectId from authenticated user
+        task.setProjectId(projectIdForNewTask); // Assign projectId from request for Manager/BA or derived for TeamLead
 
         // Handle assigned teammates by name
         if (request.getAssignedTeammateNames() != null && !request.getAssignedTeammateNames().isEmpty()) {
             Set<String> uniqueAssignedNames = new HashSet<>();
             for (String teammateName : request.getAssignedTeammateNames()) {
-                Teammate teammate = teammateRepository.findByNameIgnoreCaseAndProjectId(teammateName, projectIdForNewTask) // Look up within project
+                // Teammates must belong to the *same project as the task* being created/updated
+                Teammate teammate = teammateRepository.findByNameIgnoreCaseAndProjectId(teammateName, projectIdForNewTask)
                         .orElseThrow(() -> {
                             logger.warn("Teammate '{}' not found in project ID {} during task creation.", teammateName, projectIdForNewTask);
-                            return new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate not found with name: " + teammateName + " in your project.");
+                            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate not found with name: " + teammateName + " in the selected project.");
                         });
                 uniqueAssignedNames.add(teammate.getName());
             }
@@ -214,8 +246,11 @@ public class TaskService {
             logger.debug("No teammates assigned to new task.");
         }
 
-        logger.info("Saving new task entity: Task Name={}, Stage={}, DueDate={}, AssignedTeammates={}, ProjectId={}",
-                task.getTaskName(), task.getCurrentStage(), task.getDueDate(), task.getAssignedTeammateNames(), task.getProjectId());
+        // Set document path
+        task.setDocumentPath(request.getDocumentPath()); // NEW: Set document path from request
+
+        logger.info("Saving new task entity: Task Name={}, Stage={}, DueDate={}, AssignedTeammates={}, ProjectId={}, DocumentPath={}",
+                task.getTaskName(), task.getCurrentStage(), task.getDueDate(), task.getAssignedTeammateNames(), task.getProjectId(), task.getDocumentPath());
         Task savedTask = taskRepository.save(task);
         logger.info("New task saved successfully with ID: {}", savedTask.getTaskId());
 
@@ -229,28 +264,33 @@ public class TaskService {
         return convertToDto(savedTask);
     }
 
-    // Update an existing task by name - UPDATED (Project-aware RBAC)
+    // Update an existing task by name - UPDATED (Project-aware RBAC, documentPath)
     @Transactional
     public TaskResponse updateTask(String name, TaskUpdateRequest request) {
         logger.info("Received request to update task: {}", name);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        // Find existing task, scoped by project if not ADMIN
-        Task existingTask = getTaskEntityByNameAndProject(name, "ADMIN".equalsIgnoreCase(userDetails.getRole()) ? null : userDetails.getProjectId());
+        String userRole = userDetails.getRole();
+        List<Long> userProjectIds = userDetails.getProjectIds();
+
+        // Find existing task within the user's scope
+        Task existingTask = getTaskEntityByNameAndProject(name, "ADMIN".equalsIgnoreCase(userRole) ? null : userProjectIds);
 
         logger.debug("Found existing task with ID: {}", existingTask.getTaskId());
 
-        // Authorization check: MANAGER, BA can update any task in their project.
+        // Authorization check: MANAGER, BA, TEAMLEAD can update any task in their assigned projects.
         // TEAM_MEMBER has granular restrictions.
-        if (!"ADMIN".equalsIgnoreCase(userDetails.getRole()) && !existingTask.getProjectId().equals(userDetails.getProjectId())) {
-            logger.warn("User {} (Role {}, Project {}) attempted to update task {} (Project {}). Access denied.",
-                    userDetails.getEmail(), userDetails.getRole(), userDetails.getProjectId(), existingTask.getTaskName(), existingTask.getProjectId());
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You can only update tasks within your assigned project.");
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            if (userProjectIds == null || !userProjectIds.contains(existingTask.getProjectId())) {
+                logger.warn("User {} (Role {}, Projects {}) attempted to update task {} (Project {}). Access denied.",
+                        userDetails.getEmail(), userRole, userProjectIds, existingTask.getTaskName(), existingTask.getProjectId());
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You can only update tasks within your assigned projects.");
+            }
         }
 
         // TEAM_MEMBER specific restrictions
-        if ("TEAM_MEMBER".equalsIgnoreCase(userDetails.getRole())) {
+        if ("TEAMMEMBER".equalsIgnoreCase(userRole)) {
             Set<String> assignedTeammates = new HashSet<>();
             if (existingTask.getAssignedTeammateNames() != null && !existingTask.getAssignedTeammateNames().isEmpty()) {
                 assignedTeammates.addAll(Arrays.stream(existingTask.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
@@ -258,37 +298,37 @@ public class TaskService {
                         .collect(Collectors.toSet()));
             }
 
-            // A TEAM_MEMBER can only update tasks if they are assigned to it.
+            // A TEAMMEMBER can only update tasks if they are assigned to it.
             if (!assignedTeammates.contains(userDetails.getFullName().toUpperCase())) {
-                logger.warn("TEAM_MEMBER {} attempted to update task {} but is not assigned to it. Access denied.", userDetails.getEmail(), existingTask.getTaskName());
+                logger.warn("TEAMMEMBER {} attempted to update task {} but is not assigned to it. Access denied.", userDetails.getEmail(), existingTask.getTaskName());
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You can only update tasks you are assigned to.");
             }
 
-            // Restrict fields TEAM_MEMBER can update as per requirements.
-            // They can update isCompleted, isCmcDone, currentStage, description.
+            // Restrict fields TEAMMEMBER can update as per requirements.
+            // They can update isCompleted, isCmcDone, currentStage, description, documentPath.
             // All other fields are forbidden.
             if (request.getTaskName() != null && !request.getTaskName().equalsIgnoreCase(existingTask.getTaskName())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAM_MEMBERs cannot change task names.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAMMEMBERs cannot change task names.");
             }
             if (request.getPriority() != null && !request.getPriority().equals(existingTask.getPriority())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAM_MEMBERs cannot change task priority.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAMMEMBERs cannot change task priority.");
             }
             if (request.getStartDate() != null && !request.getStartDate().equals(existingTask.getStartDate())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAM_MEMBERs cannot change task start date.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAMMEMBERs cannot change task start date.");
             }
             if (request.getDueDate() != null && !request.getDueDate().equals(existingTask.getDueDate())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAM_MEMBERs cannot change task due date.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAMMEMBERs cannot change task due date.");
             }
             if (request.getIssueType() != null && !request.getIssueType().equals(existingTask.getIssueType())) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAM_MEMBERs cannot change task issue type.");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAMMEMBERs cannot change task issue type.");
             }
             // Check if assignedTeammateNames is modified
             if (request.getAssignedTeammateNames() != null) {
                 Set<String> requestedAssignedNames = request.getAssignedTeammateNames().stream().map(String::toUpperCase).collect(Collectors.toSet());
-                Set<String> currentAssignedNames = Arrays.stream(existingTask.getAssignedTeammateNames().split(","))
+                Set<String> currentAssignedNames = Arrays.stream(existingTask.getAssignedTeammateNames() != null ? existingTask.getAssignedTeammateNames().split(",") : new String[0])
                         .map(String::trim).map(String::toUpperCase).collect(Collectors.toSet());
                 if (!requestedAssignedNames.equals(currentAssignedNames)) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAM_MEMBERs cannot change assigned teammates.");
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "TEAMMEMBERs cannot change assigned teammates.");
                 }
             }
         }
@@ -301,6 +341,7 @@ public class TaskService {
                     .collect(Collectors.toSet()));
         }
         Boolean wasCompleted = existingTask.getIsCompleted();
+        String oldDocumentPath = existingTask.getDocumentPath(); // Store old path to potentially delete file
 
         // Handle task name update: convert to uppercase and check for uniqueness within project
         if (request.getTaskName() != null && !request.getTaskName().equalsIgnoreCase(existingTask.getTaskName())) {
@@ -332,18 +373,19 @@ public class TaskService {
         Optional.ofNullable(request.getIsCmcDone()).ifPresent(existingTask::setIsCmcDone);
         Optional.ofNullable(request.getPriority()).ifPresent(existingTask::setPriority);
 
-        // Handle assigned teammates update (only if not TEAM_MEMBER or if TEAM_MEMBER didn't try to change it)
+        // Handle assigned teammates update (only if not TEAMMEMBER or if TEAMMEMBER didn't try to change it)
         Set<String> newAssignedNames = null;
-        if (!"TEAM_MEMBER".equalsIgnoreCase(userDetails.getRole()) || request.getAssignedTeammateNames() == null ||
-                (request.getAssignedTeammateNames().stream().map(String::toUpperCase).collect(Collectors.toSet())
-                        .equals(Arrays.stream(existingTask.getAssignedTeammateNames().split(","))
+        if (!"TEAMMEMBER".equalsIgnoreCase(userRole) || (request.getAssignedTeammateNames() != null &&
+                request.getAssignedTeammateNames().stream().map(String::toUpperCase).collect(Collectors.toSet())
+                        .equals(Arrays.stream(existingTask.getAssignedTeammateNames() != null ? existingTask.getAssignedTeammateNames().split(",") : new String[0])
                                 .map(String::trim).map(String::toUpperCase).collect(Collectors.toSet()))
-                )) { // Only proceed if TEAM_MEMBER didn't try to change, or if it's not a TEAM_MEMBER
+        )) { // Only proceed if TEAMMEMBER didn't try to change, or if it's not a TEAMMEMBER
 
             newAssignedNames = new HashSet<>();
             if (request.getAssignedTeammateNames() != null) {
                 for (String teammateName : request.getAssignedTeammateNames()) {
-                    Teammate teammate = teammateRepository.findByNameIgnoreCaseAndProjectId(teammateName, existingTask.getProjectId()) // Look up within task's project
+                    // Teammates must belong to the *same project as the task* being created/updated
+                    Teammate teammate = teammateRepository.findByNameIgnoreCaseAndProjectId(teammateName, existingTask.getProjectId())
                             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate not found with name: " + teammateName + " in this project."));
                     newAssignedNames.add(teammate.getName());
                 }
@@ -352,9 +394,24 @@ public class TaskService {
                 existingTask.setAssignedTeammateNames("");
             }
         } else {
-            logger.debug("TEAM_MEMBER attempted to modify assignedTeammateNames. This is forbidden.");
+            logger.debug("TEAMMEMBER attempted to modify assignedTeammateNames. This is forbidden.");
         }
 
+        // Handle document path update
+        if (request.getDocumentPath() != null && !request.getDocumentPath().equals(oldDocumentPath)) {
+            existingTask.setDocumentPath(request.getDocumentPath());
+            logger.info("Task document path updated to: {}", request.getDocumentPath());
+            // If an old document exists and a new one is provided (or old is cleared), delete the old file
+            if (oldDocumentPath != null && !oldDocumentPath.isEmpty()) {
+                fileStorageService.deleteFile(oldDocumentPath);
+                logger.info("Old document file '{}' deleted.", oldDocumentPath);
+            }
+        } else if (request.getDocumentPath() == null && oldDocumentPath != null && !oldDocumentPath.isEmpty()) {
+            // If request clears the document path but one existed, delete it
+            existingTask.setDocumentPath(null);
+            fileStorageService.deleteFile(oldDocumentPath);
+            logger.info("Document path cleared and old file '{}' deleted.", oldDocumentPath);
+        }
 
         Task updatedTask = taskRepository.save(existingTask);
 
@@ -374,23 +431,28 @@ public class TaskService {
         return convertToDto(updatedTask);
     }
 
-    // Delete a task by name - UPDATED (Project-aware RBAC)
+    // Delete a task by name - UPDATED (Project-aware RBAC, deletes associated document)
     @Transactional
     public void deleteTask(String name) {
         logger.info("Received request to delete task: {}", name);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        // Find existing task, scoped by project if not ADMIN
-        Task taskToDelete = getTaskEntityByNameAndProject(name, "ADMIN".equalsIgnoreCase(userDetails.getRole()) ? null : userDetails.getProjectId());
+        String userRole = userDetails.getRole();
+        List<Long> userProjectIds = userDetails.getProjectIds();
+
+        // Find existing task within the user's scope
+        Task taskToDelete = getTaskEntityByNameAndProject(name, "ADMIN".equalsIgnoreCase(userRole) ? null : userProjectIds);
 
         logger.debug("Found task to delete with ID: {}", taskToDelete.getTaskId());
 
-        // Authorization check: MANAGER, BA can delete any task in their project.
-        if (!"ADMIN".equalsIgnoreCase(userDetails.getRole()) && !taskToDelete.getProjectId().equals(userDetails.getProjectId())) {
-            logger.warn("User {} (Role {}, Project {}) attempted to delete task {} (Project {}). Access denied.",
-                    userDetails.getEmail(), userDetails.getRole(), userDetails.getProjectId(), taskToDelete.getTaskName(), taskToDelete.getProjectId());
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You can only delete tasks within your assigned project.");
+        // Authorization check: MANAGER, BA, TEAMLEAD can delete any task in their project.
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            if (userProjectIds == null || !userProjectIds.contains(taskToDelete.getProjectId())) {
+                logger.warn("User {} (Role {}, Projects {}) attempted to delete task {} (Project {}). Access denied.",
+                        userDetails.getEmail(), userRole, userProjectIds, taskToDelete.getTaskName(), taskToDelete.getProjectId());
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You can only delete tasks within your assigned projects.");
+            }
         }
 
         Set<String> affectedTeammates = new HashSet<>();
@@ -398,6 +460,12 @@ public class TaskService {
             affectedTeammates.addAll(Arrays.stream(taskToDelete.getAssignedTeammateNames().split(ASSIGNED_NAMES_DELIMITER))
                     .map(String::trim)
                     .collect(Collectors.toSet()));
+        }
+
+        // Delete associated document file if exists
+        if (taskToDelete.getDocumentPath() != null && !taskToDelete.getDocumentPath().isEmpty()) {
+            fileStorageService.deleteFile(taskToDelete.getDocumentPath());
+            logger.info("Associated document file '{}' for task '{}' deleted.", taskToDelete.getDocumentPath(), name);
         }
 
         taskRepository.delete(taskToDelete);

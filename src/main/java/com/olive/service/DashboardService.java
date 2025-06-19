@@ -27,7 +27,7 @@ public class DashboardService {
 
     private final TaskRepository taskRepository;
     private final TeammateRepository teammateRepository;
-    private final ProjectRepository projectRepository; // NEW: Inject ProjectRepository
+    private final ProjectRepository projectRepository;
 
     private static final String ASSIGNED_NAMES_DELIMITER = ",";
 
@@ -35,7 +35,7 @@ public class DashboardService {
     public DashboardService(TaskRepository taskRepository, TeammateRepository teammateRepository, ProjectRepository projectRepository) {
         this.taskRepository = taskRepository;
         this.teammateRepository = teammateRepository;
-        this.projectRepository = projectRepository; // Initialize
+        this.projectRepository = projectRepository;
     }
 
     public DashboardSummaryResponse getDashboardSummary() {
@@ -45,20 +45,20 @@ public class DashboardService {
 
         List<Teammate> teammatesForSummary;
         List<Task> tasksForSummary;
-        Long userProjectId = userDetails.getProjectId();
+        List<Long> userProjectIds = userDetails.getProjectIds(); // This can be multiple
         String userRole = userDetails.getRole();
 
-        // Determine scope of data based on user role and project ID
+        // Determine scope of data based on user role and project ID(s)
         if ("ADMIN".equalsIgnoreCase(userRole)) {
             logger.info("User is ADMIN, fetching global data for dashboard summary.");
             teammatesForSummary = teammateRepository.findAll();
             tasksForSummary = taskRepository.findAll();
-        } else if (userProjectId != null) {
-            logger.info("User is {} from project ID {}. Fetching project-specific data for dashboard summary.", userRole, userProjectId);
-            teammatesForSummary = teammateRepository.findByProjectId(userProjectId);
-            tasksForSummary = taskRepository.findByProjectId(userProjectId);
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            logger.info("User is {} from project IDs {}. Fetching project-specific data for dashboard summary.", userRole, userProjectIds);
+            teammatesForSummary = teammateRepository.findByProjectIdIn(userProjectIds); // Fetch teammates across all assigned projects
+            tasksForSummary = taskRepository.findByProjectIdIn(userProjectIds); // Fetch tasks across all assigned projects
         } else {
-            logger.warn("User {} with role {} has no projectId assigned. Dashboard summary will be empty.", userDetails.getEmail(), userRole);
+            logger.warn("User {} with role {} has no projectIds assigned. Dashboard summary will be empty.", userDetails.getEmail(), userRole);
             teammatesForSummary = Collections.emptyList();
             tasksForSummary = Collections.emptyList();
         }
@@ -80,13 +80,13 @@ public class DashboardService {
         logger.debug("Calculated totalTasks: {}, activeTasks: {}", totalTasks, activeTasks);
 
 
-        // Tasks by stage: now using repository query if not ADMIN
+        // Tasks by stage: now using repository query for single or multiple projects
         Map<String, Long> tasksByStage;
         if ("ADMIN".equalsIgnoreCase(userRole)) {
-            tasksByStage = tasksForSummary.stream()
+            tasksByStage = tasksForSummary.stream() // If ADMIN, use already fetched global tasks
                     .collect(Collectors.groupingBy(Task::getCurrentStage, Collectors.counting()));
-        } else if (userProjectId != null) {
-            tasksByStage = taskRepository.countTasksByStageAndProjectId(userProjectId).stream() // Use project-specific query
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            tasksByStage = taskRepository.countTasksByStageAndProjectIdIn(userProjectIds).stream() // Use project-specific query for multiple projects
                     .collect(Collectors.toMap(
                             array -> (String) array[0],
                             array -> (Long) array[1]
@@ -96,13 +96,13 @@ public class DashboardService {
         }
         logger.debug("Tasks by stage: {}", tasksByStage);
 
-        // Tasks by issue type: now using repository query if not ADMIN
+        // Tasks by issue type: now using repository query for single or multiple projects
         Map<String, Long> tasksByIssueType;
         if ("ADMIN".equalsIgnoreCase(userRole)) {
-            tasksByIssueType = tasksForSummary.stream()
+            tasksByIssueType = tasksForSummary.stream() // If ADMIN, use already fetched global tasks
                     .collect(Collectors.groupingBy(Task::getIssueType, Collectors.counting()));
-        } else if (userProjectId != null) {
-            tasksByIssueType = taskRepository.countTasksByIssueTypeAndProjectId(userProjectId).stream() // Use project-specific query
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            tasksByIssueType = taskRepository.countTasksByIssueTypeAndProjectIdIn(userProjectIds).stream() // Use project-specific query for multiple projects
                     .collect(Collectors.toMap(
                             array -> (String) array[0],
                             array -> (Long) array[1]
@@ -113,15 +113,25 @@ public class DashboardService {
         logger.debug("Tasks by issue type: {}", tasksByIssueType);
 
 
-        long tasksPendingCodeReview = tasksForSummary.stream()
-                .filter(task -> !task.getIsCodeReviewDone())
-                .count();
+        long tasksPendingCodeReview;
+        if ("ADMIN".equalsIgnoreCase(userRole)) {
+            tasksPendingCodeReview = taskRepository.countByIsCodeReviewDoneFalse(); // Global count for admin
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            tasksPendingCodeReview = taskRepository.countByProjectIdInAndIsCodeReviewDoneFalse(userProjectIds); // Multi-project count
+        } else {
+            tasksPendingCodeReview = 0;
+        }
         logger.debug("Tasks pending code review: {}", tasksPendingCodeReview);
 
 
-        long tasksPendingCmcApproval = tasksForSummary.stream()
-                .filter(task -> !task.getIsCmcDone())
-                .count();
+        long tasksPendingCmcApproval;
+        if ("ADMIN".equalsIgnoreCase(userRole)) {
+            tasksPendingCmcApproval = taskRepository.countByIsCmcDoneFalse(); // Global count for admin
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            tasksPendingCmcApproval = taskRepository.countByProjectIdInAndIsCmcDoneFalse(userProjectIds); // Multi-project count
+        } else {
+            tasksPendingCmcApproval = 0;
+        }
         logger.debug("Tasks pending CMC approval: {}", tasksPendingCmcApproval);
 
 
@@ -132,8 +142,8 @@ public class DashboardService {
             recentTasks = taskRepository.findTop10ByIsCompletedFalseOrderByStartDateDesc().stream()
                     .map(this::convertTaskToDashboardTaskDTO)
                     .collect(Collectors.toList());
-        } else if (userProjectId != null) {
-            recentTasks = taskRepository.findTop10ByProjectIdAndIsCompletedFalseOrderByStartDateDesc(userProjectId).stream()
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            recentTasks = taskRepository.findTop10ByProjectIdInAndIsCompletedFalseOrderByStartDateDesc(userProjectIds).stream()
                     .map(this::convertTaskToDashboardTaskDTO)
                     .collect(Collectors.toList());
         } else {
@@ -144,7 +154,7 @@ public class DashboardService {
 
         // Active tasks list for dashboard (not completed, not in Prod)
         logger.debug("Generating active tasks list.");
-        List<DashboardTaskDTO> activeTasksList = tasksForSummary.stream()
+        List<DashboardTaskDTO> activeTasksList = tasksForSummary.stream() // Use tasksForSummary (already scoped)
                 .filter(task -> !task.getIsCompleted() && !task.getCurrentStage().equalsIgnoreCase("Prod"))
                 .map(this::convertTaskToDashboardTaskDTO)
                 .collect(Collectors.toList());
@@ -153,7 +163,7 @@ public class DashboardService {
 
         // Team Members Summary (only for the user's scope)
         logger.debug("Generating team members summary.");
-        List<DashboardTeammateDTO> teamMembersSummary = teammatesForSummary.stream()
+        List<DashboardTeammateDTO> teamMembersSummary = teammatesForSummary.stream() // Use teammatesForSummary (already scoped)
                 .map(teammate -> {
                     long tasksAssignedToTeammate = tasksForSummary.stream() // Filter from tasks within user's scope
                             .filter(task -> !task.getIsCompleted()) // Only count active tasks
@@ -180,8 +190,8 @@ public class DashboardService {
                             teammate.getDepartment(),
                             teammate.getLocation(),
                             tasksAssignedToTeammate,
-                            teammate.getProjectId(), // Include projectId
-                            teammateProjectName // Include projectName
+                            teammate.getProjectId(),
+                            teammateProjectName
                     );
                     logger.debug("Created DashboardTeammateDTO for '{}': tasksAssigned={}, ProjectName={}", teammate.getName(), tasksAssignedToTeammate, teammateProjectName);
                     return teammateDTO;
@@ -239,8 +249,8 @@ public class DashboardService {
                 task.getDueDate(),
                 task.getPriority(),
                 formattedTaskNumber,
-                task.getProjectId(), // Include projectId
-                projectName // Include projectName
+                task.getProjectId(),
+                projectName
         );
         logger.debug("Finished converting Task to DashboardTaskDTO: ID={}, Name={}, TaskNumber={}, ProjectName={}", dto.getId(), dto.getName(), dto.getTaskNumber(), dto.getProjectName());
         return dto;

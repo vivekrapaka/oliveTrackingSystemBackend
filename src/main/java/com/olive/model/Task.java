@@ -7,6 +7,7 @@ import java.util.Objects;
 @Table(name = "tasks")
 public class Task {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
@@ -40,9 +41,11 @@ public class Task {
     @Column(length = 20)
     private String priority;
 
-    // UPDATED: Renamed teamId to projectId
     @Column(name = "project_id", nullable = false)
     private Long projectId;
+
+    @Column(columnDefinition = "TEXT") // NEW: documentPath
+    private String documentPath;
 
     // --- Constructors ---
     public Task() {
@@ -169,13 +172,21 @@ public class Task {
         this.priority = priority;
     }
 
-    // UPDATED: Getter and Setter for projectId
     public Long getProjectId() {
         return projectId;
     }
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    // NEW: Getter and Setter for documentPath
+    public String getDocumentPath() {
+        return documentPath;
+    }
+
+    public void setDocumentPath(String documentPath) {
+        this.documentPath = documentPath;
     }
 
     @Override

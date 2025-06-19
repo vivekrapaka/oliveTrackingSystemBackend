@@ -30,19 +30,19 @@ public class TeammateService {
 
     private final TeammateRepository teammateRepository;
     private final TaskRepository taskRepository;
-    private final ProjectRepository projectRepository; // NEW: Inject ProjectRepository
+    private final ProjectRepository projectRepository;
     private static final String ASSIGNED_NAMES_DELIMITER = ",";
 
     @Autowired
     public TeammateService(TeammateRepository teammateRepository, TaskRepository taskRepository, ProjectRepository projectRepository) {
         this.teammateRepository = teammateRepository;
         this.taskRepository = taskRepository;
-        this.projectRepository = projectRepository; // Initialize ProjectRepository
+        this.projectRepository = projectRepository;
     }
 
     // Helper to calculate isOccupied state based on assigned tasks (now project-aware)
     private boolean calculateIsOccupied(Teammate teammate) {
-        // Filter tasks by the teammate's project ID for relevance
+        // A teammate is occupied if they have any active tasks within their assigned project
         List<Task> relevantTasks = taskRepository.findByProjectId(teammate.getProjectId());
         return relevantTasks.stream()
                 .filter(task -> !task.getIsCompleted())
@@ -60,15 +60,15 @@ public class TeammateService {
     private TeammateResponse convertToDto(Teammate teammate) {
         logger.debug("Converting Teammate entity to DTO: {}", teammate.getName());
 
-        List<Task> allTasks = taskRepository.findAll(); // Used for global task counts if needed, but for assigned tasks, filter by project.
+        // Find tasks relevant to this teammate within their project
+        List<Task> teammateTasks = taskRepository.findByProjectId(teammate.getProjectId());
 
         // Get project name
         String projectName = projectRepository.findById(teammate.getProjectId())
                 .map(Project::getProjectName)
-                .orElse("Unknown Project"); // Default if project not found
+                .orElse("Unknown Project");
 
-        long activeTasksAssigned = allTasks.stream()
-                .filter(task -> Objects.equals(task.getProjectId(), teammate.getProjectId())) // Filter by teammate's project
+        long activeTasksAssigned = teammateTasks.stream()
                 .filter(task -> !task.getIsCompleted())
                 .filter(task -> {
                     if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
@@ -80,8 +80,7 @@ public class TeammateService {
                 })
                 .count();
 
-        long completedTasksAssigned = allTasks.stream()
-                .filter(task -> Objects.equals(task.getProjectId(), teammate.getProjectId())) // Filter by teammate's project
+        long completedTasksAssigned = teammateTasks.stream()
                 .filter(Task::getIsCompleted)
                 .filter(task -> {
                     if (task.getAssignedTeammateNames() == null || task.getAssignedTeammateNames().isEmpty()) {
@@ -94,7 +93,8 @@ public class TeammateService {
                 .count();
 
         String availabilityStatus = activeTasksAssigned > 0 ? "Occupied" : "Free";
-        teammate.setAvailabilityStatus(availabilityStatus); // Update the entity's status for consistency
+        // Do not update entity here; availability is a derived property for the DTO
+        // teammate.setAvailabilityStatus(availabilityStatus);
 
         TeammateResponse response = new TeammateResponse(
                 teammate.getTeammateId(),
@@ -105,46 +105,52 @@ public class TeammateService {
                 teammate.getDepartment(),
                 teammate.getLocation(),
                 teammate.getAvatar(),
-                teammate.getAvailabilityStatus(),
+                availabilityStatus, // Use the dynamically calculated status
                 activeTasksAssigned,
                 completedTasksAssigned,
-                teammate.getProjectId(), // NEW: Include projectId
-                projectName // NEW: Include projectName
+                teammate.getProjectId(),
+                projectName
         );
         logger.debug("Converted Teammate DTO: {}", response);
         return response;
     }
 
-    // Get all teammates with summary - UPDATED (Project-aware filtering)
+    // Get all teammates with summary - UPDATED (Project-aware filtering for all roles)
     public TeammatesSummaryResponse getAllTeammatesSummary() {
         logger.info("Fetching all teammates summary.");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        List<Teammate> teammatesToReturn;
+        List<Teammate> teammatesToConsider;
+        List<Task> tasksToConsider; // Tasks for calculating counts in this scope
 
-        if ("ADMIN".equalsIgnoreCase(userDetails.getRole())) {
-            logger.info("User is ADMIN, fetching all teammates globally.");
-            teammatesToReturn = teammateRepository.findAll();
-        } else if (userDetails.getProjectId() != null) {
-            logger.info("User is {} from project ID {}. Fetching teammates for project ID: {}", userDetails.getRole(), userDetails.getProjectId(), userDetails.getProjectId());
-            teammatesToReturn = teammateRepository.findByProjectId(userDetails.getProjectId());
+        String userRole = userDetails.getRole();
+        List<Long> userProjectIds = userDetails.getProjectIds();
+
+        // Determine the scope of teammates and tasks based on user role
+        if ("ADMIN".equalsIgnoreCase(userRole) || "HR".equalsIgnoreCase(userRole)) {
+            logger.info("User is {} (global access). Fetching all teammates and tasks.", userRole);
+            teammatesToConsider = teammateRepository.findAll();
+            tasksToConsider = taskRepository.findAll(); // All tasks for global calculations
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            // Manager, BA, TeamLead, TeamMember get data scoped to their assigned projects
+            logger.info("User is {} from project IDs {}. Fetching teammates and tasks within these projects.", userRole, userProjectIds);
+            teammatesToConsider = teammateRepository.findByProjectIdIn(userProjectIds);
+            tasksToConsider = taskRepository.findByProjectIdIn(userProjectIds);
         } else {
-            logger.warn("User {} has role {} but no projectId assigned. Returning empty list for teammates.", userDetails.getEmail(), userDetails.getRole());
-            teammatesToReturn = Collections.emptyList();
+            logger.warn("User {} has role {} but no projectIds assigned. Returning empty list for teammates and tasks.", userDetails.getEmail(), userRole);
+            return new TeammatesSummaryResponse(0, 0, 0, 0, Collections.emptyList());
         }
 
-        // Global task count for summary (still from all tasks for overall view on dashboard)
-        List<Task> allTasks = taskRepository.findAll();
-        long activeTasksCount = allTasks.stream()
+        long totalMembersInTeamCount = teammatesToConsider.size();
+        long availableTeamMembersCount = teammatesToConsider.stream().filter(t -> !calculateIsOccupied(t)).count();
+        long occupiedTeamMembersCount = teammatesToConsider.stream().filter(this::calculateIsOccupied).count();
+
+        long activeTasksCount = tasksToConsider.stream()
                 .filter(task -> !task.getIsCompleted() && !task.getCurrentStage().equalsIgnoreCase("Prod"))
                 .count();
 
-        long totalMembersInTeamCount = teammatesToReturn.size();
-        long availableTeamMembersCount = teammatesToReturn.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
-        long occupiedTeamMembersCount = teammatesToReturn.stream().filter(t -> "Occupied".equals(t.getAvailabilityStatus())).count();
-
-        List<TeammateResponse> teammateResponses = teammatesToReturn.stream()
+        List<TeammateResponse> teammateResponses = teammatesToConsider.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
@@ -159,21 +165,33 @@ public class TeammateService {
         return summaryResponse;
     }
 
-    // Get teammate by Name - UPDATED (Project-aware filtering)
+    // Get teammate by Name - UPDATED (Project-aware filtering for all roles)
     public TeammateResponse getTeammateByName(String name) {
         logger.info("Attempting to retrieve teammate with name: {}", name);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         Teammate teammate;
-        if ("ADMIN".equalsIgnoreCase(userDetails.getRole())) {
-            teammate = teammateRepository.findByNameIgnoreCase(name) // Admin can find any teammate
+        String userRole = userDetails.getRole();
+        List<Long> userProjectIds = userDetails.getProjectIds();
+
+        if ("ADMIN".equalsIgnoreCase(userRole) || "HR".equalsIgnoreCase(userRole)) {
+            teammate = teammateRepository.findByNameIgnoreCase(name) // Admin/HR can find any teammate globally
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with name: " + name));
-        } else if (userDetails.getProjectId() != null) {
-            teammate = teammateRepository.findByNameIgnoreCaseAndProjectId(name, userDetails.getProjectId()) // Non-admin can only find within their project
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with name: " + name + " in your project."));
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            // MANAGER, BA, TEAMLEAD can find teammates within their assigned projects
+            // TEAMMEMBER cannot access this tab, so this case is for the allowed roles
+            teammate = teammateRepository.findByNameIgnoreCase(name) // First, find by name globally
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with name: " + name));
+
+            // Now, check if the found teammate's project is within the user's assigned projects
+            if (!userProjectIds.contains(teammate.getProjectId())) {
+                logger.warn("User {} (Role {}, Projects {}) attempted to access teammate {} (Project {}), but it's outside their scope. Access denied.",
+                        userDetails.getEmail(), userRole, userProjectIds, teammate.getName(), teammate.getProjectId());
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You can only view teammates within your assigned projects.");
+            }
         } else {
-            logger.warn("User {} with role {} has no projectId assigned. Access denied for teammate retrieval.", userDetails.getEmail(), userDetails.getRole());
+            logger.warn("User {} with role {} has no projectIds assigned. Access denied for teammate retrieval.", userDetails.getEmail(), userRole);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied: You must be assigned to a project to view teammates.");
         }
 
@@ -181,12 +199,11 @@ public class TeammateService {
         return convertToDto(teammate);
     }
 
-    // Create a new teammate - UPDATED (Admin-only, project-aware)
+    // Create a new teammate - UPDATED (Admin-only, project-aware for creation)
     @Transactional
     public TeammateResponse createTeammate(TeammateCreateRequest request) {
         logger.info("Received request to create teammate with full name: {}", request.getFullName());
-        // This method is now expected to be called by ADMIN only,
-        // and request contains the projectId for the new teammate.
+        // This method is called by ADMIN only. The request contains the projectId for the new teammate.
 
         // Validate that the projectId exists
         projectRepository.findById(request.getProjectId())
@@ -212,8 +229,8 @@ public class TeammateService {
         teammate.setPhone(request.getPhone());
         teammate.setDepartment(request.getDepartment());
         teammate.setLocation(request.getLocation());
-        teammate.setAvatar(request.getAvatar());
-        teammate.setAvailabilityStatus("Free");
+        teammate.setAvatar(request.getAvatar()); // Avatar could be provided by Admin, or auto-generated default
+        teammate.setAvailabilityStatus("Free"); // Default status initially, will be updated by task assignments
         teammate.setProjectId(request.getProjectId()); // Assign projectId from request
 
         logger.info("Saving new teammate: {} for Project ID: {}", teammate.getName(), teammate.getProjectId());
@@ -227,10 +244,6 @@ public class TeammateService {
     public TeammateResponse updateTeammate(String name, TeammateCreateRequest request) {
         logger.info("Received request to update teammate: {}", name);
         // This method is now expected to be called by ADMIN only
-        // The request may or may not contain a projectId. For existing teammates,
-        // their projectId is retrieved from the DB, and only an Admin can change it (if a dedicated API for that is added).
-        // For this general update, we validate the existing teammate's project against the request (if provided)
-        // or ensure the Admin context is global.
 
         Teammate existingTeammate = teammateRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> {
@@ -239,13 +252,8 @@ public class TeammateService {
                 });
         logger.debug("Found existing teammate with ID: {}", existingTeammate.getTeammateId());
 
-        // For non-ADMIN users, we would restrict updates to their own project.
-        // Since this method is now @PreAuthorize("hasRole('ADMIN')"), this check is simplified.
-        // ADMIN can update any teammate. If the request includes projectId, validate it.
+        // ADMIN can update a teammate's project ID
         if (request.getProjectId() != null && !request.getProjectId().equals(existingTeammate.getProjectId())) {
-            // ADMIN is trying to change a teammate's project via a general update.
-            // This is typically handled by a specific "reassign teammate to project" API for clarity.
-            // For now, we'll allow ADMINs to directly change it here, but it's less explicit.
             projectRepository.findById(request.getProjectId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Target Project not found with ID: " + request.getProjectId()));
             existingTeammate.setProjectId(request.getProjectId());
@@ -287,6 +295,7 @@ public class TeammateService {
         Teammate updatedTeammate = teammateRepository.save(existingTeammate);
         logger.info("Teammate updated successfully.");
 
+        // Update availability for the updated teammate (and any others if task reassignments occurred, but this focuses on the changed teammate)
         updateTeammateAvailability(updatedTeammate.getName());
 
         return convertToDto(updatedTeammate);
@@ -328,6 +337,9 @@ public class TeammateService {
             boolean isOccupied = calculateIsOccupied(teammate);
             String newStatus = isOccupied ? "Occupied" : "Free";
             if (!teammate.getAvailabilityStatus().equals(newStatus)) {
+                // If availability changes, save it to the entity.
+                // Note: Teammate.availabilityStatus is now managed by this service based on task assignments,
+                // it's not directly set via TeammateCreateRequest.
                 teammate.setAvailabilityStatus(newStatus);
                 teammateRepository.save(teammate);
                 logger.info("Teammate '{}' availability changed to: {}", teammate.getName(), newStatus);

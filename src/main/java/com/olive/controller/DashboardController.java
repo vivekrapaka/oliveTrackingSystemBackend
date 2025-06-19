@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
         }
 
         @GetMapping
-        @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'BA', 'TEAM_MEMBER')")
+        @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')")
         public ResponseEntity<DashboardSummaryResponse> getDashboardSummary() {
             logger.info("Received request for dashboard summary.");
             DashboardSummaryResponse response = dashboardService.getDashboardSummary();

@@ -5,7 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public class UserCreateUpdateRequest {
+    private Long id; // Added for updates
     @NotBlank(message = "Full name is required")
     @Size(max = 100, message = "Full name cannot exceed 100 characters")
     private String fullName;
@@ -20,13 +23,22 @@ public class UserCreateUpdateRequest {
     private String password;
 
     @NotBlank(message = "Role is required")
-    @Pattern(regexp = "ADMIN|MANAGER||TEAM_LEAD|BA|TEAM_MEMBER", message = "Invalid role. Must be ADMIN, MANAGER, BA, or TEAM_MEMBER.")
+    @Pattern(regexp = "ADMIN|HR|MANAGER|TEAMLEAD|BA|TEAMMEMBER", message = "Invalid role. Must be ADMIN, HR, MANAGER, TEAMLEAD, BA, or TEAMMEMBER.")
     private String role;
 
-    // projectId can be null for ADMIN, but mandatory for others
-    private Long projectId;
+    // UPDATED: projectIds to handle multiple project assignments for MANAGER/BA
+    // For ADMIN/HR: null/empty list. For TEAMLEAD/TEAMMEMBER: list with exactly one ID. For MANAGER/BA: list with one or more IDs.
+    private List<Long> projectIds;
 
     // Getters and Setters
+    public Long getId() { // NEW
+        return id;
+    }
+
+    public void setId(Long id) { // NEW
+        this.id = id;
+    }
+
     public String getFullName() {
         return fullName;
     }
@@ -59,11 +71,12 @@ public class UserCreateUpdateRequest {
         this.role = role;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    // UPDATED: Getter and Setter for projectIds (List<Long>)
+    public List<Long> getProjectIds() {
+        return projectIds;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectIds(List<Long> projectIds) {
+        this.projectIds = projectIds;
     }
 }

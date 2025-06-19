@@ -43,6 +43,7 @@ public class ProjectController {
     public ResponseEntity<List<ProjectResponse>> getAllProjects() {
         logger.info("Received request to get all projects.");
         List<ProjectResponse> response = projectService.getAllProjects();
+        logger.info("response sending to get all projects.{}", response.get(0));
         return ResponseEntity.ok(response);
     }
 

@@ -31,7 +31,7 @@ public class TaskController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'BA', 'TEAM_MEMBER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')")
     public ResponseEntity<TasksSummaryResponse> getAllTasks(@RequestParam(required = false) String taskName) {
         logger.info("Received request to get all tasks. Filter: {}", taskName);
         TasksSummaryResponse response = taskService.getAllTasks(taskName);
@@ -40,26 +40,29 @@ public class TaskController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'BA')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')") // Only ADMIN, MANAGER, TEAMLEAD, BA can create tasks
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskCreateRequest request) {
         logger.info("Received request to create task: {}", request.getTaskName());
         TaskResponse response = taskService.createTask(request);
+        logger.info("Task created successfully with ID: {}", response.getId());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{name}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'BA', 'TEAM_MEMBER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')") // Granular control in service
     public ResponseEntity<TaskResponse> updateTask(@PathVariable String name, @Valid @RequestBody TaskUpdateRequest request) {
         logger.info("Received request to update task '{}'.", name);
         TaskResponse response = taskService.updateTask(name, request);
+        logger.info("Task '{}' updated successfully.", name);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{name}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'BA')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')") // Only ADMIN, MANAGER, TEAMLEAD, BA can delete tasks
     public ResponseEntity<Void> deleteTask(@PathVariable String name) {
         logger.info("Received request to delete task '{}'.", name);
         taskService.deleteTask(name);
+        logger.info("Task '{}' deleted successfully.", name);
         return ResponseEntity.noContent().build();
     }
 }

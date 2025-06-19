@@ -26,7 +26,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    // Only ADMIN can create/onboard users (and assign role/projectId)
+    // Only ADMIN can create/onboard users (and assign role/project)
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateUpdateRequest request) {
@@ -35,29 +35,30 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // Only ADMIN can get all users (global view)
+    // ADMIN and HR can get all users (global view)
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         logger.info("Received request to get all users.");
         List<UserResponse> response = userService.getAllUsers();
         return ResponseEntity.ok(response);
     }
 
-    // Only ADMIN can get user by ID
+    // ADMIN and HR can get user by ID
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         logger.info("Received request to get user by ID: {}", id);
         UserResponse response = userService.getUserById(id);
         return ResponseEntity.ok(response);
     }
 
-    // Only ADMIN can update users (including role/projectId)
+    // ADMIN can update any user. HR can update non-ADMIN/HR users to assign projects.
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserCreateUpdateRequest request) {
         logger.info("Received request to update user ID: {}", id);
+        // Authorization logic for HR is handled within UserService.updateUser
         UserResponse response = userService.updateUser(id, request);
         return ResponseEntity.ok(response);
     }
