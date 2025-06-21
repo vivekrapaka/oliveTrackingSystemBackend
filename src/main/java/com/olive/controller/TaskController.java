@@ -65,4 +65,13 @@ public class TaskController {
         logger.info("Task '{}' deleted successfully.", name);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/generateSequenceNumber")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')")
+    public ResponseEntity<Long> getNextTaskSequenceNumber() {
+        logger.info("Received request to get next task sequence number.");
+        Long nextSequence = taskService.generateNextSequenceNumber();
+        logger.info("Returning next sequence number: {}", nextSequence);
+        return ResponseEntity.ok(nextSequence);
+    }
 }
