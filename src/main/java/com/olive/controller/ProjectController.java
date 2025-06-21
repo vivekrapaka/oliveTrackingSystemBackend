@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -43,7 +44,11 @@ public class ProjectController {
     public ResponseEntity<List<ProjectResponse>> getAllProjects() {
         logger.info("Received request to get all projects.");
         List<ProjectResponse> response = projectService.getAllProjects();
-        logger.info("response sending to get all projects.{}", response.get(0));
+        if(response != null && !response.isEmpty()) {
+            logger.info("response sending to get all projects.{}", response.get(0));
+            return ResponseEntity.ok(response);
+        }
+
         return ResponseEntity.ok(response);
     }
 

@@ -110,7 +110,7 @@ public class TaskService {
         List<Task> tasksToReturn;
         String userRole = userDetails.getRole();
         List<Long> userProjectIds = userDetails.getProjectIds(); // This will be null for ADMIN, list for MANAGER/BA/TEAMLEAD/TEAMMEMBER
-
+        logger.info("checking userProjectIds - {}", userDetails.getProjectIds());
         // Determine the scope of tasks based on user role and project IDs
         if ("ADMIN".equalsIgnoreCase(userRole)) {
             logger.info("User is ADMIN, fetching all tasks globally.");
@@ -170,7 +170,7 @@ public class TaskService {
         logger.info("Received request to create task: {}", request.getTaskName());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
+        logger.info("user projectIds {}", userDetails.getProjectIds());
         String userRole = userDetails.getRole();
         List<Long> userProjectIds = userDetails.getProjectIds();
 
@@ -183,7 +183,7 @@ public class TaskService {
                 logger.error("Admin user attempted to create task with invalid or missing projectId: {}", projectIdForNewTask);
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or missing Project ID for task creation.");
             }
-        } else if (userProjectIds != null && userProjectIds.contains(projectIdForNewTask)) {
+        } else if (Arrays.asList("MANAGER", "BA", "TEAMLEAD").contains(userRole.toUpperCase())) {
             // MANAGER, BA, TEAMLEAD must create tasks only for projects they are assigned to
             // TEAMMEMBER cannot create tasks (handled by @PreAuthorize)
             if (projectIdForNewTask == null) {

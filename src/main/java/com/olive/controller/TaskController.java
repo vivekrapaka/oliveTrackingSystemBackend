@@ -39,14 +39,14 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')") // Only ADMIN, MANAGER, TEAMLEAD, BA can create tasks
-    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskCreateRequest request) {
-        logger.info("Received request to create task: {}", request.getTaskName());
-        TaskResponse response = taskService.createTask(request);
-        logger.info("Task created successfully with ID: {}", response.getId());
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+        @PostMapping
+        @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')") // Only ADMIN, MANAGER, TEAMLEAD, BA can create tasks
+        public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskCreateRequest request) {
+            logger.info("Received request to create task: {}", request.getTaskName());
+            TaskResponse response = taskService.createTask(request);
+            logger.info("Task created successfully with ID: {}", response.getId());
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
 
     @PutMapping("/{name}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')") // Granular control in service
