@@ -200,7 +200,7 @@ public class TeammateService {
     }
 
     // Create a new teammate - UPDATED (Admin-only, project-aware for creation)
-    @Transactional
+   /* @Transactional
     public TeammateResponse createTeammate(TeammateCreateRequest request) {
         logger.info("Received request to create teammate with full name: {}", request.getFullName());
         // This method is called by ADMIN only. The request contains the projectId for the new teammate.
@@ -231,13 +231,13 @@ public class TeammateService {
         teammate.setLocation(request.getLocation());
         teammate.setAvatar(request.getAvatar()); // Avatar could be provided by Admin, or auto-generated default
         teammate.setAvailabilityStatus("Free"); // Default status initially, will be updated by task assignments
-        teammate.setProjectId(request.getProjectId()); // Assign projectId from request
+        teammate.setProjectIds(request.getProjectIds()); // Assign projectId from request
 
         logger.info("Saving new teammate: {} for Project ID: {}", teammate.getName(), teammate.getProjectId());
         Teammate savedTeammate = teammateRepository.save(teammate);
         logger.info("Teammate saved successfully with ID: {}", savedTeammate.getTeammateId());
         return convertToDto(savedTeammate);
-    }
+    }*/
 
     // Update teammate details by Name - UPDATED (Admin-only, project-aware)
     @Transactional

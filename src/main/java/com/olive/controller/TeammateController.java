@@ -46,14 +46,14 @@ public class TeammateController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
+  /*  @PostMapping
     @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can create teammates
     public ResponseEntity<TeammateResponse> createTeammate(@Valid @RequestBody TeammateCreateRequest request) {
         logger.info("Received request to create teammate: {}", request.getFullName());
-        TeammateResponse response = teammateService.createTeammate(request);
+        TeammateResponse response = teammateService.createTeammate(request.getProjectId());
         logger.info("Teammate created successfully with ID: {}", response.getId());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+    } */
 
     @PutMapping("/{name}")
     @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can update teammates
