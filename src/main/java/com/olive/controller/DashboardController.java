@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,20 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
     public class DashboardController {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
+        private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
-    private final DashboardService dashboardService;
+        private final DashboardService dashboardService;
 
-    @Autowired
-    public DashboardController(DashboardService dashboardService) {
-        this.dashboardService = dashboardService;
-    }
+        @Autowired
+        public DashboardController(DashboardService dashboardService) {
+            this.dashboardService = dashboardService;
+        }
 
-    @GetMapping
-    public ResponseEntity<DashboardSummaryResponse> getDashboardSummary() {
-        logger.info("Received request for dashboard summary.");
-        DashboardSummaryResponse response = dashboardService.getDashboardSummary();
-        logger.info("Returning dashboard summary.");
-        return ResponseEntity.ok(response);
-    }
+        @GetMapping
+        @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')")
+        public ResponseEntity<DashboardSummaryResponse> getDashboardSummary() {
+            logger.info("Received request for dashboard summary.");
+            DashboardSummaryResponse response = dashboardService.getDashboardSummary();
+            logger.info("Returning dashboard summary.");
+            return ResponseEntity.ok(response);
+        }
 }

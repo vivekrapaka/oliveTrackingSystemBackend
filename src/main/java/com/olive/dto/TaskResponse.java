@@ -5,10 +5,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.List;
 
-public class TaskResponse {  private Long id; // Renamed from taskId
-    private String name; // Renamed from taskName
-    private String taskNumber; // Changed from Long sequenceNumber to String taskNumber
-    private String description; // Added description back
+public class TaskResponse {
+    private Long id;
+    private String name;
+    private String taskNumber;
+    private String description;
     private String issueType;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate receivedDate;
@@ -17,21 +18,23 @@ public class TaskResponse {  private Long id; // Renamed from taskId
     private String currentStage;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
-    private List<String> assignedTeammates; // Renamed from assignedTeammateNames
+    private List<String> assignedTeammates;
     private String priority;
     private Boolean isCompleted;
-    private Boolean isCmcDone; // Renamed from iscmcDone to isCmcDone
+    private Boolean isCmcDone;
+    private Long projectId;
+    private String projectName;
+    private String documentPath; // NEW: documentPath
 
 
-    // Updated constructor to include description and use String taskNumber
     public TaskResponse(Long id, String name, String taskNumber, String description, String issueType, LocalDate receivedDate,
                         LocalDate developmentStartDate, String currentStage, LocalDate dueDate,
                         List<String> assignedTeammates, String priority, Boolean isCompleted,
-                        Boolean isCmcDone) { // Changed here too
+                        Boolean isCmcDone, Long projectId, String projectName, String documentPath) {
         this.id = id;
         this.name = name;
-        this.taskNumber = taskNumber; // Initialize taskNumber
-        this.description = description; // Initialize description
+        this.taskNumber = taskNumber;
+        this.description = description;
         this.issueType = issueType;
         this.receivedDate = receivedDate;
         this.developmentStartDate = developmentStartDate;
@@ -40,10 +43,13 @@ public class TaskResponse {  private Long id; // Renamed from taskId
         this.assignedTeammates = assignedTeammates;
         this.priority = priority;
         this.isCompleted = isCompleted;
-        this.isCmcDone = isCmcDone; // Changed here too
+        this.isCmcDone = isCmcDone;
+        this.projectId = projectId;
+        this.projectName = projectName;
+        this.documentPath = documentPath;
     }
 
-    // Getters and Setters - Renamed and removed as per the request
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -140,11 +146,35 @@ public class TaskResponse {  private Long id; // Renamed from taskId
         isCompleted = completed;
     }
 
-    public Boolean getIsCmcDone() { // Changed here too
+    public Boolean getIsCmcDone() {
         return isCmcDone;
     }
 
-    public void setIsCmcDone(Boolean isCmcDone) { // Changed here too
+    public void setIsCmcDone(Boolean isCmcDone) {
         this.isCmcDone = isCmcDone;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getDocumentPath() {
+        return documentPath;
+    }
+
+    public void setDocumentPath(String documentPath) {
+        this.documentPath = documentPath;
     }
 }

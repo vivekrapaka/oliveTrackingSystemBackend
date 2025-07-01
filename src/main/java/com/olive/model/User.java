@@ -1,6 +1,8 @@
 package com.olive.model;
 
 import jakarta.persistence.*;
+
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,14 +22,26 @@ public class User {
     @Column(nullable = false, length = 255) // Store hashed password
     private String password;
 
+    @Column(nullable = false, length = 50)
+    private String role; // e.g., "ADMIN", "HR", "MANAGER", "BA", "TEAMLEAD", "TEAMMEMBER"
+
+    // UPDATED: projectIds to handle multiple project assignments for MANAGER/BA
+    // Stored as a comma-separated string in DB, converted to List<Long> in entity
+    @Column(name = "project_ids")
+    @Convert(converter = JpaLongListConverter.class) // NEW: Apply the converter
+    private List<Long> projectIds;
+
     // Default constructor
     public User() {
     }
 
-    public User(String fullName, String email, String password) {
+    // Updated constructor to use List<Long> for projectIds
+    public User(String fullName, String email, String password, String role, List<Long> projectIds) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
+        this.role = role;
+        this.projectIds = projectIds;
     }
 
     // Getters and Setters
@@ -61,6 +75,23 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    // UPDATED: Getter and Setter for projectIds (List<Long>)
+    public List<Long> getProjectIds() {
+        return projectIds;
+    }
+
+    public void setProjectIds(List<Long> projectIds) {
+        this.projectIds = projectIds;
     }
 
     @Override

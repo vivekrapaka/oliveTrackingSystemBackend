@@ -5,12 +5,14 @@ public class DashboardTeammateDTO {
     private String name;
     private String role;
     private String email;
-    private String phone; // New field
-    private String department; // New field
-    private String location; // New field
-    private long tasksAssigned; // Count of active tasks assigned
+    private String phone;
+    private String department;
+    private String location;
+    private long tasksAssigned;
+    private Long projectId; // NEW: projectId
+    private String projectName; // NEW: projectName
 
-    public DashboardTeammateDTO(Long id, String name, String role, String email, String phone, String department, String location, long tasksAssigned) {
+    public DashboardTeammateDTO(Long id, String name, String role, String email, String phone, String department, String location, long tasksAssigned, Long projectId, String projectName) {
         this.id = id;
         this.name = name;
         this.role = role;
@@ -19,6 +21,8 @@ public class DashboardTeammateDTO {
         this.department = department;
         this.location = location;
         this.tasksAssigned = tasksAssigned;
+        this.projectId = projectId;
+        this.projectName = projectName;
     }
 
     // Getters and Setters
@@ -84,5 +88,21 @@ public class DashboardTeammateDTO {
 
     public void setTasksAssigned(long tasksAssigned) {
         this.tasksAssigned = tasksAssigned;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }

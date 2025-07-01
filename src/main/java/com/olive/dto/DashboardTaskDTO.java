@@ -8,14 +8,15 @@ public class DashboardTaskDTO {
     private Long id;
     private String name;
     private String stage;
-    private String assignee; // Combined from assignedTeammateNames
+    private String assignee;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
     private String priority;
-    private String taskNumber; // NEW: field for sequence number
+    private String taskNumber;
+    private Long projectId; // NEW: projectId
+    private String projectName; // NEW: projectName
 
-    // Updated constructor to include taskNumber
-    public DashboardTaskDTO(Long id, String name, String stage, String assignee, LocalDate dueDate, String priority, String taskNumber) {
+    public DashboardTaskDTO(Long id, String name, String stage, String assignee, LocalDate dueDate, String priority, String taskNumber, Long projectId, String projectName) {
         this.id = id;
         this.name = name;
         this.stage = stage;
@@ -23,6 +24,8 @@ public class DashboardTaskDTO {
         this.dueDate = dueDate;
         this.priority = priority;
         this.taskNumber = taskNumber;
+        this.projectId = projectId;
+        this.projectName = projectName;
     }
 
     // Getters and Setters
@@ -74,11 +77,27 @@ public class DashboardTaskDTO {
         this.priority = priority;
     }
 
-    public String getTaskNumber() { // Getter for taskNumber
+    public String getTaskNumber() {
         return taskNumber;
     }
 
-    public void setTaskNumber(String taskNumber) { // Setter for taskNumber
+    public void setTaskNumber(String taskNumber) {
         this.taskNumber = taskNumber;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }

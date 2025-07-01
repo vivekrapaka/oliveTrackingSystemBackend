@@ -2,6 +2,7 @@ package com.olive.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
@@ -13,10 +14,10 @@ public class TaskCreateRequest {
     @Size(max = 255, message = "Task name cannot exceed 255 characters")
     private String taskName;
 
-    private String description; // Added description here
+    private String description;
 
     @NotBlank(message = "Current stage is required")
-    private String currentStage; // Now a String directly
+    private String currentStage;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
@@ -24,7 +25,7 @@ public class TaskCreateRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
 
-    private String issueType; // e.g., 'BRD', 'Production Issue', 'Enhancement', 'Bug'
+    private String issueType;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent(message = "Received date cannot be in the future")
@@ -33,9 +34,15 @@ public class TaskCreateRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate developmentStartDate;
 
-    private List<String> assignedTeammateNames; // Now a list of names
+    private List<String> assignedTeammateNames;
 
-    private String priority; // New field
+    private String priority;
+
+    @NotNull(message = "Project ID is required for task creation") // NEW: projectId is now required for task creation
+    private Long projectId;
+
+    private String documentPath; // NEW: documentPath
+
 
     // Getters and Setters
     public String getTaskName() {
@@ -46,11 +53,11 @@ public class TaskCreateRequest {
         this.taskName = taskName;
     }
 
-    public String getDescription() { // Getter for description
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) { // Setter for description
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -116,5 +123,21 @@ public class TaskCreateRequest {
 
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getDocumentPath() {
+        return documentPath;
+    }
+
+    public void setDocumentPath(String documentPath) {
+        this.documentPath = documentPath;
     }
 }
