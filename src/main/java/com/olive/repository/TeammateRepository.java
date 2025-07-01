@@ -11,8 +11,19 @@ import java.util.Optional;
 public interface TeammateRepository extends JpaRepository<Teammate,Long> {
     // Custom query to find teammates by availability status
     List<Teammate> findByAvailabilityStatus(String availabilityStatus);
-    Optional<Teammate> findByName(String name); // Find teammate by exact name
-    Optional<Teammate> findByEmail(String email); // Find teammate by email for uniqueness check
-    Optional<Teammate> findByNameIgnoreCase(String name); // New: Find teammate by name, ignoring case
+    Optional<Teammate> findByName(String name);
+    Optional<Teammate> findByEmail(String email);
+    Optional<Teammate> findByNameIgnoreCase(String name);
 
+    // Find teammates by project ID
+    List<Teammate> findByProjectId(Long projectId);
+
+    // Find teammate by name and projectId
+    Optional<Teammate> findByNameIgnoreCaseAndProjectId(String name, Long projectId);
+
+    // Find teammate by email and projectId
+    Optional<Teammate> findByEmailAndProjectId(String email, Long projectId);
+
+    // NEW: Find teammates by multiple project IDs (for MANAGER/BA views)
+    List<Teammate> findByProjectIdIn(List<Long> projectIds);
 }

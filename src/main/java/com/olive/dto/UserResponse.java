@@ -2,44 +2,24 @@ package com.olive.dto;
 
 import java.util.List;
 
-public class AuthResponse {
-    private String token;
-    private String type = "Bearer";
+public class UserResponse {
     private Long id;
-    private String email;
     private String fullName;
+    private String email;
     private String role;
     private List<Long> projectIds; // UPDATED: List of project IDs
-    private List<String> projectNames; // NEW: List of project names
+    private List<String> projectNames; // NEW: List of project names (comma-separated for display)
 
-    // Updated constructor to use List<Long> for projectIds and List<String> for projectNames
-    public AuthResponse(String token, Long id, String email, String fullName, String role, List<Long> projectIds, List<String> projectNames) {
-        this.token = token;
+    public UserResponse(Long id, String fullName, String email, String role, List<Long> projectIds, List<String> projectNames) {
         this.id = id;
-        this.email = email;
         this.fullName = fullName;
+        this.email = email;
         this.role = role;
         this.projectIds = projectIds;
         this.projectNames = projectNames;
     }
 
     // Getters and Setters
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public Long getId() {
         return id;
     }
@@ -48,20 +28,20 @@ public class AuthResponse {
         this.id = id;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getFullName() {
         return fullName;
     }
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getRole() {

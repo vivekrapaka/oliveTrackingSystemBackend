@@ -1,6 +1,8 @@
 package com.olive.model;
 
 import jakarta.persistence.*;
+
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,28 +22,26 @@ public class User {
     @Column(nullable = false, length = 255) // Store hashed password
     private String password;
 
-    // NEW: Role field
-    // Using String to allow flexibility for now, but enum is also a good option.
     @Column(nullable = false, length = 50)
-    private String role; // e.g., "ADMIN", "MANAGER", "BA", "TEAM_MEMBER"
+    private String role; // e.g., "ADMIN", "HR", "MANAGER", "BA", "TEAMLEAD", "TEAMMEMBER"
 
-    // NEW: Team ID field
-    // This will be null if the user is an ADMIN or currently unassigned.
-    @Column(name = "team_id")
-    private Long teamId; // Foreign Key to Team entity (if Team entity exists, otherwise just an ID)
-
+    // UPDATED: projectIds to handle multiple project assignments for MANAGER/BA
+    // Stored as a comma-separated string in DB, converted to List<Long> in entity
+    @Column(name = "project_ids")
+    @Convert(converter = JpaLongListConverter.class) // NEW: Apply the converter
+    private List<Long> projectIds;
 
     // Default constructor
     public User() {
     }
 
-    // Updated constructor to include role and teamId
-    public User(String fullName, String email, String password, String role, Long teamId) {
+    // Updated constructor to use List<Long> for projectIds
+    public User(String fullName, String email, String password, String role, List<Long> projectIds) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.teamId = teamId;
+        this.projectIds = projectIds;
     }
 
     // Getters and Setters
@@ -77,7 +77,6 @@ public class User {
         this.password = password;
     }
 
-    // NEW Getters and Setters for role and teamId
     public String getRole() {
         return role;
     }
@@ -86,12 +85,13 @@ public class User {
         this.role = role;
     }
 
-    public Long getTeamId() {
-        return teamId;
+    // UPDATED: Getter and Setter for projectIds (List<Long>)
+    public List<Long> getProjectIds() {
+        return projectIds;
     }
 
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
+    public void setProjectIds(List<Long> projectIds) {
+        this.projectIds = projectIds;
     }
 
     @Override
@@ -105,6 +105,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-
     }
 }

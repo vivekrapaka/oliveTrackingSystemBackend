@@ -6,9 +6,12 @@ import com.olive.dto.TaskUpdateRequest;
 import com.olive.dto.TasksSummaryResponse;
 import com.olive.service.TaskService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +21,8 @@ import java.util.List;
 public class TaskController {
 
 
+    private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
+
     private final TaskService taskService;
 
     @Autowired
@@ -25,47 +30,48 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    // GET all tasks (no filter parameter here)
     @GetMapping
-    public ResponseEntity<TasksSummaryResponse> getAllTasks() {
-        // Pass null to indicate no specific name filter for this endpoint
-        TasksSummaryResponse summaryResponse = taskService.getAllTasks(null);
-        return ResponseEntity.ok(summaryResponse);
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')")
+    public ResponseEntity<TasksSummaryResponse> getAllTasks(@RequestParam(required = false) String taskName) {
+        logger.info("Received request to get all tasks. Filter: {}", taskName);
+        TasksSummaryResponse response = taskService.getAllTasks(taskName);
+        logger.info("Returning {} tasks.", response.getTasks().size());
+        return ResponseEntity.ok(response);
     }
 
-    // NEW API: GET tasks filtered by name
-    @GetMapping("/filterByName/{name}")
-    public ResponseEntity<TasksSummaryResponse> getTasksByName(@PathVariable String name) {
-        // Pass the name filter to the service
-        TasksSummaryResponse summaryResponse = taskService.getAllTasks(name);
-        return ResponseEntity.ok(summaryResponse);
-    }
+        @PostMapping
+        @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')") // Only ADMIN, MANAGER, TEAMLEAD, BA can create tasks
+        public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskCreateRequest request) {
+            logger.info("Received request to create task: {}", request.getTaskName());
+            TaskResponse response = taskService.createTask(request);
+            logger.info("Task created successfully with ID: {}", response.getId());
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
 
-    // NEW API: Generate a unique sequence number for a new task
-    @GetMapping("/generateSequenceNumber")
-    public ResponseEntity<Long> generateSequenceNumber() {
-        Long nextSequenceNumber = taskService.generateNextSequenceNumber();
-        return ResponseEntity.ok(nextSequenceNumber);
-    }
-
-    // POST create a new task
-    @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskCreateRequest request) {
-        TaskResponse newTask = taskService.createTask(request);
-        return new ResponseEntity<>(newTask, HttpStatus.CREATED);
-    }
-
-    // PUT update an existing task by name
     @PutMapping("/{name}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')") // Granular control in service
     public ResponseEntity<TaskResponse> updateTask(@PathVariable String name, @Valid @RequestBody TaskUpdateRequest request) {
-        TaskResponse updatedTask = taskService.updateTask(name, request);
-        return ResponseEntity.ok(updatedTask);
+        logger.info("Received request to update task '{}'.", name);
+        TaskResponse response = taskService.updateTask(name, request);
+        logger.info("Task '{}' updated successfully.", name);
+        return ResponseEntity.ok(response);
     }
 
-    // DELETE a task by name
     @DeleteMapping("/{name}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')") // Only ADMIN, MANAGER, TEAMLEAD, BA can delete tasks
     public ResponseEntity<Void> deleteTask(@PathVariable String name) {
+        logger.info("Received request to delete task '{}'.", name);
         taskService.deleteTask(name);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        logger.info("Task '{}' deleted successfully.", name);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/generateSequenceNumber")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')")
+    public ResponseEntity<Long> getNextTaskSequenceNumber() {
+        logger.info("Received request to get next task sequence number.");
+        Long nextSequence = taskService.generateNextSequenceNumber();
+        logger.info("Returning next sequence number: {}", nextSequence);
+        return ResponseEntity.ok(nextSequence);
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public class TaskUpdateRequest {
     private String taskName;
     private String description;
-    private String currentStage; // Now a String
+    private String currentStage;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -21,9 +21,11 @@ public class TaskUpdateRequest {
     private LocalDate developmentStartDate;
     private Boolean isCodeReviewDone;
     private Boolean isCmcDone;
-    private List<String> assignedTeammateNames; // Now a list of names
+    private List<String> assignedTeammateNames;
 
-    private String priority; // New field
+    private String priority;
+
+    private String documentPath; // NEW: documentPath
 
     // Getters and Setters
     public String getTaskName() {
@@ -111,7 +113,7 @@ public class TaskUpdateRequest {
     }
 
     public void setIsCmcDone(Boolean cmcDone) {
-        isCmcDone = cmcDone;
+        this.isCmcDone = cmcDone;
     }
 
     public List<String> getAssignedTeammateNames() {
@@ -128,5 +130,13 @@ public class TaskUpdateRequest {
 
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+
+    public String getDocumentPath() {
+        return documentPath;
+    }
+
+    public void setDocumentPath(String documentPath) {
+        this.documentPath = documentPath;
     }
 }

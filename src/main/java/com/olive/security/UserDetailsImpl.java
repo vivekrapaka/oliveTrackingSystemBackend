@@ -17,8 +17,8 @@ public class UserDetailsImpl implements UserDetails {
     private Long id;
     private String fullName;
     private String email;
-    private String role; // Field for user's role
-    private Long teamId; // Field for user's teamId
+    private String role;
+    private List<Long> projectIds; // UPDATED: List of project IDs
 
     @JsonIgnore
     private String password;
@@ -26,14 +26,14 @@ public class UserDetailsImpl implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String fullName, String email, String password,
-                           String role, Long teamId, // Include role and teamId in constructor
+                           String role, List<Long> projectIds, // UPDATED: projectIds parameter as List<Long>
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.teamId = teamId;
+        this.projectIds = projectIds; // UPDATED
         this.authorities = authorities;
     }
 
@@ -42,7 +42,7 @@ public class UserDetailsImpl implements UserDetails {
         if (user.getRole() != null && !user.getRole().isEmpty()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase()));
         } else {
-            authorities.add(new SimpleGrantedAuthority("ROLE_TEAM_MEMBER")); // Default role
+            authorities.add(new SimpleGrantedAuthority("ROLE_TEAMMEMBER")); // Default if role is somehow missing
         }
 
         return new UserDetailsImpl(
@@ -50,8 +50,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getFullName(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole(), // Pass the role from User entity
-                user.getTeamId(), // Pass the teamId from User entity
+                user.getRole(),
+                user.getProjectIds(), // Pass the list of project IDs
                 authorities);
     }
 
@@ -72,12 +72,13 @@ public class UserDetailsImpl implements UserDetails {
         return email;
     }
 
-    public String getRole() { // Getter for role
+    public String getRole() {
         return role;
     }
 
-    public Long getTeamId() { // Getter for teamId
-        return teamId;
+    // UPDATED: Getter for projectIds (List<Long>)
+    public List<Long> getProjectIds() {
+        return projectIds;
     }
 
     @Override

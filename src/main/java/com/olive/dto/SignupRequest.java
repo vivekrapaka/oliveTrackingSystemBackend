@@ -18,8 +18,13 @@ public class SignupRequest {
     @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
     private String password;
 
-    // REMOVED: role field, as self-signup defaults to TEAM_MEMBER
-    // REMOVED: teamId field, as self-signup defaults to unassigned (null)
+    @NotBlank(message = "Phone number is required") // NEW
+    @Size(max = 20, message = "Phone number cannot exceed 20 characters") // NEW
+    private String phone;
+
+    @NotBlank(message = "Location is required") // NEW
+    @Size(max = 100, message = "Location cannot exceed 100 characters") // NEW
+    private String location;
 
     // Getters and Setters
     public String getFullName() {
@@ -44,5 +49,21 @@ public class SignupRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPhone() { // NEW
+        return phone;
+    }
+
+    public void setPhone(String phone) { // NEW
+        this.phone = phone;
+    }
+
+    public String getLocation() { // NEW
+        return location;
+    }
+
+    public void setLocation(String location) { // NEW
+        this.location = location;
     }
 }

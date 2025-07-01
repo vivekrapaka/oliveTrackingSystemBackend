@@ -5,9 +5,12 @@ import com.olive.dto.TeammateResponse;
 import com.olive.dto.TeammatesSummaryResponse;
 import com.olive.service.TeammateService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.List;
 //@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"}) // Allow requests from frontend origin
 public class TeammateController {
 
+    private static final Logger logger = LoggerFactory.getLogger(TeammateController.class);
+
     private final TeammateService teammateService;
 
     @Autowired
@@ -23,39 +28,48 @@ public class TeammateController {
         this.teammateService = teammateService;
     }
 
-    // GET all teammates with summary statistics
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'MANAGER', 'TEAMLEAD', 'BA')") // TEAMMEMBER cannot see this tab
     public ResponseEntity<TeammatesSummaryResponse> getAllTeammatesSummary() {
-        TeammatesSummaryResponse summaryResponse = teammateService.getAllTeammatesSummary();
-        return ResponseEntity.ok(summaryResponse);
+        logger.info("Received request to get all teammates summary.");
+        TeammatesSummaryResponse response = teammateService.getAllTeammatesSummary();
+        logger.info("Returning teammates summary with {} total members.", response.getTotalMembersInTeamCount());
+        return ResponseEntity.ok(response);
     }
 
-    // GET teammate by Name (changed from ID)
     @GetMapping("/{name}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'MANAGER', 'TEAMLEAD', 'BA')") // TEAMMEMBER cannot see this tab
     public ResponseEntity<TeammateResponse> getTeammateByName(@PathVariable String name) {
-        TeammateResponse teammate = teammateService.getTeammateByName(name);
-        return ResponseEntity.ok(teammate);
+        logger.info("Received request to get teammate by name: {}", name);
+        TeammateResponse response = teammateService.getTeammateByName(name);
+        logger.info("Returning teammate details for: {}", response.getName());
+        return ResponseEntity.ok(response);
     }
 
-    // POST create a new teammate
-    @PostMapping
+  /*  @PostMapping
+    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can create teammates
     public ResponseEntity<TeammateResponse> createTeammate(@Valid @RequestBody TeammateCreateRequest request) {
-        TeammateResponse newTeammate = teammateService.createTeammate(request);
-        return new ResponseEntity<>(newTeammate, HttpStatus.CREATED);
-    }
+        logger.info("Received request to create teammate: {}", request.getFullName());
+        TeammateResponse response = teammateService.createTeammate(request.getProjectId());
+        logger.info("Teammate created successfully with ID: {}", response.getId());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    } */
 
-    // PUT update an existing teammate by Name (changed from ID)
     @PutMapping("/{name}")
+    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can update teammates
     public ResponseEntity<TeammateResponse> updateTeammate(@PathVariable String name, @Valid @RequestBody TeammateCreateRequest request) {
-        TeammateResponse updatedTeammate = teammateService.updateTeammate(name, request);
-        return ResponseEntity.ok(updatedTeammate);
+        logger.info("Received request to update teammate '{}'.", name);
+        TeammateResponse response = teammateService.updateTeammate(name, request);
+        logger.info("Teammate '{}' updated successfully.", name);
+        return ResponseEntity.ok(response);
     }
 
-
-    // DELETE a teammate by Name (changed from ID)
     @DeleteMapping("/{name}")
+    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can delete teammates
     public ResponseEntity<Void> deleteTeammate(@PathVariable String name) {
+        logger.info("Received request to delete teammate '{}'.", name);
         teammateService.deleteTeammate(name);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        logger.info("Teammate '{}' deleted successfully.", name);
+        return ResponseEntity.noContent().build();
     }
 }
