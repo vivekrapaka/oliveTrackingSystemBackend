@@ -1,4 +1,3 @@
-// backend/src/main/java/com/olive/service/UserService.java
 package com.olive.service;
 
 import com.olive.dto.UserCreateUpdateRequest;
@@ -9,13 +8,10 @@ import com.olive.model.User;
 import com.olive.repository.ProjectRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.repository.UserRepository;
-import com.olive.security.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +34,36 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.projectRepository = projectRepository;
         this.teammateRepository = teammateRepository;
+    }
+
+    // FIX: Updated convertToDto to include phone and location
+    private UserResponse convertToDto(User user) {
+        List<String> projectNames = user.getProjectIds().stream()
+                .map(projectId -> projectRepository.findById(projectId).map(Project::getProjectName).orElse("Unknown Project"))
+                .collect(Collectors.toList());
+
+        // Fetch associated Teammate to get phone and location
+        String phone = null;
+        String location = null;
+        if (!user.getRole().equalsIgnoreCase("ADMIN") && !user.getRole().equalsIgnoreCase("HR")) {
+            Optional<Teammate> teammateOpt = teammateRepository.findByUser(user);
+            if (teammateOpt.isPresent()) {
+                Teammate teammate = teammateOpt.get();
+                phone = teammate.getPhone();
+                location = teammate.getLocation();
+            }
+        }
+
+        return new UserResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole(),
+                user.getProjectIds(),
+                projectNames,
+                phone,      // Pass phone to constructor
+                location    // Pass location to constructor
+        );
     }
 
     public List<UserResponse> getAllUsers() {
@@ -71,7 +97,7 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         if (!"ADMIN".equalsIgnoreCase(savedUser.getRole()) && !"HR".equalsIgnoreCase(savedUser.getRole())) {
-            createOrUpdateTeammateForUser(savedUser);
+            createOrUpdateTeammateForUser(savedUser, request.getPhone(), request.getLocation());
         }
         return convertToDto(savedUser);
     }
@@ -95,7 +121,7 @@ public class UserService {
         User updatedUser = userRepository.save(existingUser);
 
         if (!"ADMIN".equalsIgnoreCase(updatedUser.getRole()) && !"HR".equalsIgnoreCase(updatedUser.getRole())) {
-            createOrUpdateTeammateForUser(updatedUser);
+            createOrUpdateTeammateForUser(updatedUser, request.getPhone(), request.getLocation());
         } else {
             teammateRepository.findByUser(updatedUser).ifPresent(teammateRepository::delete);
         }
@@ -111,22 +137,19 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    private UserResponse convertToDto(User user) {
-        List<String> projectNames = user.getProjectIds().stream()
-                .map(projectId -> projectRepository.findById(projectId).map(Project::getProjectName).orElse("Unknown Project"))
-                .collect(Collectors.toList());
-        return new UserResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getProjectIds(), projectNames);
-    }
-
     @Transactional
-    private void createOrUpdateTeammateForUser(User user) {
+    private void createOrUpdateTeammateForUser(User user, String phone, String location) {
         Teammate teammate = teammateRepository.findByUser(user).orElse(new Teammate());
         teammate.setUser(user);
+        teammate.setPhone(phone);
+        teammate.setLocation(location);
+
         String avatar = "";
         if (user.getFullName() != null && !user.getFullName().isEmpty()) {
             avatar = user.getFullName().substring(0, Math.min(user.getFullName().length(), 2)).toUpperCase();
         }
         teammate.setAvatar(avatar);
+
         Set<Project> assignedProjects = new HashSet<>(projectRepository.findAllById(user.getProjectIds()));
         teammate.setProjects(assignedProjects);
         teammateRepository.save(teammate);

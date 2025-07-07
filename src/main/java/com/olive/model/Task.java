@@ -62,6 +62,18 @@ public class Task {
     private String documentPath;
     private String commitId;
 
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<TaskActivity> activities = new HashSet<>();
+
+    // NEW: Relationship to WorkLog
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<WorkLog> workLogs = new HashSet<>();
+
+    public Set<TaskActivity> getActivities() { return activities; }
+    public void setActivities(Set<TaskActivity> activities) { this.activities = activities; }
+    public Set<WorkLog> getWorkLogs() { return workLogs; }
+    public void setWorkLogs(Set<WorkLog> workLogs) { this.workLogs = workLogs; }
+
     public Task() {}
 
     public Long getTaskId() { return id; }

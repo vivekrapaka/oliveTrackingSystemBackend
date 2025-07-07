@@ -2,9 +2,8 @@ package com.olive.model;
 
 import com.olive.converter.JpaLongListConverter;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -29,6 +28,13 @@ public class User {
     @Convert(converter = JpaLongListConverter.class)
     @Column(name = "project_ids_list")
     private List<Long> projectIds = new ArrayList<>();
+
+    // NEW: Relationship to TaskActivity
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<TaskActivity> activities = new HashSet<>();
+
+    public Set<TaskActivity> getActivities() { return activities; }
+    public void setActivities(Set<TaskActivity> activities) { this.activities = activities; }
 
     public User() {
     }
