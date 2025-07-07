@@ -8,6 +8,7 @@ C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\oliv
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TaskUpdateRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\UserResponse.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\security\jwt\AuthEntryPointJwt.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\model\enums\TaskType.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\model\JpaLongListConverter.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\controller\TaskController.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\controller\TeammateController.java
@@ -31,13 +32,16 @@ C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\oliv
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\exception\FileStorageException.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\ProjectCreateRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\config\FileStorageProperties.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TaskCreateUpdateRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\service\DashboardService.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\converter\JpaLongListConverter.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\service\TaskService.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\config\CorsConfig.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TeammateCreateRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\controller\UserController.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TeammatesSummaryResponse.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\controller\AuthController.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\model\enums\TaskStatus.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\DashboardSummaryResponse.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\repository\UserRepository.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\model\User.java

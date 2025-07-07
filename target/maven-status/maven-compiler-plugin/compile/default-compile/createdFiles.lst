@@ -3,6 +3,7 @@ com\olive\config\CorsConfig$1.class
 com\olive\dto\SignupRequest.class
 com\olive\dto\UserCreateUpdateRequest.class
 com\olive\repository\UserRepository.class
+com\olive\dto\TaskCreateUpdateRequest.class
 com\olive\dto\DashboardSummaryResponse.class
 com\olive\dto\MessageResponse.class
 com\olive\security\JwtTokenUtil.class
@@ -16,8 +17,10 @@ com\olive\repository\TeammateRepository.class
 com\olive\service\TaskService.class
 com\olive\controller\TaskController.class
 com\olive\dto\TeammatesSummaryResponse.class
+com\olive\converter\JpaLongListConverter.class
 com\olive\dto\TaskResponse.class
 com\olive\controller\FileController.class
+com\olive\model\enums\TaskStatus.class
 com\olive\dto\TeammateResponse.class
 com\olive\model\User.class
 com\olive\service\TeammateService.class
@@ -35,6 +38,7 @@ com\olive\exception\FileStorageException.class
 com\olive\controller\ProjectController.class
 com\olive\security\jwt\AuthTokenFilter.class
 com\olive\model\Project.class
+com\olive\model\enums\TaskType.class
 com\olive\model\Teammate.class
 com\olive\dto\TeammateCreateRequest.class
 com\olive\security\JwtAuthFilter.class

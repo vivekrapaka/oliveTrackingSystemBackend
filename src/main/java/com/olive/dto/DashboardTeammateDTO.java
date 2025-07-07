@@ -1,5 +1,7 @@
 package com.olive.dto;
 
+import java.util.List;
+
 public class DashboardTeammateDTO {
     private Long id;
     private String name;
@@ -23,6 +25,9 @@ public class DashboardTeammateDTO {
         this.tasksAssigned = tasksAssigned;
         this.projectId = projectId;
         this.projectName = projectName;
+    }
+
+    public DashboardTeammateDTO(Long teammateId, String name, String role, String email, String phone, String department, String location, long tasksAssignedToTeammate, List<Long> teammateProjectIdsList, List<String> teammateProjectNames) {
     }
 
     // Getters and Setters

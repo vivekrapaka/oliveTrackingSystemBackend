@@ -1,44 +1,32 @@
+// backend/src/main/java/com/olive/dto/UserCreateUpdateRequest.java
 package com.olive.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+
 public class UserCreateUpdateRequest {
-    private Long id; // Added for updates
-    @NotBlank(message = "Full name is required")
+
+    @NotBlank(message = "Full name cannot be empty")
     @Size(max = 100, message = "Full name cannot exceed 100 characters")
     private String fullName;
 
-    @NotBlank(message = "Email is required")
+    @NotBlank(message = "Email cannot be empty")
     @Email(message = "Invalid email format")
-    @Size(max = 100, message = "Email cannot exceed 100 characters")
     private String email;
 
-    // Password is only required for create, optional for update.
     @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
-    private String password;
+    private String password; // Optional for update, but required for create
 
-    @NotBlank(message = "Role is required")
-    @Pattern(regexp = "ADMIN|HR|MANAGER|TEAMLEAD|BA|TEAMMEMBER", message = "Invalid role. Must be ADMIN, HR, MANAGER, TEAMLEAD, BA, or TEAMMEMBER.")
+    @NotBlank(message = "Role cannot be empty")
     private String role;
 
-    // UPDATED: projectIds to handle multiple project assignments for MANAGER/BA
-    // For ADMIN/HR: null/empty list. For TEAMLEAD/TEAMMEMBER: list with exactly one ID. For MANAGER/BA: list with one or more IDs.
-    private List<Long> projectIds;
+    private List<Long> projectIds; // List of project IDs
 
     // Getters and Setters
-    public Long getId() { // NEW
-        return id;
-    }
-
-    public void setId(Long id) { // NEW
-        this.id = id;
-    }
-
     public String getFullName() {
         return fullName;
     }
@@ -71,7 +59,6 @@ public class UserCreateUpdateRequest {
         this.role = role;
     }
 
-    // UPDATED: Getter and Setter for projectIds (List<Long>)
     public List<Long> getProjectIds() {
         return projectIds;
     }

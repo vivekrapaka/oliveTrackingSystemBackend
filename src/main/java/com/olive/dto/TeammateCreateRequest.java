@@ -1,103 +1,117 @@
+// backend/src/main/java/com/olive/dto/TeammateCreateRequest.java
 package com.olive.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
+import java.util.List;
 
 public class TeammateCreateRequest {
 
-    @NotBlank(message = "Full name is required")
+    @NotBlank(message = "Full name cannot be empty")
     @Size(max = 100, message = "Full name cannot exceed 100 characters")
-    private String fullName;
+    private String fullName; // Consistent with User entity
 
+    @NotBlank(message = "Email cannot be empty")
     @Email(message = "Invalid email format")
-    @Size(max = 100, message = "Email cannot exceed 100 characters")
     private String email;
 
-    @Size(max = 50, message = "Role cannot exceed 50 characters")
-    private String role; // Role within the team/project (e.g., "Developer", "QA")
+    @NotBlank(message = "Role cannot be empty")
+    private String role;
 
-    @Size(max = 20, message = "Phone number cannot exceed 20 characters")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
     private String phone;
 
-    @Size(max = 100, message = "Department cannot exceed 100 characters")
+    @NotBlank(message = "Department cannot be empty")
     private String department;
 
-    @Size(max = 100, message = "Location cannot exceed 100 characters")
+    @NotBlank(message = "Location cannot be empty")
     private String location;
 
-    @Size(max = 255, message = "Avatar URL cannot exceed 255 characters")
     private String avatar;
 
-    // NEW: projectId for the teammate
-    @NotNull(message = "Project ID is required for teammate creation")
-    private Long projectId;
+    private List<Long> projectIds; // List of project IDs to assign to this teammate
 
-
-    // Getters and Setters
-    public String getFullName() {
-        return fullName;
+    // Constructors
+    public TeammateCreateRequest() {
     }
 
-    public void setFullName(String fullName) {
+    public TeammateCreateRequest(String fullName, String email, String role, String phone, String department, String location, String avatar, List<Long> projectIds) {
         this.fullName = fullName;
+        this.email = email;
+        this.role = role;
+        this.phone = phone;
+        this.department = department;
+        this.location = location;
+        this.avatar = avatar;
+        this.projectIds = projectIds;
+    }
+
+    // Getters
+    public String getFullName() {
+        return fullName;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getRole() {
         return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public String getDepartment() {
         return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
     }
 
     public String getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public String getAvatar() {
         return avatar;
+    }
+
+    public List<Long> getProjectIds() {
+        return projectIds;
+    }
+
+    // Setters
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
-    // NEW Getter and Setter for projectId
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setProjectIds(List<Long> projectIds) {
+        this.projectIds = projectIds;
     }
 }

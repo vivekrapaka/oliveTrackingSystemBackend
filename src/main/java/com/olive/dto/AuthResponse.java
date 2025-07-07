@@ -1,6 +1,8 @@
+// backend/src/main/java/com/olive/dto/AuthResponse.java
 package com.olive.dto;
 
 import java.util.List;
+import java.util.Collections;
 
 public class AuthResponse {
     private String token;
@@ -9,35 +11,33 @@ public class AuthResponse {
     private String email;
     private String fullName;
     private String role;
-    private List<Long> projectIds; // UPDATED: List of project IDs
-    private List<String> projectNames; // NEW: List of project names
+    private List<Long> projectIds;
+    private List<String> projectNames;
 
-    // Updated constructor to use List<Long> for projectIds and List<String> for projectNames
-    public AuthResponse(String token, Long id, String email, String fullName, String role, List<Long> projectIds, List<String> projectNames) {
-        this.token = token;
+    public AuthResponse(String accessToken, Long id, String email, String fullName, String role, List<Long> projectIds, List<String> projectNames) {
+        this.token = accessToken;
         this.id = id;
         this.email = email;
         this.fullName = fullName;
         this.role = role;
-        this.projectIds = projectIds;
-        this.projectNames = projectNames;
+        this.projectIds = (projectIds != null) ? projectIds : Collections.emptyList();
+        this.projectNames = (projectNames != null) ? projectNames : Collections.emptyList();
     }
 
-    // Getters and Setters
-    public String getToken() {
+    public String getAccessToken() {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setAccessToken(String accessToken) {
+        this.token = accessToken;
     }
 
-    public String getType() {
+    public String getTokenType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTokenType(String tokenType) {
+        this.type = tokenType;
     }
 
     public Long getId() {
@@ -72,21 +72,19 @@ public class AuthResponse {
         this.role = role;
     }
 
-    // UPDATED: Getter and Setter for projectIds (List<Long>)
     public List<Long> getProjectIds() {
         return projectIds;
     }
 
     public void setProjectIds(List<Long> projectIds) {
-        this.projectIds = projectIds;
+        this.projectIds = (projectIds != null) ? projectIds : Collections.emptyList();
     }
 
-    // NEW: Getter and Setter for projectNames (List<String>)
     public List<String> getProjectNames() {
         return projectNames;
     }
 
     public void setProjectNames(List<String> projectNames) {
-        this.projectNames = projectNames;
+        this.projectNames = (projectNames != null) ? projectNames : Collections.emptyList();
     }
 }

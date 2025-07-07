@@ -1,18 +1,22 @@
 package com.olive.model;
+
+import com.olive.model.enums.TaskStatus;
+import com.olive.model.enums.TaskType;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tasks")
 public class Task {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long taskId;
+    private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String taskName;
 
     @Column(nullable = false, unique = true)
@@ -21,192 +25,84 @@ public class Task {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false, length = 50)
-    private String currentStage;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskType taskType;
 
-    private LocalDate startDate;
-    private LocalDate dueDate;
-    private Boolean isCompleted = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskStatus status;
 
-    private String issueType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_task_id")
+    private Task parentTask;
+
+    @OneToMany(mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Task> subTasks = new HashSet<>();
+
     private LocalDate receivedDate;
     private LocalDate developmentStartDate;
+    private LocalDate dueDate;
 
-    private Boolean isCodeReviewDone = false;
-    private Boolean isCmcDone = false;
-
-    @Column(columnDefinition = "TEXT")
-    private String assignedTeammateNames;
-
-    @Column(length = 20)
+    @Column(nullable = false)
     private String priority;
 
-    @Column(name = "project_id", nullable = false)
-    private Long projectId;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "task_teammate_assignments",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "teammate_id")
+    )
+    private Set<Teammate> assignedTeammates = new HashSet<>();
 
-    @Column(columnDefinition = "TEXT") // NEW: documentPath
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
+
     private String documentPath;
+    private String commitId;
 
-    // --- Constructors ---
-    public Task() {
-    }
+    public Task() {}
 
-    // Getters and Setters
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public Long getSequenceNumber() {
-        return sequenceNumber;
-    }
-
-    public void setSequenceNumber(Long sequenceNumber) {
-        this.sequenceNumber = sequenceNumber;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCurrentStage() {
-        return currentStage;
-    }
-
-    public void setCurrentStage(String currentStage) {
-        this.currentStage = currentStage;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public Boolean getIsCompleted() {
-        return isCompleted;
-    }
-
-    public void setIsCompleted(Boolean completed) {
-        isCompleted = completed;
-    }
-
-    public String getIssueType() {
-        return issueType;
-    }
-
-    public void setIssueType(String issueType) {
-        this.issueType = issueType;
-    }
-
-    public LocalDate getReceivedDate() {
-        return receivedDate;
-    }
-
-    public void setReceivedDate(LocalDate receivedDate) {
-        this.receivedDate = receivedDate;
-    }
-
-    public LocalDate getDevelopmentStartDate() {
-        return developmentStartDate;
-    }
-
-    public void setDevelopmentStartDate(LocalDate developmentStartDate) {
-        this.developmentStartDate = developmentStartDate;
-    }
-
-    public Boolean getIsCodeReviewDone() {
-        return isCodeReviewDone;
-    }
-
-    public void setIsCodeReviewDone(Boolean codeReviewDone) {
-        isCodeReviewDone = codeReviewDone;
-    }
-
-    public Boolean getIsCmcDone() {
-        return isCmcDone;
-    }
-
-    public void setIsCmcDone(Boolean cmcDone) {
-        this.isCmcDone = cmcDone;
-    }
-
-    public String getAssignedTeammateNames() {
-        return assignedTeammateNames;
-    }
-
-    public void setAssignedTeammateNames(String assignedTeammateNames) {
-        this.assignedTeammateNames = assignedTeammateNames;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-    }
-
-    // NEW: Getter and Setter for documentPath
-    public String getDocumentPath() {
-        return documentPath;
-    }
-
-    public void setDocumentPath(String documentPath) {
-        this.documentPath = documentPath;
-    }
+    public Long getTaskId() { return id; }
+    public void setTaskId(Long id) { this.id = id; }
+    public String getTaskName() { return taskName; }
+    public void setTaskName(String taskName) { this.taskName = taskName; }
+    public Long getSequenceNumber() { return sequenceNumber; }
+    public void setSequenceNumber(Long sequenceNumber) { this.sequenceNumber = sequenceNumber; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public TaskType getTaskType() { return taskType; }
+    public void setTaskType(TaskType taskType) { this.taskType = taskType; }
+    public TaskStatus getStatus() { return status; }
+    public void setStatus(TaskStatus status) { this.status = status; }
+    public Task getParentTask() { return parentTask; }
+    public void setParentTask(Task parentTask) { this.parentTask = parentTask; }
+    public Set<Task> getSubTasks() { return subTasks; }
+    public void setSubTasks(Set<Task> subTasks) { this.subTasks = subTasks != null ? subTasks : new HashSet<>(); }
+    public LocalDate getReceivedDate() { return receivedDate; }
+    public void setReceivedDate(LocalDate receivedDate) { this.receivedDate = receivedDate; }
+    public LocalDate getDevelopmentStartDate() { return developmentStartDate; }
+    public void setDevelopmentStartDate(LocalDate developmentStartDate) { this.developmentStartDate = developmentStartDate; }
+    public LocalDate getDueDate() { return dueDate; }
+    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
+    public Set<Teammate> getAssignedTeammates() { return assignedTeammates; }
+    public void setAssignedTeammates(Set<Teammate> assignedTeammates) { this.assignedTeammates = assignedTeammates != null ? assignedTeammates : new HashSet<>(); }
+    public Project getProject() { return project; }
+    public void setProject(Project project) { this.project = project; }
+    public String getDocumentPath() { return documentPath; }
+    public void setDocumentPath(String documentPath) { this.documentPath = documentPath; }
+    public String getCommitId() { return commitId; }
+    public void setCommitId(String commitId) { this.commitId = commitId; }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return Objects.equals(taskId, task.taskId);
-    }
+    public boolean equals(Object o) { if (this == o) return true; if (o == null || getClass() != o.getClass()) return false; Task task = (Task) o; return Objects.equals(id, task.id); }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(taskId);
-    }
+    public int hashCode() { return Objects.hash(id); }
 
-    @PrePersist
-    @PreUpdate
-    public void convertTaskNameToUppercase() {
-        if (this.taskName != null) {
-            this.taskName = this.taskName.toUpperCase();
-        }
-    }
+    @PrePersist @PreUpdate
+    public void convertTaskNameToUpper() { if (this.taskName != null) { this.taskName = this.taskName.toUpperCase(); } }
 }

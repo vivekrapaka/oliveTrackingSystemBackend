@@ -1,6 +1,8 @@
 package com.olive.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.olive.model.enums.TaskStatus;
+import com.olive.model.enums.TaskType;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,171 +12,68 @@ public class TaskResponse {
     private String name;
     private String taskNumber;
     private String description;
-    private String issueType;
+    private TaskType taskType;
+    private TaskStatus status;
+    private Long parentId;
+    private String parentTaskTitle;
+    private String parentTaskFormattedNumber;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate receivedDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate developmentStartDate;
-    private String currentStage;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
-    private List<String> assignedTeammates;
     private String priority;
-    private Boolean isCompleted;
-    private Boolean isCmcDone;
+    private List<Long> assignedTeammateIds;
+    private List<String> assignedTeammateNames;
     private Long projectId;
     private String projectName;
-    private String documentPath; // NEW: documentPath
+    private String documentPath;
+    private String commitId;
 
-
-    public TaskResponse(Long id, String name, String taskNumber, String description, String issueType, LocalDate receivedDate,
-                        LocalDate developmentStartDate, String currentStage, LocalDate dueDate,
-                        List<String> assignedTeammates, String priority, Boolean isCompleted,
-                        Boolean isCmcDone, Long projectId, String projectName, String documentPath) {
+    public TaskResponse(Long id, String name, String taskNumber, String description, TaskType taskType, TaskStatus status,
+                        Long parentId, String parentTaskTitle, String parentTaskFormattedNumber,
+                        LocalDate receivedDate, LocalDate developmentStartDate, LocalDate dueDate, String priority,
+                        List<Long> assignedTeammateIds, List<String> assignedTeammateNames,
+                        Long projectId, String projectName, String documentPath, String commitId) {
         this.id = id;
         this.name = name;
         this.taskNumber = taskNumber;
         this.description = description;
-        this.issueType = issueType;
+        this.taskType = taskType;
+        this.status = status;
+        this.parentId = parentId;
+        this.parentTaskTitle = parentTaskTitle;
+        this.parentTaskFormattedNumber = parentTaskFormattedNumber;
         this.receivedDate = receivedDate;
         this.developmentStartDate = developmentStartDate;
-        this.currentStage = currentStage;
         this.dueDate = dueDate;
-        this.assignedTeammates = assignedTeammates;
         this.priority = priority;
-        this.isCompleted = isCompleted;
-        this.isCmcDone = isCmcDone;
+        this.assignedTeammateIds = assignedTeammateIds;
+        this.assignedTeammateNames = assignedTeammateNames;
         this.projectId = projectId;
         this.projectName = projectName;
         this.documentPath = documentPath;
+        this.commitId = commitId;
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getTaskNumber() {
-        return taskNumber;
-    }
-
-    public void setTaskNumber(String taskNumber) {
-        this.taskNumber = taskNumber;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getIssueType() {
-        return issueType;
-    }
-
-    public void setIssueType(String issueType) {
-        this.issueType = issueType;
-    }
-
-    public LocalDate getReceivedDate() {
-        return receivedDate;
-    }
-
-    public void setReceivedDate(LocalDate receivedDate) {
-        this.receivedDate = receivedDate;
-    }
-
-    public LocalDate getDevelopmentStartDate() {
-        return developmentStartDate;
-    }
-
-    public void setDevelopmentStartDate(LocalDate developmentStartDate) {
-        this.developmentStartDate = developmentStartDate;
-    }
-
-    public String getCurrentStage() {
-        return currentStage;
-    }
-
-    public void setCurrentStage(String currentStage) {
-        this.currentStage = currentStage;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public List<String> getAssignedTeammates() {
-        return assignedTeammates;
-    }
-
-    public void setAssignedTeammates(List<String> assignedTeammates) {
-        this.assignedTeammates = assignedTeammates;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
-    public Boolean getIsCompleted() {
-        return isCompleted;
-    }
-
-    public void setIsCompleted(Boolean completed) {
-        isCompleted = completed;
-    }
-
-    public Boolean getIsCmcDone() {
-        return isCmcDone;
-    }
-
-    public void setIsCmcDone(Boolean isCmcDone) {
-        this.isCmcDone = isCmcDone;
-    }
-
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public String getDocumentPath() {
-        return documentPath;
-    }
-
-    public void setDocumentPath(String documentPath) {
-        this.documentPath = documentPath;
-    }
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getTaskNumber() { return taskNumber; }
+    public String getDescription() { return description; }
+    public TaskType getTaskType() { return taskType; }
+    public TaskStatus getStatus() { return status; }
+    public Long getParentId() { return parentId; }
+    public String getParentTaskTitle() { return parentTaskTitle; }
+    public String getParentTaskFormattedNumber() { return parentTaskFormattedNumber; }
+    public LocalDate getReceivedDate() { return receivedDate; }
+    public LocalDate getDevelopmentStartDate() { return developmentStartDate; }
+    public LocalDate getDueDate() { return dueDate; }
+    public String getPriority() { return priority; }
+    public List<Long> getAssignedTeammateIds() { return assignedTeammateIds; }
+    public List<String> getAssignedTeammateNames() { return assignedTeammateNames; }
+    public Long getProjectId() { return projectId; }
+    public String getProjectName() { return projectName; }
+    public String getDocumentPath() { return documentPath; }
+    public String getCommitId() { return commitId; }
 }

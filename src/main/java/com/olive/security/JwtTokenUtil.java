@@ -20,10 +20,10 @@ public class JwtTokenUtil {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
 
     // Corrected property names to match application.properties
-    @Value("${app.jwt.secret}")
+    @Value("${olive.app.jwtSecret}")
     private String jwtSecret;
 
-    @Value("${jwt.expirationMs}")
+    @Value("${olive.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
