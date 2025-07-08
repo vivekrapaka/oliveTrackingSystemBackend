@@ -13,6 +13,7 @@ com\olive\repository\WorkLogRepository.class
 com\olive\config\CorsConfig.class
 com\olive\repository\TaskRepository.class
 com\olive\model\JpaLongListConverter.class
+com\olive\service\TaskService$1.class
 com\olive\dto\TaskUpdateRequest.class
 com\olive\service\DashboardService.class
 com\olive\security\SecurityConfig.class

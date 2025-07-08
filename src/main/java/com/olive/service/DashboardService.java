@@ -104,7 +104,9 @@ public class DashboardService {
                 .findFirst()
                 .orElse(null);
 
-        String formattedTaskNumber = String.format("TSK-%03d", task.getSequenceNumber());
+        // FIX: Simply prepend "TSK-" to the sequence number string. Do not format it as a number.
+        String formattedTaskNumber = "TSK-" + task.getSequenceNumber();
+
         String projectName = task.getProject() != null ? task.getProject().getProjectName() : "Unknown Project";
 
         return new DashboardTaskDTO(
