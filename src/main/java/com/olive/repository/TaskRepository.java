@@ -13,10 +13,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findByProjectIdAndTaskNameIgnoreCase(Long projectId, String taskName);
     List<Task> findByProjectIdIn(List<Long> projectIds);
     List<Task> findByProjectIdInAndTaskNameContainingIgnoreCase(List<Long> projectIds, String taskName);
+    List<Task> findByTaskNameContainingIgnoreCase(String taskName);
     List<Task> findTop5ByOrderByDevelopmentStartDateDesc();
 
-    @Query("SELECT MAX(t.sequenceNumber) FROM Task t")
-    Optional<Long> findMaxSequenceNumber();
+    // FIX: Changed to a native query to use database-specific functions reliably.
+    @Query(value = "SELECT MAX(CAST(SUBSTRING(sequence_number, 1, CHARINDEX('.', sequence_number + '.') - 1) AS int)) FROM tasks WHERE parent_task_id IS NULL", nativeQuery = true)
+    Optional<Integer> findMaxParentSequenceNumber();
 
-    List<Task> findByTaskNameContainingIgnoreCase(String taskNameFilter);
+    long countByParentTask(Task parentTask);
 }

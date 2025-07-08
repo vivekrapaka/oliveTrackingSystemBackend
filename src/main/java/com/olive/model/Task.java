@@ -19,8 +19,9 @@ public class Task {
     @Column(nullable = false)
     private String taskName;
 
+    // CRITICAL CHANGE: Changed from Long to String to support "1.1" style sub-task numbering
     @Column(nullable = false, unique = true)
-    private Long sequenceNumber;
+    private String sequenceNumber;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -65,23 +66,18 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<TaskActivity> activities = new HashSet<>();
 
-    // NEW: Relationship to WorkLog
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<WorkLog> workLogs = new HashSet<>();
 
-    public Set<TaskActivity> getActivities() { return activities; }
-    public void setActivities(Set<TaskActivity> activities) { this.activities = activities; }
-    public Set<WorkLog> getWorkLogs() { return workLogs; }
-    public void setWorkLogs(Set<WorkLog> workLogs) { this.workLogs = workLogs; }
-
     public Task() {}
 
+    // Getters and Setters
     public Long getTaskId() { return id; }
     public void setTaskId(Long id) { this.id = id; }
     public String getTaskName() { return taskName; }
     public void setTaskName(String taskName) { this.taskName = taskName; }
-    public Long getSequenceNumber() { return sequenceNumber; }
-    public void setSequenceNumber(Long sequenceNumber) { this.sequenceNumber = sequenceNumber; }
+    public String getSequenceNumber() { return sequenceNumber; }
+    public void setSequenceNumber(String sequenceNumber) { this.sequenceNumber = sequenceNumber; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public TaskType getTaskType() { return taskType; }
@@ -108,6 +104,10 @@ public class Task {
     public void setDocumentPath(String documentPath) { this.documentPath = documentPath; }
     public String getCommitId() { return commitId; }
     public void setCommitId(String commitId) { this.commitId = commitId; }
+    public Set<TaskActivity> getActivities() { return activities; }
+    public void setActivities(Set<TaskActivity> activities) { this.activities = activities; }
+    public Set<WorkLog> getWorkLogs() { return workLogs; }
+    public void setWorkLogs(Set<WorkLog> workLogs) { this.workLogs = workLogs; }
 
     @Override
     public boolean equals(Object o) { if (this == o) return true; if (o == null || getClass() != o.getClass()) return false; Task task = (Task) o; return Objects.equals(id, task.id); }

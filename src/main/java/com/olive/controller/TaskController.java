@@ -1,12 +1,10 @@
 package com.olive.controller;
 
-import com.olive.dto.*;
+import com.olive.dto.TaskCreateUpdateRequest;
+import com.olive.dto.TaskResponse;
+import com.olive.dto.TasksSummaryResponse;
 import com.olive.model.Task;
-import com.olive.model.User;
 import com.olive.repository.TaskRepository;
-import com.olive.repository.UserRepository;
-import com.olive.security.UserDetailsImpl;
-import com.olive.service.TaskActivityService;
 import com.olive.service.TaskService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -15,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -27,20 +23,13 @@ public class TaskController {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
     private final TaskService taskService;
+    private final TaskRepository taskRepository; // Inject repository for parent task lookup
 
     @Autowired
-    private TaskActivityService taskActivityService;
-    @Autowired
-    private TaskRepository taskRepository;
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, TaskRepository taskRepository) {
         this.taskService = taskService;
+        this.taskRepository = taskRepository;
     }
-
-
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')")
@@ -68,29 +57,16 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/generateSequenceNumber")
+    // FIX: Re-added a smarter endpoint for generating sequence numbers.
+    @GetMapping("/nextSequenceNumber")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')")
-    public ResponseEntity<Long> getNextTaskSequenceNumber() {
-        return ResponseEntity.ok(taskService.generateNextSequenceNumber());
-    }
-
-    // NEW: Endpoint to add a comment
-    @PostMapping("/{taskId}/comments")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')")
-    public ResponseEntity<Void> addComment(@PathVariable Long taskId, @Valid @RequestBody CommentRequest request) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User currentUser = userRepository.findById(userDetails.getId()).orElse(null);
-
-        taskActivityService.addComment(task, currentUser, request.getContent());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    // NEW: Endpoint to get task history
-    @GetMapping("/{taskId}/history")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')") // Only management can see history
-    public ResponseEntity<List<TaskActivityResponse>> getTaskHistory(@PathVariable Long taskId) {
-        return ResponseEntity.ok(taskActivityService.getTaskHistory(taskId));
+    public ResponseEntity<String> getNextTaskSequenceNumber(@RequestParam(required = false) Long parentId) {
+        Task parentTask = null;
+        if (parentId != null) {
+            // Find the parent task to pass to the service method
+            parentTask = taskRepository.findById(parentId).orElse(null);
+        }
+        String nextSequence = taskService.generateNextSequenceNumber(parentTask);
+        return ResponseEntity.ok(nextSequence);
     }
 }

@@ -41,6 +41,10 @@ public class TaskCreateUpdateRequest {
     private String documentPath;
     private String commitId;
 
+    // NEW: Field for mandatory comments during workflow transitions
+    private String comment;
+
+    // Getters and Setters
     public String getTaskName() { return taskName; }
     public void setTaskName(String taskName) { this.taskName = taskName; }
     public String getDescription() { return description; }
@@ -67,4 +71,6 @@ public class TaskCreateUpdateRequest {
     public void setDocumentPath(String documentPath) { this.documentPath = documentPath; }
     public String getCommitId() { return commitId; }
     public void setCommitId(String commitId) { this.commitId = commitId; }
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
 }
