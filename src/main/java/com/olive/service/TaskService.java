@@ -1,4 +1,3 @@
-// backend/src/main/java/com/olive/service/TaskService.java
 package com.olive.service;
 
 import com.olive.dto.TaskCreateUpdateRequest;
@@ -39,6 +38,7 @@ public class TaskService {
     private final TaskActivityService taskActivityService;
     private final UserRepository userRepository;
 
+    // FIX: Added the missing declaration for this set.
     private static final Set<TaskStatus> COMPLETED_OR_CLOSED_STATUSES = Set.of(TaskStatus.COMPLETED, TaskStatus.CLOSED);
 
     @Autowired
@@ -55,12 +55,12 @@ public class TaskService {
     public TasksSummaryResponse getAllTasks(String taskNameFilter) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String userRole = userDetails.getRole();
+        String functionalGroup = userDetails.getFunctionalGroup();
         List<Long> userProjectIds = userDetails.getProjectIds();
 
         List<Task> tasksToReturn;
 
-        if ("ADMIN".equalsIgnoreCase(userRole) || "HR".equalsIgnoreCase(userRole)) {
+        if ("ADMIN".equalsIgnoreCase(functionalGroup) || "HR".equalsIgnoreCase(functionalGroup)) {
             tasksToReturn = (taskNameFilter != null && !taskNameFilter.trim().isEmpty())
                     ? taskRepository.findByTaskNameContainingIgnoreCase(taskNameFilter)
                     : taskRepository.findAll();
@@ -68,14 +68,14 @@ public class TaskService {
         else if (userProjectIds != null && !userProjectIds.isEmpty()) {
             List<Task> tasksInUserProjects = taskRepository.findByProjectIdIn(userProjectIds);
 
-            if ("TESTER".equalsIgnoreCase(userRole) || "QA_MANAGER".equalsIgnoreCase(userRole)) {
+            if ("TESTER".equalsIgnoreCase(functionalGroup)) {
                 User currentUser = userRepository.findById(userDetails.getId()).orElse(null);
                 if (currentUser != null) {
                     Teammate currentTeammate = teammateRepository.findByUser(currentUser).orElse(null);
                     if (currentTeammate != null) {
                         tasksToReturn = tasksInUserProjects.stream()
                                 .filter(task -> {
-                                    boolean isTestingStatus = task.getStatus() == TaskStatus.SIT_TESTING || task.getStatus() == TaskStatus.UAT_TESTING || task.getStatus() == TaskStatus.PREPROD;
+                                    boolean isTestingStatus = task.getStatus() == TaskStatus.UAT_TESTING || task.getStatus() == TaskStatus.PREPROD;
                                     boolean isAssignedToMe = task.getAssignedTeammates().contains(currentTeammate);
                                     return isTestingStatus && isAssignedToMe;
                                 })
@@ -88,7 +88,7 @@ public class TaskService {
                 }
             } else {
                 tasksToReturn = tasksInUserProjects.stream()
-                        .filter(task -> isTaskVisibleToRole(task, userRole))
+                        .filter(task -> isTaskVisibleToRole(task, functionalGroup))
                         .collect(Collectors.toList());
             }
 
@@ -147,11 +147,11 @@ public class TaskService {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User currentUser = userRepository.findById(userDetails.getId()).orElse(null);
-        String userRole = userDetails.getRole();
+        String functionalGroup = userDetails.getFunctionalGroup();
 
         authorizeAccessOrThrow(existingTask.getProject().getProjectId(), "You can only update tasks within your assigned projects.");
 
-        validateTaskStatusTransition(existingTask.getStatus(), request.getStatus(), userRole, request.getComment());
+        validateTaskStatusTransition(existingTask.getStatus(), request.getStatus(), functionalGroup, request.getComment());
         validateMandatoryFieldsForStatus(request.getStatus(), request.getCommitId());
 
         if (StringUtils.hasText(request.getComment())) {
@@ -203,20 +203,26 @@ public class TaskService {
             long subTaskCount = taskRepository.countByParentTask(parentTask);
             return parentTask.getSequenceNumber() + "." + (subTaskCount + 1);
         } else {
-            Integer maxParentNum = taskRepository.findMaxParentSequenceNumber().orElse(0);
+            List<String> parentNumbers = taskRepository.findAllParentSequenceNumbers();
+            int maxParentNum = parentNumbers.stream()
+                    .filter(s -> !s.contains("."))
+                    .mapToInt(s -> {
+                        try { return Integer.parseInt(s); }
+                        catch (NumberFormatException e) { return 0; }
+                    })
+                    .max().orElse(0);
             return String.valueOf(maxParentNum + 1);
         }
     }
 
-    private boolean isTaskVisibleToRole(Task task, String userRole) {
+    private boolean isTaskVisibleToRole(Task task, String functionalGroup) {
         TaskStatus status = task.getStatus();
-        switch (userRole) {
+        switch (functionalGroup) {
             case "DEVELOPER":
-                return status == TaskStatus.DEVELOPMENT || status == TaskStatus.CODE_REVIEW || status == TaskStatus.SIT_FAILED || status == TaskStatus.UAT_FAILED || status == TaskStatus.REOPENED;
+                return status == TaskStatus.BACKLOG || status == TaskStatus.ANALYSIS || status == TaskStatus.DEVELOPMENT || status == TaskStatus.CODE_REVIEW || status == TaskStatus.UAT_FAILED || status == TaskStatus.REOPENED;
             case "BUSINESS_ANALYST":
                 return status == TaskStatus.ANALYSIS || status == TaskStatus.CODE_REVIEW || status == TaskStatus.UAT_TESTING;
             case "MANAGER":
-            case "PROJECT_MANAGER":
             case "TEAMLEAD":
                 return true;
             default:
@@ -224,7 +230,7 @@ public class TaskService {
         }
     }
 
-    private void validateTaskStatusTransition(TaskStatus oldStatus, TaskStatus newStatus, String userRole, String comment) {
+    private void validateTaskStatusTransition(TaskStatus oldStatus, TaskStatus newStatus, String functionalGroup, String comment) {
         if (oldStatus == newStatus) return;
 
         if (COMPLETED_OR_CLOSED_STATUSES.contains(oldStatus) && newStatus != TaskStatus.REOPENED) {
@@ -235,59 +241,29 @@ public class TaskService {
             if (!StringUtils.hasText(comment)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A comment is required when moving a task from the Code Review stage.");
             }
-            if (!userRole.equals("BUSINESS_ANALYST") && !userRole.equals("TEAMLEAD") && !userRole.equals("MANAGER")) {
+            if (!"BUSINESS_ANALYST".equals(functionalGroup) && !"TEAMLEAD".equals(functionalGroup) && !"MANAGER".equals(functionalGroup)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a BA, Team Lead, or Manager can action a Code Review.");
             }
         }
 
         switch (newStatus) {
-            case CODE_REVIEW:
-                if (oldStatus != TaskStatus.DEVELOPMENT) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must be in Development to move to Code Review.");
+            case ANALYSIS:
+                if (!"DEVELOPER".equals(functionalGroup)) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task to Analysis.");
                 }
-                if (!userRole.equals("DEVELOPER")) {
+                break;
+            case CODE_REVIEW:
+                if (!"DEVELOPER".equals(functionalGroup)) {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task to Code Review.");
                 }
                 break;
-            case SIT_TESTING:
-                if (oldStatus != TaskStatus.CODE_REVIEW) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must pass Code Review before moving to SIT Testing.");
-                }
-                break;
-            case SIT_FAILED:
-                if (oldStatus != TaskStatus.SIT_TESTING) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must be in SIT Testing to be marked as failed.");
-                }
-                if (!userRole.equals("DEVELOPER")) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can mark a task as SIT Failed.");
-                }
-                break;
-            case UAT_TESTING:
-                if (oldStatus != TaskStatus.SIT_TESTING) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must pass SIT Testing before moving to UAT.");
-                }
-                if (!userRole.equals("DEVELOPER")) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task to UAT Testing.");
-                }
-                break;
             case UAT_FAILED:
-                if (oldStatus != TaskStatus.UAT_TESTING) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must be in UAT Testing to be marked as failed.");
-                }
-                if (!userRole.equals("TESTER") && !userRole.equals("QA_MANAGER") && !userRole.equals("BUSINESS_ANALYST")) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Tester, QA Manager, or Business Analyst can mark a task as UAT Failed.");
-                }
-                break;
-            case PREPROD:
-                if (oldStatus != TaskStatus.UAT_TESTING) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must pass UAT Testing before moving to Pre-Production.");
+                if (!"TESTER".equals(functionalGroup)) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Tester can mark a task as UAT Failed.");
                 }
                 break;
             case PROD:
-                if (oldStatus != TaskStatus.PREPROD) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must be in Pre-Production before moving to Production.");
-                }
-                if (!userRole.equals("MANAGER") && !userRole.equals("ADMIN")) {
+                if (!"MANAGER".equals(functionalGroup) && !"ADMIN".equals(functionalGroup)) {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a MANAGER or ADMIN can deploy to Production.");
                 }
                 break;
@@ -313,7 +289,7 @@ public class TaskService {
     private void authorizeAccessOrThrow(Long projectId, String errorMessage) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        if (!"ADMIN".equalsIgnoreCase(userDetails.getRole()) && !userDetails.getProjectIds().contains(projectId)) {
+        if (!"ADMIN".equalsIgnoreCase(userDetails.getFunctionalGroup()) && !userDetails.getProjectIds().contains(projectId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, errorMessage);
         }
     }
@@ -341,7 +317,7 @@ public class TaskService {
     private TaskResponse convertToDto(Task task) {
         List<Long> assignedTeammateIds = task.getAssignedTeammates().stream().map(Teammate::getTeammateId).collect(Collectors.toList());
         List<String> assignedTeammateNames = task.getAssignedTeammates().stream().map(Teammate::getName).collect(Collectors.toList());
-        String formattedTaskNumber = task.getSequenceNumber(); // Use the string sequence number directly
+        String formattedTaskNumber = task.getSequenceNumber();
         String projectName = task.getProject() != null ? task.getProject().getProjectName() : "Unknown Project";
         Long parentId = task.getParentTask() != null ? task.getParentTask().getTaskId() : null;
         String parentTaskTitle = task.getParentTask() != null ? task.getParentTask().getTaskName() : null;

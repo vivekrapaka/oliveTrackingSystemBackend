@@ -3,9 +3,11 @@ package com.olive.service;
 import com.olive.dto.UserCreateUpdateRequest;
 import com.olive.dto.UserResponse;
 import com.olive.model.Project;
+import com.olive.model.Role;
 import com.olive.model.Teammate;
 import com.olive.model.User;
 import com.olive.repository.ProjectRepository;
+import com.olive.repository.RoleRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.repository.UserRepository;
 import org.slf4j.Logger;
@@ -27,76 +29,47 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ProjectRepository projectRepository;
     private final TeammateRepository teammateRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ProjectRepository projectRepository, TeammateRepository teammateRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ProjectRepository projectRepository, TeammateRepository teammateRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.projectRepository = projectRepository;
         this.teammateRepository = teammateRepository;
-    }
-
-    // FIX: Updated convertToDto to include phone and location
-    private UserResponse convertToDto(User user) {
-        List<String> projectNames = user.getProjectIds().stream()
-                .map(projectId -> projectRepository.findById(projectId).map(Project::getProjectName).orElse("Unknown Project"))
-                .collect(Collectors.toList());
-
-        // Fetch associated Teammate to get phone and location
-        String phone = null;
-        String location = null;
-        if (!user.getRole().equalsIgnoreCase("ADMIN") && !user.getRole().equalsIgnoreCase("HR")) {
-            Optional<Teammate> teammateOpt = teammateRepository.findByUser(user);
-            if (teammateOpt.isPresent()) {
-                Teammate teammate = teammateOpt.get();
-                phone = teammate.getPhone();
-                location = teammate.getLocation();
-            }
-        }
-
-        return new UserResponse(
-                user.getId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getRole(),
-                user.getProjectIds(),
-                projectNames,
-                phone,      // Pass phone to constructor
-                location    // Pass location to constructor
-        );
+        this.roleRepository = roleRepository;
     }
 
     public List<UserResponse> getAllUsers() {
-        logger.info("Fetching all users.");
-        return userRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return userRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     public UserResponse getUserById(Long id) {
-        logger.info("Attempting to retrieve user with ID: {}", id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with ID: " + id));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return convertToDto(user);
+    }
+
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
     }
 
     @Transactional
     public UserResponse createUser(UserCreateUpdateRequest request) {
-        logger.info("Received request to create user with email: {}", request.getEmail());
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists.");
         }
-        validateProjectAssignmentForRole(request.getRole(), request.getProjectIds());
+        Role role = roleRepository.findById(request.getRoleId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Role ID."));
+        validateProjectAssignmentForRole(role, request.getProjectIds());
 
         User user = new User();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole().toUpperCase());
+        user.setRole(role);
         user.setProjectIds(request.getProjectIds() != null ? new ArrayList<>(request.getProjectIds()) : new ArrayList<>());
         User savedUser = userRepository.save(user);
 
-        if (!"ADMIN".equalsIgnoreCase(savedUser.getRole()) && !"HR".equalsIgnoreCase(savedUser.getRole())) {
+        if (!"ADMIN".equalsIgnoreCase(role.getFunctionalGroup()) && !"HR".equalsIgnoreCase(role.getFunctionalGroup())) {
             createOrUpdateTeammateForUser(savedUser, request.getPhone(), request.getLocation());
         }
         return convertToDto(savedUser);
@@ -104,14 +77,12 @@ public class UserService {
 
     @Transactional
     public UserResponse updateUser(Long id, UserCreateUpdateRequest request) {
-        logger.info("Received request to update user with ID: {}", id);
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with ID: " + id));
-
-        validateProjectAssignmentForRole(request.getRole(), request.getProjectIds());
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Role newRole = roleRepository.findById(request.getRoleId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Role ID."));
+        validateProjectAssignmentForRole(newRole, request.getProjectIds());
 
         existingUser.setFullName(request.getFullName());
-        existingUser.setRole(request.getRole().toUpperCase());
+        existingUser.setRole(newRole);
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
         }
@@ -120,7 +91,7 @@ public class UserService {
         }
         User updatedUser = userRepository.save(existingUser);
 
-        if (!"ADMIN".equalsIgnoreCase(updatedUser.getRole()) && !"HR".equalsIgnoreCase(updatedUser.getRole())) {
+        if (!"ADMIN".equalsIgnoreCase(newRole.getFunctionalGroup()) && !"HR".equalsIgnoreCase(newRole.getFunctionalGroup())) {
             createOrUpdateTeammateForUser(updatedUser, request.getPhone(), request.getLocation());
         } else {
             teammateRepository.findByUser(updatedUser).ifPresent(teammateRepository::delete);
@@ -130,11 +101,22 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id) {
-        logger.info("Received request to delete user with ID: {}", id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with ID: " + id));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         teammateRepository.findByUser(user).ifPresent(teammateRepository::delete);
         userRepository.delete(user);
+    }
+
+    private UserResponse convertToDto(User user) {
+        List<String> projectNames = user.getProjectIds().stream().map(projectId -> projectRepository.findById(projectId).map(Project::getProjectName).orElse("Unknown Project")).collect(Collectors.toList());
+        String phone = null;
+        String location = null;
+        Optional<Teammate> teammateOpt = teammateRepository.findByUser(user);
+        if (teammateOpt.isPresent()) {
+            Teammate teammate = teammateOpt.get();
+            phone = teammate.getPhone();
+            location = teammate.getLocation();
+        }
+        return new UserResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole().getTitle(), user.getProjectIds(), projectNames, phone, location);
     }
 
     @Transactional
@@ -143,28 +125,26 @@ public class UserService {
         teammate.setUser(user);
         teammate.setPhone(phone);
         teammate.setLocation(location);
-
         String avatar = "";
         if (user.getFullName() != null && !user.getFullName().isEmpty()) {
             avatar = user.getFullName().substring(0, Math.min(user.getFullName().length(), 2)).toUpperCase();
         }
         teammate.setAvatar(avatar);
-
         Set<Project> assignedProjects = new HashSet<>(projectRepository.findAllById(user.getProjectIds()));
         teammate.setProjects(assignedProjects);
         teammateRepository.save(teammate);
     }
 
-    private void validateProjectAssignmentForRole(String role, List<Long> projectIds) {
+    private void validateProjectAssignmentForRole(Role role, List<Long> projectIds) {
         if (projectIds == null) projectIds = Collections.emptyList();
-        String upperCaseRole = role.toUpperCase();
-        if (upperCaseRole.equals("ADMIN") || upperCaseRole.equals("HR")) {
+        String functionalGroup = role.getFunctionalGroup();
+        if ("ADMIN".equalsIgnoreCase(functionalGroup) || "HR".equalsIgnoreCase(functionalGroup)) {
             if (!projectIds.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, role + " role cannot be assigned to any projects.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ADMIN/HR roles cannot be assigned to projects.");
             }
         } else {
             if (projectIds.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, role + " role must be assigned to at least one project.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This role must be assigned to at least one project.");
             }
         }
     }

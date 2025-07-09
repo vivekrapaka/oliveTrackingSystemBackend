@@ -2,28 +2,26 @@ package com.olive.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public class UserCreateUpdateRequest {
 
     @NotBlank(message = "Full name cannot be empty")
-    @Size(max = 100, message = "Full name cannot exceed 100 characters")
     private String fullName;
 
     @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Invalid email format")
+    @Email
     private String email;
 
-    @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    @NotBlank(message = "Role cannot be empty")
-    private String role;
+    @NotNull(message = "Role ID cannot be empty")
+    private Long roleId; // Changed from String role to Long roleId
 
     private List<Long> projectIds;
-
-    // NEW: Added phone and location to the request DTO
     private String phone;
     private String location;
 
@@ -34,8 +32,8 @@ public class UserCreateUpdateRequest {
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Long getRoleId() { return roleId; }
+    public void setRoleId(Long roleId) { this.roleId = roleId; }
     public List<Long> getProjectIds() { return projectIds; }
     public void setProjectIds(List<Long> projectIds) { this.projectIds = projectIds; }
     public String getPhone() { return phone; }

@@ -16,9 +16,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByTaskNameContainingIgnoreCase(String taskName);
     List<Task> findTop5ByOrderByDevelopmentStartDateDesc();
 
-    // FIX: Changed to a native query to use database-specific functions reliably.
-    @Query(value = "SELECT MAX(CAST(SUBSTRING(sequence_number, 1, CHARINDEX('.', sequence_number + '.') - 1) AS int)) FROM tasks WHERE parent_task_id IS NULL", nativeQuery = true)
-    Optional<Integer> findMaxParentSequenceNumber();
+    // FIX: This method was missing in the previous update. It is now correctly defined.
+    @Query("SELECT t.sequenceNumber FROM Task t WHERE t.parentTask IS NULL")
+    List<String> findAllParentSequenceNumbers();
 
     long countByParentTask(Task parentTask);
 }
