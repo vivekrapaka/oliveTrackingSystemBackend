@@ -62,10 +62,11 @@ public class TeammateService {
 
         List<String> relevantGroups;
         switch (functionalGroup) {
+            case "DEV_MANAGER":
             case "DEV_LEAD":
-            case "MANAGER":
                 relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD");
                 break;
+            case "TEST_MANAGER":
             case "TEST_LEAD":
                 relevantGroups = Arrays.asList("TESTER", "TEST_LEAD");
                 break;
@@ -73,7 +74,7 @@ public class TeammateService {
                 relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST");
                 break;
             default:
-                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER");
+                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
                 break;
         }
 

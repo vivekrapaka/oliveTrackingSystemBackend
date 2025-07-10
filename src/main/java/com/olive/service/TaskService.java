@@ -210,6 +210,8 @@ public class TaskService {
                 return false;
 
             case "MANAGER":
+            case "DEV_MANAGER":
+            case "TEST_MANAGER":
             case "BUSINESS_ANALYST":
                 return true;
 

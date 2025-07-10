@@ -500,3 +500,904 @@
 2025-07-10T08:47:17.250+05:30  INFO 3904 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-07-10T08:47:17.265+05:30  INFO 3904 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2025-07-10T08:47:17.265+05:30  INFO 3904 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-07-10T10:11:08.253+05:30  INFO 21732 --- [main] com.olive.TaskmanagerApplicationTests    : Starting TaskmanagerApplicationTests using Java 17.0.15 with PID 21732 (started by VivekKumarRapaka in D:\workspace\oliveTrackingSystemBackend)
+2025-07-10T10:11:08.256+05:30  INFO 21732 --- [main] com.olive.TaskmanagerApplicationTests    : No active profile set, falling back to 1 default profile: "default"
+2025-07-10T10:11:10.270+05:30  INFO 21732 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-10T10:11:10.394+05:30  INFO 21732 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 113 ms. Found 7 JPA repository interfaces.
+2025-07-10T10:11:11.629+05:30  INFO 21732 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-10T10:11:11.802+05:30  INFO 21732 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-07-10T10:11:11.916+05:30  INFO 21732 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-10T10:11:12.553+05:30  INFO 21732 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-10T10:11:12.598+05:30  INFO 21732 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-10T10:11:13.168+05:30  INFO 21732 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: 70700db2-c7a6-4b40-8f5d-e0ef4eb72f40
+2025-07-10T10:11:13.173+05:30  INFO 21732 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-10T10:11:13.241+05:30  WARN 21732 --- [main] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-07-10T10:11:15.777+05:30  INFO 21732 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-10T10:11:16.950+05:30  INFO 21732 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T10:11:18.108+05:30  INFO 21732 --- [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-10T10:11:18.726+05:30  INFO 21732 --- [main] com.olive.service.FileStorageService     : File storage location initialized to: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T10:11:18.728+05:30  INFO 21732 --- [main] com.olive.service.FileStorageService     : Created upload directory: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T10:11:19.128+05:30  WARN 21732 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-10T10:11:19.732+05:30  INFO 21732 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@430abcad, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@373e3dac, org.springframework.security.web.context.SecurityContextHolderFilter@491afa9b, org.springframework.security.web.header.HeaderWriterFilter@358f85b1, org.springframework.web.filter.CorsFilter@4746b319, org.springframework.security.web.authentication.logout.LogoutFilter@67e03fe4, com.olive.security.JwtAuthFilter@14738629, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@60bd11f7, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@693f9ab5, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2265a052, org.springframework.security.web.session.SessionManagementFilter@76e56b17, org.springframework.security.web.access.ExceptionTranslationFilter@52bef30b, org.springframework.security.web.access.intercept.AuthorizationFilter@38499139]
+2025-07-10T10:11:20.460+05:30  INFO 21732 --- [main] com.olive.TaskmanagerApplicationTests    : Started TaskmanagerApplicationTests in 12.791 seconds (process running for 15.214)
+2025-07-10T10:11:22.022+05:30  INFO 21732 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T10:11:22.030+05:30  INFO 21732 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-07-10T10:11:22.047+05:30  INFO 21732 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-07-10T10:11:42.879+05:30  INFO 24656 --- [restartedMain] com.olive.TaskmanagerApplication         : Starting TaskmanagerApplication using Java 17.0.15 with PID 24656 (D:\workspace\oliveTrackingSystemBackend\target\classes started by VivekKumarRapaka in D:\workspace\oliveTrackingSystemBackend)
+2025-07-10T10:11:42.883+05:30  INFO 24656 --- [restartedMain] com.olive.TaskmanagerApplication         : No active profile set, falling back to 1 default profile: "default"
+2025-07-10T10:11:42.961+05:30  INFO 24656 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-07-10T10:11:42.962+05:30  INFO 24656 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-07-10T10:11:43.710+05:30  INFO 24656 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-10T10:11:43.790+05:30  INFO 24656 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 71 ms. Found 7 JPA repository interfaces.
+2025-07-10T10:11:44.488+05:30  INFO 24656 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8085 (http)
+2025-07-10T10:11:44.504+05:30  INFO 24656 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-07-10T10:11:44.505+05:30  INFO 24656 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-07-10T10:11:44.559+05:30  INFO 24656 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-07-10T10:11:44.560+05:30  INFO 24656 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1596 ms
+2025-07-10T10:11:44.711+05:30  INFO 24656 --- [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-10T10:11:44.758+05:30  INFO 24656 --- [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-07-10T10:11:44.791+05:30  INFO 24656 --- [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-10T10:11:44.979+05:30  INFO 24656 --- [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-10T10:11:45.009+05:30  INFO 24656 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-10T10:11:45.295+05:30  INFO 24656 --- [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: bf286950-9567-4c10-825d-413fcfa5cddf
+2025-07-10T10:11:45.299+05:30  INFO 24656 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-10T10:11:45.332+05:30  WARN 24656 --- [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-07-10T10:11:46.326+05:30  INFO 24656 --- [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-10T10:11:47.769+05:30  INFO 24656 --- [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T10:11:48.281+05:30  INFO 24656 --- [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-10T10:11:48.543+05:30  INFO 24656 --- [restartedMain] com.olive.service.FileStorageService     : File storage location initialized to: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T10:11:48.544+05:30  INFO 24656 --- [restartedMain] com.olive.service.FileStorageService     : Created upload directory: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T10:11:48.764+05:30  WARN 24656 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-10T10:11:49.073+05:30  INFO 24656 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@351a0b0, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@74b39aa5, org.springframework.security.web.context.SecurityContextHolderFilter@6365c176, org.springframework.security.web.header.HeaderWriterFilter@6ca33747, org.springframework.web.filter.CorsFilter@6f9778e6, org.springframework.security.web.authentication.logout.LogoutFilter@7cb0de11, com.olive.security.JwtAuthFilter@605f01f4, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@508e06e6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@68b23321, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@b099ec, org.springframework.security.web.session.SessionManagementFilter@6159ddda, org.springframework.security.web.access.ExceptionTranslationFilter@6a7bf263, org.springframework.security.web.access.intercept.AuthorizationFilter@eef3f40]
+2025-07-10T10:11:49.366+05:30  INFO 24656 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-07-10T10:11:49.413+05:30  INFO 24656 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8085 (http) with context path ''
+2025-07-10T10:11:49.424+05:30  INFO 24656 --- [restartedMain] com.olive.TaskmanagerApplication         : Started TaskmanagerApplication in 7.03 seconds (process running for 7.446)
+2025-07-10T10:21:27.231+05:30  INFO 24656 --- [http-nio-8085-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-10T10:21:27.310+05:30  INFO 24656 --- [http-nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-07-10T10:21:27.604+05:30  INFO 24656 --- [http-nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 273 ms
+2025-07-10T10:21:29.976+05:30 ERROR 24656 --- [http-nio-8085-exec-3] com.olive.security.JwtAuthFilter         : Cannot set user authentication: User Not Found with email: vivekkumar.rapaka@olivecrypto.com
+2025-07-10T10:21:30.050+05:30 ERROR 24656 --- [http-nio-8085-exec-3] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-10T10:21:30.083+05:30 ERROR 24656 --- [http-nio-8085-exec-3] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-10T10:21:50.526+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.controller.AuthController      : Received sign-up request for email: admin@olivecrypto.com
+2025-07-10T10:22:10.085+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.controller.AuthController      : Received sign-up request for email: shabeerahmed@olivecrypto.com
+2025-07-10T10:22:38.063+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.AuthController      : Received sign-up request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-10T10:23:04.751+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.AuthController      : Received sign-up request for email: srihari.u@olivecrypto.com
+2025-07-10T10:27:18.755+05:30  INFO 24656 --- [http-nio-8085-exec-1] com.olive.controller.AuthController      : Received sign-in request for email: admin@olivecrypto.com
+2025-07-10T10:27:21.455+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:27:21.462+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:27:32.969+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:27:32.969+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:27:37.942+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.controller.ProjectController   : Received request to create project: kotakupi
+2025-07-10T10:27:37.947+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.service.ProjectService         : Received request to create project: kotakupi
+2025-07-10T10:27:38.019+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.service.ProjectService         : Project created successfully with ID: 1
+2025-07-10T10:27:38.101+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:27:38.104+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:27:38.168+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@51f91736
+2025-07-10T10:27:42.844+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.controller.ProjectController   : Received request to create project: kotakimps
+2025-07-10T10:27:42.844+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.service.ProjectService         : Received request to create project: kotakimps
+2025-07-10T10:27:42.876+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.service.ProjectService         : Project created successfully with ID: 2
+2025-07-10T10:27:42.971+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:27:42.971+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:27:43.012+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@52ae2d32
+2025-07-10T10:27:48.760+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.controller.ProjectController   : Received request to create project: unionupi
+2025-07-10T10:27:48.763+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.service.ProjectService         : Received request to create project: unionupi
+2025-07-10T10:27:48.777+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.service.ProjectService         : Project created successfully with ID: 3
+2025-07-10T10:27:48.858+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:27:48.859+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:27:48.890+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@c58a2ea
+2025-07-10T10:27:53.312+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.controller.ProjectController   : Received request to create project: dbc
+2025-07-10T10:27:53.317+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.service.ProjectService         : Received request to create project: dbc
+2025-07-10T10:27:53.335+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.service.ProjectService         : Project created successfully with ID: 4
+2025-07-10T10:27:53.402+05:30  INFO 24656 --- [http-nio-8085-exec-9] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:27:53.404+05:30  INFO 24656 --- [http-nio-8085-exec-9] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:27:53.435+05:30  INFO 24656 --- [http-nio-8085-exec-9] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@2cc54b9e
+2025-07-10T10:27:57.387+05:30  INFO 24656 --- [http-nio-8085-exec-1] com.olive.controller.ProjectController   : Received request to create project: axis
+2025-07-10T10:27:57.391+05:30  INFO 24656 --- [http-nio-8085-exec-1] com.olive.service.ProjectService         : Received request to create project: axis
+2025-07-10T10:27:57.408+05:30  INFO 24656 --- [http-nio-8085-exec-1] com.olive.service.ProjectService         : Project created successfully with ID: 5
+2025-07-10T10:27:57.526+05:30  INFO 24656 --- [http-nio-8085-exec-3] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:27:57.536+05:30  INFO 24656 --- [http-nio-8085-exec-3] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:27:57.568+05:30  INFO 24656 --- [http-nio-8085-exec-3] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@1eac64b7
+2025-07-10T10:28:04.608+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.controller.ProjectController   : Received request to update project ID: 5
+2025-07-10T10:28:04.624+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.service.ProjectService         : Received request to update project with ID: 5
+2025-07-10T10:28:04.671+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.service.ProjectService         : Project name updated to: AXISUPI
+2025-07-10T10:28:04.695+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.service.ProjectService         : Project with ID 5 updated successfully.
+2025-07-10T10:28:04.828+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:28:04.828+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:28:04.870+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@7bdfbdd8
+2025-07-10T10:28:10.967+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.controller.ProjectController   : Received request to create project: axisimps
+2025-07-10T10:28:10.978+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.service.ProjectService         : Received request to create project: axisimps
+2025-07-10T10:28:11.000+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.service.ProjectService         : Project created successfully with ID: 6
+2025-07-10T10:28:11.094+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:28:11.094+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:28:11.150+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@599d055e
+2025-07-10T10:28:15.811+05:30  INFO 24656 --- [http-nio-8085-exec-1] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:28:15.811+05:30  INFO 24656 --- [http-nio-8085-exec-1] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:28:15.836+05:30  INFO 24656 --- [http-nio-8085-exec-1] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@266daf1
+2025-07-10T10:28:50.051+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.controller.AuthController      : Received sign-up request for email: navya@olivecrypto.com
+2025-07-10T10:28:52.527+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.AuthController      : Received sign-in request for email: admin@olivecrypto.com
+2025-07-10T10:28:53.018+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:28:53.019+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:28:55.352+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:28:55.353+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:28:55.376+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@4e777025
+2025-07-10T10:30:53.389+05:30  INFO 24656 --- [http-nio-8085-exec-9] com.olive.controller.AuthController      : Received sign-up request for email: mahesh@olivecrypto.com
+2025-07-10T10:31:25.888+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.controller.AuthController      : Received sign-up request for email: kumarraju@olivecrypto.com
+2025-07-10T10:31:35.606+05:30  INFO 24656 --- [http-nio-8085-exec-3] com.olive.controller.AuthController      : Received sign-in request for email: admin@olivecrypto.com
+2025-07-10T10:31:35.994+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:31:35.995+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:31:38.922+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:31:38.923+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:31:38.941+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@5f0bd868
+2025-07-10T10:32:19.352+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:32:19.352+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:32:19.372+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@7b7502cb
+2025-07-10T10:32:37.619+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:32:37.623+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:32:37.900+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@eeccac3
+2025-07-10T10:32:43.412+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:32:43.426+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:32:43.497+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@5e0e7480
+2025-07-10T10:32:52.235+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:32:52.236+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:32:52.252+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@f0ad629
+2025-07-10T10:32:54.732+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:32:54.734+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:33:15.169+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-10T10:33:15.609+05:30 ERROR 24656 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : An unexpected error occurred: Bad credentials
+
+org.springframework.security.authentication.BadCredentialsException: Bad credentials
+	at org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.authenticate(AbstractUserDetailsAuthenticationProvider.java:141) ~[spring-security-core-6.2.2.jar:6.2.2]
+	at org.springframework.security.authentication.ProviderManager.authenticate(ProviderManager.java:182) ~[spring-security-core-6.2.2.jar:6.2.2]
+	at com.olive.service.AuthService.authenticateUser(AuthService.java:72) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351) ~[spring-aop-6.1.4.jar:6.1.4]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:713) ~[spring-aop-6.1.4.jar:6.1.4]
+	at com.olive.service.AuthService$$SpringCGLIB$$0.authenticateUser(<generated>) ~[classes/:na]
+	at com.olive.controller.AuthController.authenticateUser(AuthController.java:43) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590) ~[tomcat-embed-core-10.1.19.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.19.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at com.olive.security.JwtAuthFilter.doFilterInternal(JwtAuthFilter.java:48) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230) ~[spring-security-config-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at java.base/java.lang.Thread.run(Thread.java:842) ~[na:na]
+
+2025-07-10T10:33:15.931+05:30  WARN 24656 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
+2025-07-10T10:33:31.252+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.controller.AuthController      : Received sign-in request for email: shabeerahmed@olivecrypto.com
+2025-07-10T10:33:31.731+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:33:32.329+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:34:40.194+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:34:40.334+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:39:52.546+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:39:52.955+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:40:42.015+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:40:42.117+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:40:50.087+05:30  INFO 24656 --- [http-nio-8085-exec-2] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:40:50.088+05:30  INFO 24656 --- [http-nio-8085-exec-2] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:41:01.460+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.AuthController      : Received sign-in request for email: shabeerahmed@olivecrypto.com
+2025-07-10T10:41:02.055+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:41:02.297+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:41:29.699+05:30  INFO 24656 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:41:30.443+05:30  INFO 24656 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:41:31.603+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:41:31.889+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:41:33.121+05:30  INFO 24656 --- [http-nio-8085-exec-9] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:41:33.252+05:30  INFO 24656 --- [http-nio-8085-exec-9] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:41:39.908+05:30  INFO 24656 --- [http-nio-8085-exec-2] com.olive.controller.AuthController      : Received sign-in request for email: shabeerahmed@olivecrypto.com
+2025-07-10T10:41:48.019+05:30  INFO 24656 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:41:48.169+05:30  INFO 24656 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:44:14.018+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.service.TeammateService        : Teammate 'Srihari Udugula' availability changed to: Occupied
+2025-07-10T10:44:18.795+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:44:18.980+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:44:33.451+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.controller.AuthController      : Received sign-in request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-10T10:44:33.884+05:30  INFO 24656 --- [http-nio-8085-exec-8] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:44:34.186+05:30  INFO 24656 --- [http-nio-8085-exec-8] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:45:11.027+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:45:11.358+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:45:22.844+05:30  INFO 24656 --- [http-nio-8085-exec-3] com.olive.controller.AuthController      : Received sign-in request for email: shabeerahmed@olivecrypto.com
+2025-07-10T10:45:23.307+05:30  INFO 24656 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:45:23.582+05:30  INFO 24656 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:45:41.274+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:45:41.477+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:45:52.278+05:30  INFO 24656 --- [http-nio-8085-exec-4] com.olive.controller.AuthController      : Received sign-in request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-10T10:45:52.723+05:30  INFO 24656 --- [http-nio-8085-exec-8] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:45:53.066+05:30  INFO 24656 --- [http-nio-8085-exec-8] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:49:35.776+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:49:36.406+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:49:48.869+05:30  INFO 24656 --- [http-nio-8085-exec-10] com.olive.controller.AuthController      : Received sign-in request for email: shabeerahmed@olivecrypto.com
+2025-07-10T10:49:49.350+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:49:49.625+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:50:19.397+05:30  INFO 24656 --- [http-nio-8085-exec-9] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:50:19.605+05:30  INFO 24656 --- [http-nio-8085-exec-9] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:51:32.528+05:30  INFO 24656 --- [http-nio-8085-exec-2] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:51:32.836+05:30  INFO 24656 --- [http-nio-8085-exec-2] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:51:44.595+05:30  INFO 24656 --- [http-nio-8085-exec-8] com.olive.controller.AuthController      : Received sign-in request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-10T10:51:45.143+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:51:45.395+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:52:08.476+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:52:09.457+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:52:17.960+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:52:18.041+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:52:21.086+05:30  WARN 24656 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:52:21.086+05:30  WARN 24656 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:53:51.268+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:53:51.479+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:54:26.366+05:30  WARN 24656 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:54:26.383+05:30  WARN 24656 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:54:55.629+05:30  WARN 24656 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:54:55.629+05:30  WARN 24656 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:54:56.861+05:30  WARN 24656 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:54:56.864+05:30  WARN 24656 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:54:57.753+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:54:57.939+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:54:58.963+05:30  WARN 24656 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:54:58.968+05:30  WARN 24656 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:02.153+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:55:02.400+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:55:04.411+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:04.418+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:05.482+05:30  WARN 24656 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:05.491+05:30  WARN 24656 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:07.554+05:30  WARN 24656 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:07.555+05:30  WARN 24656 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:11.695+05:30  WARN 24656 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:11.697+05:30  WARN 24656 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:15.185+05:30  WARN 24656 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:15.190+05:30  WARN 24656 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:16.233+05:30  WARN 24656 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:16.234+05:30  WARN 24656 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:18.273+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:18.275+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:22.325+05:30  WARN 24656 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:22.329+05:30  WARN 24656 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:24.055+05:30  WARN 24656 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:24.057+05:30  WARN 24656 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:25.111+05:30  WARN 24656 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:25.113+05:30  WARN 24656 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:27.148+05:30  WARN 24656 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:27.148+05:30  WARN 24656 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:36.147+05:30  WARN 24656 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:36.151+05:30  WARN 24656 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:37.204+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:37.204+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:39.245+05:30  WARN 24656 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:39.245+05:30  WARN 24656 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:43.304+05:30  WARN 24656 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:43.304+05:30  WARN 24656 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:58.723+05:30  WARN 24656 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:58.726+05:30  WARN 24656 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:55:59.779+05:30  WARN 24656 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:55:59.781+05:30  WARN 24656 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:01.836+05:30  WARN 24656 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:01.838+05:30  WARN 24656 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:05.875+05:30  WARN 24656 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:05.883+05:30  WARN 24656 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:31.057+05:30  WARN 24656 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:31.060+05:30  WARN 24656 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:32.117+05:30  WARN 24656 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:32.119+05:30  WARN 24656 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:34.194+05:30  WARN 24656 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:34.202+05:30  WARN 24656 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:38.245+05:30  WARN 24656 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:38.245+05:30  WARN 24656 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:52.873+05:30  WARN 24656 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:52.873+05:30  WARN 24656 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:53.915+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:53.922+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:56:58.438+05:30  WARN 24656 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:56:58.447+05:30  WARN 24656 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:57:32.681+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.controller.AuthController      : Received sign-in request for email: shabeerahmed@olivecrypto.com
+2025-07-10T10:57:32.877+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:57:32.986+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:58:16.709+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.AuthController      : Received sign-in request for email: mahesh@olivecrypto.com
+2025-07-10T10:58:16.941+05:30  WARN 24656 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:58:16.941+05:30  WARN 24656 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:58:17.971+05:30  WARN 24656 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:58:17.980+05:30  WARN 24656 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:58:20.020+05:30  WARN 24656 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:58:20.022+05:30  WARN 24656 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:58:24.049+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T10:58:24.049+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T10:58:37.002+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.controller.AuthController      : Received sign-in request for email: kumarraju@olivecrypto.com
+2025-07-10T10:58:37.436+05:30  INFO 24656 --- [http-nio-8085-exec-2] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:58:38.652+05:30  INFO 24656 --- [http-nio-8085-exec-2] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:59:00.540+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:59:00.695+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:59:20.667+05:30  INFO 24656 --- [http-nio-8085-exec-9] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:59:20.814+05:30  INFO 24656 --- [http-nio-8085-exec-9] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:59:41.073+05:30  INFO 24656 --- [http-nio-8085-exec-7] com.olive.controller.AuthController      : Received sign-in request for email: admin@olivecrypto.com
+2025-07-10T10:59:41.336+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T10:59:41.336+05:30  INFO 24656 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T10:59:47.472+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T10:59:47.480+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T10:59:47.485+05:30  INFO 24656 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@5743c46d
+2025-07-10T11:00:12.536+05:30  INFO 24656 --- [http-nio-8085-exec-6] com.olive.controller.AuthController      : Received sign-in request for email: mahesh@olivecrypto.com
+2025-07-10T11:00:12.840+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T11:00:12.993+05:30  INFO 24656 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T11:06:17.753+05:30  INFO 24656 --- [http-nio-8085-exec-3] com.olive.controller.AuthController      : Received sign-in request for email: mahesh@olivecrypto.com
+2025-07-10T11:06:35.389+05:30  INFO 24656 --- [http-nio-8085-exec-8] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T11:06:38.168+05:30  INFO 24656 --- [http-nio-8085-exec-8] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T11:07:52.253+05:30  INFO 24656 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T11:07:53.008+05:30  INFO 24656 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T11:08:22.573+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T11:08:22.726+05:30  INFO 24656 --- [http-nio-8085-exec-10] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T11:08:43.893+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T11:08:44.135+05:30  INFO 24656 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T11:08:47.456+05:30  WARN 24656 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:08:47.462+05:30  WARN 24656 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:08:48.501+05:30  WARN 24656 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:08:48.502+05:30  WARN 24656 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:08:56.104+05:30  WARN 24656 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:08:56.120+05:30  WARN 24656 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:08:59.739+05:30  INFO 24656 --- [http-nio-8085-exec-4] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T11:08:59.834+05:30  INFO 24656 --- [http-nio-8085-exec-4] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T11:09:02.224+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:02.226+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:03.272+05:30  WARN 24656 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:03.273+05:30  WARN 24656 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:05.325+05:30  WARN 24656 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:05.327+05:30  WARN 24656 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:09.364+05:30  WARN 24656 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:09.366+05:30  WARN 24656 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:12.467+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T11:09:12.589+05:30  INFO 24656 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T11:09:13.223+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:13.229+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:14.274+05:30  WARN 24656 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:14.275+05:30  WARN 24656 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:16.330+05:30  WARN 24656 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:16.333+05:30  WARN 24656 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:20.379+05:30  WARN 24656 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:20.381+05:30  WARN 24656 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:23.855+05:30  INFO 24656 --- [http-nio-8085-exec-8] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T11:09:24.011+05:30  INFO 24656 --- [http-nio-8085-exec-8] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T11:09:25.650+05:30  WARN 24656 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:25.652+05:30  WARN 24656 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:26.704+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:26.708+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:28.761+05:30  WARN 24656 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:28.762+05:30  WARN 24656 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:09:32.825+05:30  WARN 24656 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:09:32.828+05:30  WARN 24656 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:11:20.603+05:30  WARN 24656 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:11:20.605+05:30  WARN 24656 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:11:21.667+05:30  WARN 24656 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:11:21.670+05:30  WARN 24656 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:11:23.725+05:30  WARN 24656 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:11:23.733+05:30  WARN 24656 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:11:27.792+05:30  WARN 24656 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T11:11:27.792+05:30  WARN 24656 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T11:34:07.354+05:30  INFO 24656 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T11:34:07.629+05:30  INFO 24656 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-07-10T11:34:07.709+05:30  INFO 24656 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-07-10T11:40:14.600+05:30  INFO 18736 --- [main] com.olive.TaskmanagerApplicationTests    : Starting TaskmanagerApplicationTests using Java 17.0.15 with PID 18736 (started by VivekKumarRapaka in D:\workspace\oliveTrackingSystemBackend)
+2025-07-10T11:40:14.602+05:30  INFO 18736 --- [main] com.olive.TaskmanagerApplicationTests    : No active profile set, falling back to 1 default profile: "default"
+2025-07-10T11:40:16.082+05:30  INFO 18736 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-10T11:40:16.214+05:30  INFO 18736 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 116 ms. Found 7 JPA repository interfaces.
+2025-07-10T11:40:17.771+05:30  INFO 18736 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-10T11:40:17.931+05:30  INFO 18736 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-07-10T11:40:18.019+05:30  INFO 18736 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-10T11:40:19.166+05:30  INFO 18736 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-10T11:40:19.242+05:30  INFO 18736 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-10T11:40:23.548+05:30  INFO 18736 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: b68c8a93-79cc-4379-be3e-54fe79cacb6d
+2025-07-10T11:40:23.576+05:30  INFO 18736 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-10T11:40:23.665+05:30  WARN 18736 --- [main] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-07-10T11:40:27.699+05:30  INFO 18736 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-10T11:40:34.465+05:30  INFO 18736 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T11:40:35.673+05:30  INFO 18736 --- [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-10T11:40:36.205+05:30  INFO 18736 --- [main] com.olive.service.FileStorageService     : File storage location initialized to: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T11:40:36.207+05:30  INFO 18736 --- [main] com.olive.service.FileStorageService     : Created upload directory: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T11:40:36.575+05:30  WARN 18736 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-10T11:40:37.239+05:30  INFO 18736 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@6f272dc4, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@446dea16, org.springframework.security.web.context.SecurityContextHolderFilter@4c53ce60, org.springframework.security.web.header.HeaderWriterFilter@7aca4144, org.springframework.web.filter.CorsFilter@28817763, org.springframework.security.web.authentication.logout.LogoutFilter@48186ba8, com.olive.security.JwtAuthFilter@35f59dfe, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@508863eb, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7d8802cf, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3c22a99a, org.springframework.security.web.session.SessionManagementFilter@38e46ea, org.springframework.security.web.access.ExceptionTranslationFilter@26415b5e, org.springframework.security.web.access.intercept.AuthorizationFilter@45fdd38d]
+2025-07-10T11:40:37.959+05:30  INFO 18736 --- [main] com.olive.TaskmanagerApplicationTests    : Started TaskmanagerApplicationTests in 23.802 seconds (process running for 25.059)
+2025-07-10T11:40:39.270+05:30  INFO 18736 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T11:40:39.278+05:30  INFO 18736 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-07-10T11:40:39.296+05:30  INFO 18736 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-07-10T11:44:12.826+05:30  INFO 15836 --- [restartedMain] com.olive.TaskmanagerApplication         : Starting TaskmanagerApplication using Java 17.0.15 with PID 15836 (D:\workspace\oliveTrackingSystemBackend\target\classes started by VivekKumarRapaka in D:\workspace\oliveTrackingSystemBackend)
+2025-07-10T11:44:12.829+05:30  INFO 15836 --- [restartedMain] com.olive.TaskmanagerApplication         : No active profile set, falling back to 1 default profile: "default"
+2025-07-10T11:44:12.900+05:30  INFO 15836 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-07-10T11:44:12.901+05:30  INFO 15836 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-07-10T11:44:13.675+05:30  INFO 15836 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-10T11:44:13.844+05:30  INFO 15836 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 158 ms. Found 7 JPA repository interfaces.
+2025-07-10T11:44:14.845+05:30  INFO 15836 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8085 (http)
+2025-07-10T11:44:14.859+05:30  INFO 15836 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-07-10T11:44:14.860+05:30  INFO 15836 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-07-10T11:44:14.931+05:30  INFO 15836 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-07-10T11:44:14.932+05:30  INFO 15836 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2030 ms
+2025-07-10T11:44:15.091+05:30  INFO 15836 --- [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-10T11:44:15.172+05:30  INFO 15836 --- [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-07-10T11:44:15.206+05:30  INFO 15836 --- [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-10T11:44:15.428+05:30  INFO 15836 --- [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-10T11:44:15.469+05:30  INFO 15836 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-10T11:44:15.823+05:30  INFO 15836 --- [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: 258b3d49-08c3-4e6f-8f53-a1864f99b1bf
+2025-07-10T11:44:15.826+05:30  INFO 15836 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-10T11:44:15.860+05:30  WARN 15836 --- [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-07-10T11:44:17.144+05:30  INFO 15836 --- [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-10T11:44:19.713+05:30  INFO 15836 --- [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T11:44:20.776+05:30  INFO 15836 --- [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-10T11:44:21.294+05:30  INFO 15836 --- [restartedMain] com.olive.service.FileStorageService     : File storage location initialized to: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T11:44:21.299+05:30  INFO 15836 --- [restartedMain] com.olive.service.FileStorageService     : Created upload directory: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T11:44:21.784+05:30  WARN 15836 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-10T11:44:22.575+05:30  INFO 15836 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@5d04b83c, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6ca33747, org.springframework.security.web.context.SecurityContextHolderFilter@4c7fca6a, org.springframework.security.web.header.HeaderWriterFilter@19359afe, org.springframework.web.filter.CorsFilter@19491ab3, org.springframework.security.web.authentication.logout.LogoutFilter@489bd316, com.olive.security.JwtAuthFilter@48597135, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3d9dda8b, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@88f821d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2c940b13, org.springframework.security.web.session.SessionManagementFilter@ac4109b, org.springframework.security.web.access.ExceptionTranslationFilter@8a5279e, org.springframework.security.web.access.intercept.AuthorizationFilter@17c4da49]
+2025-07-10T11:44:23.333+05:30  INFO 15836 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-07-10T11:44:23.425+05:30  INFO 15836 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8085 (http) with context path ''
+2025-07-10T11:44:23.446+05:30  INFO 15836 --- [restartedMain] com.olive.TaskmanagerApplication         : Started TaskmanagerApplication in 11.004 seconds (process running for 11.566)
+2025-07-10T11:56:53.371+05:30  INFO 15836 --- [http-nio-8085-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-10T11:56:53.459+05:30  INFO 15836 --- [http-nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-07-10T11:56:53.646+05:30  INFO 15836 --- [http-nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 179 ms
+2025-07-10T11:56:57.647+05:30  WARN 15836 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m41s543ms156µs900ns).
+2025-07-10T11:56:58.517+05:30 ERROR 15836 --- [http-nio-8085-exec-4] com.olive.security.JwtAuthFilter         : Cannot set user authentication: User Not Found with email: mahesh@olivecrypto.com
+2025-07-10T11:56:58.508+05:30 ERROR 15836 --- [http-nio-8085-exec-6] com.olive.security.JwtAuthFilter         : Cannot set user authentication: User Not Found with email: shabeerahmed@olivecrypto.com
+2025-07-10T11:56:58.558+05:30 ERROR 15836 --- [http-nio-8085-exec-2] com.olive.security.JwtAuthFilter         : Cannot set user authentication: User Not Found with email: mahesh@olivecrypto.com
+2025-07-10T11:56:58.706+05:30 ERROR 15836 --- [http-nio-8085-exec-6] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-10T11:56:58.706+05:30 ERROR 15836 --- [http-nio-8085-exec-2] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-10T11:56:58.706+05:30 ERROR 15836 --- [http-nio-8085-exec-4] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-10T11:56:58.788+05:30 ERROR 15836 --- [http-nio-8085-exec-6] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-10T11:56:58.792+05:30 ERROR 15836 --- [http-nio-8085-exec-4] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-10T11:56:58.791+05:30 ERROR 15836 --- [http-nio-8085-exec-2] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-10T12:48:17.042+05:30  INFO 15836 --- [http-nio-8085-exec-5] com.olive.controller.AuthController      : Received sign-up request for email: admin@olivecrypto.com
+2025-07-10T12:48:36.722+05:30  INFO 15836 --- [http-nio-8085-exec-1] com.olive.controller.AuthController      : Received sign-up request for email: shabeer@olivecrypto.com
+2025-07-10T12:48:52.078+05:30  INFO 15836 --- [http-nio-8085-exec-4] com.olive.controller.AuthController      : Received sign-up request for email: navya@olivecrypto.com
+2025-07-10T12:49:12.231+05:30  INFO 15836 --- [http-nio-8085-exec-2] com.olive.controller.AuthController      : Received sign-up request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-10T12:49:34.478+05:30  INFO 15836 --- [http-nio-8085-exec-7] com.olive.controller.AuthController      : Received sign-up request for email: srihariu@olivecrypto.com
+2025-07-10T12:49:51.816+05:30  INFO 15836 --- [http-nio-8085-exec-9] com.olive.controller.AuthController      : Received sign-up request for email: kumarraju@olivecrypto.com
+2025-07-10T12:50:06.795+05:30  INFO 15836 --- [http-nio-8085-exec-10] com.olive.controller.AuthController      : Received sign-up request for email: mahesh@olivecrypto.com
+2025-07-10T12:50:27.180+05:30  INFO 15836 --- [http-nio-8085-exec-3] com.olive.controller.AuthController      : Received sign-up request for email: varun@olivecrypto.com
+2025-07-10T12:55:03.621+05:30  WARN 15836 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m32s946ms903µs200ns).
+2025-07-10T12:55:53.447+05:30  INFO 15836 --- [http-nio-8085-exec-6] com.olive.controller.AuthController      : Received sign-in request for email: admin@olivecrypto.com
+2025-07-10T12:55:56.442+05:30  INFO 15836 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T12:55:56.444+05:30  INFO 15836 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T12:55:59.098+05:30  INFO 15836 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T12:55:59.098+05:30  INFO 15836 --- [http-nio-8085-exec-8] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T12:56:05.712+05:30  INFO 15836 --- [http-nio-8085-exec-5] com.olive.controller.ProjectController   : Received request to create project: kotakimps
+2025-07-10T12:56:05.718+05:30  INFO 15836 --- [http-nio-8085-exec-5] com.olive.service.ProjectService         : Received request to create project: kotakimps
+2025-07-10T12:56:05.844+05:30  INFO 15836 --- [http-nio-8085-exec-5] com.olive.service.ProjectService         : Project created successfully with ID: 1
+2025-07-10T12:56:06.042+05:30  INFO 15836 --- [http-nio-8085-exec-3] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T12:56:06.046+05:30  INFO 15836 --- [http-nio-8085-exec-3] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T12:56:06.131+05:30  INFO 15836 --- [http-nio-8085-exec-3] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@55906e69
+2025-07-10T12:56:13.744+05:30  INFO 15836 --- [http-nio-8085-exec-1] com.olive.controller.ProjectController   : Received request to create project: kotakupi
+2025-07-10T12:56:13.750+05:30  INFO 15836 --- [http-nio-8085-exec-1] com.olive.service.ProjectService         : Received request to create project: kotakupi
+2025-07-10T12:56:13.786+05:30  INFO 15836 --- [http-nio-8085-exec-1] com.olive.service.ProjectService         : Project created successfully with ID: 2
+2025-07-10T12:56:13.871+05:30  INFO 15836 --- [http-nio-8085-exec-4] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T12:56:13.877+05:30  INFO 15836 --- [http-nio-8085-exec-4] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T12:56:13.920+05:30  INFO 15836 --- [http-nio-8085-exec-4] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@33ee32fc
+2025-07-10T12:56:18.652+05:30  INFO 15836 --- [http-nio-8085-exec-2] com.olive.controller.ProjectController   : Received request to create project: axis
+2025-07-10T12:56:18.652+05:30  INFO 15836 --- [http-nio-8085-exec-2] com.olive.service.ProjectService         : Received request to create project: axis
+2025-07-10T12:56:18.687+05:30  INFO 15836 --- [http-nio-8085-exec-2] com.olive.service.ProjectService         : Project created successfully with ID: 3
+2025-07-10T12:56:18.765+05:30  INFO 15836 --- [http-nio-8085-exec-7] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T12:56:18.767+05:30  INFO 15836 --- [http-nio-8085-exec-7] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T12:56:18.839+05:30  INFO 15836 --- [http-nio-8085-exec-7] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@1e8b7486
+2025-07-10T12:56:24.919+05:30  INFO 15836 --- [http-nio-8085-exec-9] com.olive.controller.ProjectController   : Received request to create project: unionbank
+2025-07-10T12:56:24.933+05:30  INFO 15836 --- [http-nio-8085-exec-9] com.olive.service.ProjectService         : Received request to create project: unionbank
+2025-07-10T12:56:24.956+05:30  INFO 15836 --- [http-nio-8085-exec-9] com.olive.service.ProjectService         : Project created successfully with ID: 4
+2025-07-10T12:56:25.012+05:30  INFO 15836 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T12:56:25.019+05:30  INFO 15836 --- [http-nio-8085-exec-8] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T12:56:25.044+05:30  INFO 15836 --- [http-nio-8085-exec-8] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@74c04bc
+2025-07-10T12:56:26.792+05:30  INFO 15836 --- [http-nio-8085-exec-1] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T12:56:26.794+05:30  INFO 15836 --- [http-nio-8085-exec-1] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T12:56:26.817+05:30  INFO 15836 --- [http-nio-8085-exec-1] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@6ab6e82d
+2025-07-10T12:57:57.836+05:30  INFO 15836 --- [http-nio-8085-exec-7] com.olive.controller.ProjectController   : Received request to get all projects.
+2025-07-10T12:57:57.837+05:30  INFO 15836 --- [http-nio-8085-exec-7] com.olive.service.ProjectService         : Fetching all projects.
+2025-07-10T12:57:57.849+05:30  INFO 15836 --- [http-nio-8085-exec-7] com.olive.controller.ProjectController   : response sending to get all projects.com.olive.dto.ProjectResponse@5717152
+2025-07-10T12:58:00.250+05:30  INFO 15836 --- [http-nio-8085-exec-4] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-10T12:58:00.250+05:30  INFO 15836 --- [http-nio-8085-exec-4] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-10T12:58:12.795+05:30  INFO 15836 --- [http-nio-8085-exec-6] com.olive.controller.AuthController      : Received sign-in request for email: shabeerahmed@olivecrypto.com
+2025-07-10T12:58:13.105+05:30 ERROR 15836 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : An unexpected error occurred: Bad credentials
+
+org.springframework.security.authentication.BadCredentialsException: Bad credentials
+	at org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.authenticate(AbstractUserDetailsAuthenticationProvider.java:141) ~[spring-security-core-6.2.2.jar:6.2.2]
+	at org.springframework.security.authentication.ProviderManager.authenticate(ProviderManager.java:182) ~[spring-security-core-6.2.2.jar:6.2.2]
+	at com.olive.service.AuthService.authenticateUser(AuthService.java:72) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351) ~[spring-aop-6.1.4.jar:6.1.4]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:713) ~[spring-aop-6.1.4.jar:6.1.4]
+	at com.olive.service.AuthService$$SpringCGLIB$$0.authenticateUser(<generated>) ~[classes/:na]
+	at com.olive.controller.AuthController.authenticateUser(AuthController.java:43) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590) ~[tomcat-embed-core-10.1.19.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.19.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at com.olive.security.JwtAuthFilter.doFilterInternal(JwtAuthFilter.java:48) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230) ~[spring-security-config-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at java.base/java.lang.Thread.run(Thread.java:842) ~[na:na]
+
+2025-07-10T12:58:13.182+05:30  WARN 15836 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
+2025-07-10T12:58:24.432+05:30  INFO 15836 --- [http-nio-8085-exec-3] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-10T12:58:24.872+05:30  WARN 15836 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T12:58:24.872+05:30  WARN 15836 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T12:58:27.969+05:30  WARN 15836 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T12:58:27.978+05:30  WARN 15836 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T12:58:31.493+05:30  WARN 15836 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T12:58:31.495+05:30  WARN 15836 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T12:59:13.416+05:30  WARN 15836 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T12:59:13.498+05:30  WARN 15836 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T12:59:26.009+05:30  INFO 15836 --- [http-nio-8085-exec-4] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-10T12:59:26.489+05:30  WARN 15836 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T12:59:26.495+05:30  WARN 15836 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T12:59:28.811+05:30  WARN 15836 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T12:59:28.811+05:30  WARN 15836 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T12:59:32.185+05:30  WARN 15836 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T12:59:32.220+05:30  WARN 15836 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T12:59:42.197+05:30  WARN 15836 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T12:59:42.201+05:30  WARN 15836 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T13:00:20.558+05:30  INFO 15836 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T13:00:20.702+05:30  INFO 15836 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-07-10T13:00:20.769+05:30  INFO 15836 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-07-10T17:57:35.778+05:30  INFO 5472 --- [restartedMain] com.olive.TaskmanagerApplication         : Starting TaskmanagerApplication using Java 17.0.15 with PID 5472 (D:\workspace\oliveTrackingSystemBackend\target\classes started by VivekKumarRapaka in D:\workspace\oliveTrackingSystemBackend)
+2025-07-10T17:57:35.787+05:30  INFO 5472 --- [restartedMain] com.olive.TaskmanagerApplication         : No active profile set, falling back to 1 default profile: "default"
+2025-07-10T17:57:35.882+05:30  INFO 5472 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-07-10T17:57:35.882+05:30  INFO 5472 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-07-10T17:57:38.484+05:30  INFO 5472 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-10T17:57:38.735+05:30  INFO 5472 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 199 ms. Found 7 JPA repository interfaces.
+2025-07-10T17:57:39.894+05:30  INFO 5472 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8085 (http)
+2025-07-10T17:57:39.911+05:30  INFO 5472 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-07-10T17:57:39.911+05:30  INFO 5472 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-07-10T17:57:39.977+05:30  INFO 5472 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-07-10T17:57:39.977+05:30  INFO 5472 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4095 ms
+2025-07-10T17:57:40.131+05:30  INFO 5472 --- [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-10T17:57:40.205+05:30  INFO 5472 --- [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-07-10T17:57:40.241+05:30  INFO 5472 --- [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-10T17:57:40.446+05:30  INFO 5472 --- [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-10T17:57:40.481+05:30  INFO 5472 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-10T17:57:40.894+05:30  INFO 5472 --- [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: 2a834745-7950-4582-be62-ab04a42e8372
+2025-07-10T17:57:40.907+05:30  INFO 5472 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-10T17:57:40.925+05:30  WARN 5472 --- [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-07-10T17:57:42.931+05:30  INFO 5472 --- [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-10T17:57:48.902+05:30  INFO 5472 --- [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T17:57:49.488+05:30  INFO 5472 --- [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-10T17:57:49.799+05:30  INFO 5472 --- [restartedMain] com.olive.service.FileStorageService     : File storage location initialized to: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T17:57:49.799+05:30  INFO 5472 --- [restartedMain] com.olive.service.FileStorageService     : Created upload directory: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-10T17:57:50.011+05:30  WARN 5472 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-10T17:57:50.373+05:30  INFO 5472 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@87af537, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@12f29752, org.springframework.security.web.context.SecurityContextHolderFilter@461a8400, org.springframework.security.web.header.HeaderWriterFilter@668d1ca4, org.springframework.web.filter.CorsFilter@753aeceb, org.springframework.security.web.authentication.logout.LogoutFilter@79ac93c1, com.olive.security.JwtAuthFilter@4d6e1f70, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@30f095a5, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7f39dc46, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@336decf7, org.springframework.security.web.session.SessionManagementFilter@2169ea9a, org.springframework.security.web.access.ExceptionTranslationFilter@10d7f2c5, org.springframework.security.web.access.intercept.AuthorizationFilter@6f5eb98b]
+2025-07-10T17:57:50.701+05:30  INFO 5472 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-07-10T17:57:50.757+05:30  INFO 5472 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8085 (http) with context path ''
+2025-07-10T17:57:50.772+05:30  INFO 5472 --- [restartedMain] com.olive.TaskmanagerApplication         : Started TaskmanagerApplication in 15.448 seconds (process running for 15.885)
+2025-07-10T17:57:55.694+05:30  INFO 5472 --- [http-nio-8085-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-10T17:57:55.694+05:30  INFO 5472 --- [http-nio-8085-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-07-10T17:57:55.703+05:30  INFO 5472 --- [http-nio-8085-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 9 ms
+2025-07-10T17:57:55.845+05:30  INFO 5472 --- [http-nio-8085-exec-1] com.olive.controller.AuthController      : Received sign-in request for email: shabeerahmed@olivecrypto.com
+2025-07-10T17:57:56.096+05:30 ERROR 5472 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : An unexpected error occurred: Bad credentials
+
+org.springframework.security.authentication.BadCredentialsException: Bad credentials
+	at org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.authenticate(AbstractUserDetailsAuthenticationProvider.java:141) ~[spring-security-core-6.2.2.jar:6.2.2]
+	at org.springframework.security.authentication.ProviderManager.authenticate(ProviderManager.java:182) ~[spring-security-core-6.2.2.jar:6.2.2]
+	at com.olive.service.AuthService.authenticateUser(AuthService.java:72) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351) ~[spring-aop-6.1.4.jar:6.1.4]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:713) ~[spring-aop-6.1.4.jar:6.1.4]
+	at com.olive.service.AuthService$$SpringCGLIB$$0.authenticateUser(<generated>) ~[classes/:na]
+	at com.olive.controller.AuthController.authenticateUser(AuthController.java:43) ~[classes/:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590) ~[tomcat-embed-core-10.1.19.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.19.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at com.olive.security.JwtAuthFilter.doFilterInternal(JwtAuthFilter.java:48) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195) ~[spring-webmvc-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230) ~[spring-security-config-6.2.2.jar:6.2.2]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.4.jar:6.1.4]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.19.jar:10.1.19]
+	at java.base/java.lang.Thread.run(Thread.java:842) ~[na:na]
+
+2025-07-10T17:58:00.467+05:30  WARN 5472 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
+2025-07-10T17:58:06.037+05:30  INFO 5472 --- [http-nio-8085-exec-3] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-10T17:58:07.238+05:30  WARN 5472 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T17:58:07.244+05:30  WARN 5472 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T17:58:14.042+05:30  WARN 5472 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T17:58:14.046+05:30  WARN 5472 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T17:58:23.815+05:30  WARN 5472 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T17:58:23.815+05:30  WARN 5472 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T17:59:05.652+05:30  WARN 5472 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T17:59:05.664+05:30  WARN 5472 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T17:59:11.664+05:30  WARN 5472 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T17:59:11.670+05:30  WARN 5472 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T18:01:22.576+05:30  WARN 5472 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T18:01:22.603+05:30  WARN 5472 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T18:01:42.774+05:30  WARN 5472 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T18:01:42.919+05:30  WARN 5472 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T18:01:46.605+05:30  WARN 5472 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T18:01:46.612+05:30  WARN 5472 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T18:01:53.900+05:30  INFO 5472 --- [http-nio-8085-exec-2] com.olive.controller.AuthController      : Received sign-in request for email: navya@olivecrypto.com
+2025-07-10T18:01:54.278+05:30  WARN 5472 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T18:01:54.282+05:30  WARN 5472 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T18:01:57.716+05:30  WARN 5472 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T18:01:57.724+05:30  WARN 5472 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T18:02:01.464+05:30  WARN 5472 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-10T18:02:01.469+05:30  WARN 5472 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-10T18:17:58.556+05:30  WARN 5472 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m47s333ms458µs).
+2025-07-10T18:20:59.557+05:30  INFO 5472 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-10T18:20:59.880+05:30  INFO 5472 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-07-10T18:21:00.132+05:30  INFO 5472 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
