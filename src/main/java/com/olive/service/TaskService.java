@@ -38,7 +38,6 @@ public class TaskService {
     private final TaskActivityService taskActivityService;
     private final UserRepository userRepository;
 
-    // FIX: Added the missing declaration for this set.
     private static final Set<TaskStatus> COMPLETED_OR_CLOSED_STATUSES = Set.of(TaskStatus.COMPLETED, TaskStatus.CLOSED);
 
     @Autowired
@@ -61,36 +60,14 @@ public class TaskService {
         List<Task> tasksToReturn;
 
         if ("ADMIN".equalsIgnoreCase(functionalGroup) || "HR".equalsIgnoreCase(functionalGroup)) {
-            tasksToReturn = (taskNameFilter != null && !taskNameFilter.trim().isEmpty())
-                    ? taskRepository.findByTaskNameContainingIgnoreCase(taskNameFilter)
-                    : taskRepository.findAll();
+            tasksToReturn = taskRepository.findAll();
         }
         else if (userProjectIds != null && !userProjectIds.isEmpty()) {
             List<Task> tasksInUserProjects = taskRepository.findByProjectIdIn(userProjectIds);
 
-            if ("TESTER".equalsIgnoreCase(functionalGroup)) {
-                User currentUser = userRepository.findById(userDetails.getId()).orElse(null);
-                if (currentUser != null) {
-                    Teammate currentTeammate = teammateRepository.findByUser(currentUser).orElse(null);
-                    if (currentTeammate != null) {
-                        tasksToReturn = tasksInUserProjects.stream()
-                                .filter(task -> {
-                                    boolean isTestingStatus = task.getStatus() == TaskStatus.UAT_TESTING || task.getStatus() == TaskStatus.PREPROD;
-                                    boolean isAssignedToMe = task.getAssignedTeammates().contains(currentTeammate);
-                                    return isTestingStatus && isAssignedToMe;
-                                })
-                                .collect(Collectors.toList());
-                    } else {
-                        tasksToReturn = Collections.emptyList();
-                    }
-                } else {
-                    tasksToReturn = Collections.emptyList();
-                }
-            } else {
-                tasksToReturn = tasksInUserProjects.stream()
-                        .filter(task -> isTaskVisibleToRole(task, functionalGroup))
-                        .collect(Collectors.toList());
-            }
+            tasksToReturn = tasksInUserProjects.stream()
+                    .filter(task -> isTaskVisibleToRole(task, userDetails))
+                    .collect(Collectors.toList());
 
             if (taskNameFilter != null && !taskNameFilter.trim().isEmpty()) {
                 tasksToReturn = tasksToReturn.stream()
@@ -215,18 +192,29 @@ public class TaskService {
         }
     }
 
-    private boolean isTaskVisibleToRole(Task task, String functionalGroup) {
-        TaskStatus status = task.getStatus();
+    private boolean isTaskVisibleToRole(Task task, UserDetailsImpl userDetails) {
+        String functionalGroup = userDetails.getFunctionalGroup();
+
         switch (functionalGroup) {
             case "DEVELOPER":
-                return status == TaskStatus.BACKLOG || status == TaskStatus.ANALYSIS || status == TaskStatus.DEVELOPMENT || status == TaskStatus.CODE_REVIEW || status == TaskStatus.UAT_FAILED || status == TaskStatus.REOPENED;
-            case "BUSINESS_ANALYST":
-                return status == TaskStatus.ANALYSIS || status == TaskStatus.CODE_REVIEW || status == TaskStatus.UAT_TESTING;
+            case "DEV_LEAD":
+                return task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED;
+
+            case "TESTER":
+            case "TEST_LEAD":
+                User currentUser = userRepository.findById(userDetails.getId()).orElse(null);
+                if (currentUser != null) {
+                    Teammate currentTeammate = teammateRepository.findByUser(currentUser).orElse(null);
+                    return currentTeammate != null && task.getAssignedTeammates().contains(currentTeammate);
+                }
+                return false;
+
             case "MANAGER":
-            case "TEAMLEAD":
+            case "BUSINESS_ANALYST":
                 return true;
+
             default:
-                return true;
+                return false;
         }
     }
 
@@ -237,35 +225,44 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A " + oldStatus.getDisplayName() + " task can only be Reopened.");
         }
 
-        if (oldStatus == TaskStatus.CODE_REVIEW) {
+        if ((oldStatus == TaskStatus.CODE_REVIEW) ||
+                (oldStatus == TaskStatus.UAT_TESTING && newStatus == TaskStatus.UAT_FAILED) ||
+                (oldStatus == TaskStatus.UAT_FAILED && newStatus == TaskStatus.UAT_TESTING)) {
             if (!StringUtils.hasText(comment)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A comment is required when moving a task from the Code Review stage.");
-            }
-            if (!"BUSINESS_ANALYST".equals(functionalGroup) && !"TEAMLEAD".equals(functionalGroup) && !"MANAGER".equals(functionalGroup)) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a BA, Team Lead, or Manager can action a Code Review.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A comment is required for this status change.");
             }
         }
 
         switch (newStatus) {
-            case ANALYSIS:
-                if (!"DEVELOPER".equals(functionalGroup)) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task to Analysis.");
-                }
-                break;
             case CODE_REVIEW:
-                if (!"DEVELOPER".equals(functionalGroup)) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task to Code Review.");
+                if (!"DEVELOPER".equals(functionalGroup)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task to Code Review.");
+                break;
+            case UAT_TESTING:
+                if (oldStatus == TaskStatus.CODE_REVIEW) {
+                    if (!Arrays.asList("MANAGER", "DEV_LEAD", "BUSINESS_ANALYST").contains(functionalGroup))
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Manager, Dev Lead, or BA can approve a Code Review.");
+                } else if (oldStatus == TaskStatus.UAT_FAILED) {
+                    if (!"DEVELOPER".equals(functionalGroup))
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task back to UAT Testing after a fix.");
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid transition to UAT Testing.");
                 }
                 break;
             case UAT_FAILED:
-                if (!"TESTER".equals(functionalGroup)) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Tester can mark a task as UAT Failed.");
-                }
+                if (oldStatus != TaskStatus.UAT_TESTING) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must be in UAT Testing to be marked as failed.");
+                if (!"TESTER".equals(functionalGroup) && !"TEST_LEAD".equals(functionalGroup)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Tester or Test Lead can fail a UAT task.");
+                break;
+            case READY_FOR_PREPROD:
+                if (oldStatus != TaskStatus.UAT_TESTING) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must pass UAT Testing to be marked as Ready for Pre-Prod.");
+                if (!"TESTER".equals(functionalGroup) && !"TEST_LEAD".equals(functionalGroup)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Tester or Test Lead can sign off on UAT.");
+                break;
+            case PREPROD:
+                if (oldStatus != TaskStatus.READY_FOR_PREPROD) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must be marked 'Ready for Pre-Prod' before deployment.");
+                if (!"DEVELOPER".equals(functionalGroup) && !"DEV_LEAD".equals(functionalGroup)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Developer or Dev Lead can deploy to Pre-Prod.");
                 break;
             case PROD:
-                if (!"MANAGER".equals(functionalGroup) && !"ADMIN".equals(functionalGroup)) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a MANAGER or ADMIN can deploy to Production.");
-                }
+                if (oldStatus != TaskStatus.PREPROD) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task must be in Pre-Production before moving to Production.");
+                if (!"DEVELOPER".equals(functionalGroup) && !"DEV_LEAD".equals(functionalGroup)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Developer or Dev Lead can deploy to Production.");
                 break;
         }
     }
@@ -302,7 +299,7 @@ public class TaskService {
         }
         for (Teammate teammate : teammates) {
             if (teammate.getProjects().stream().noneMatch(p -> p.getProjectId().equals(project.getProjectId()))) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate " + teammate.getName() + " is not assigned to project " + project.getProjectName() + ".");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate " + teammate.getUser().getFullName() + " is not assigned to project " + project.getProjectName() + ".");
             }
         }
         return teammates;
@@ -310,13 +307,13 @@ public class TaskService {
 
     private void updateTeammateAvailabilityFor(Set<Teammate> teammates) {
         if (teammates != null) {
-            teammates.forEach(teammate -> teammateService.updateTeammateAvailability(teammate.getName()));
+            teammates.forEach(teammate -> teammateService.updateTeammateAvailability(teammate.getUser().getFullName()));
         }
     }
 
     private TaskResponse convertToDto(Task task) {
         List<Long> assignedTeammateIds = task.getAssignedTeammates().stream().map(Teammate::getTeammateId).collect(Collectors.toList());
-        List<String> assignedTeammateNames = task.getAssignedTeammates().stream().map(Teammate::getName).collect(Collectors.toList());
+        List<String> assignedTeammateNames = task.getAssignedTeammates().stream().map(teammate -> teammate.getUser().getFullName()).collect(Collectors.toList());
         String formattedTaskNumber = task.getSequenceNumber();
         String projectName = task.getProject() != null ? task.getProject().getProjectName() : "Unknown Project";
         Long parentId = task.getParentTask() != null ? task.getParentTask().getTaskId() : null;

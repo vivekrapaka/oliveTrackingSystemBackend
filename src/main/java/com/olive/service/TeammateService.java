@@ -4,10 +4,12 @@ import com.olive.dto.TeammateCreateRequest;
 import com.olive.dto.TeammateResponse;
 import com.olive.dto.TeammatesSummaryResponse;
 import com.olive.model.Project;
+import com.olive.model.Role;
 import com.olive.model.Teammate;
 import com.olive.model.User;
 import com.olive.model.enums.TaskStatus;
 import com.olive.repository.ProjectRepository;
+import com.olive.repository.RoleRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.repository.UserRepository;
 import com.olive.security.UserDetailsImpl;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -37,27 +40,45 @@ public class TeammateService {
     private final TeammateRepository teammateRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public TeammateService(TeammateRepository teammateRepository, ProjectRepository projectRepository, UserRepository userRepository) {
+    public TeammateService(TeammateRepository teammateRepository, ProjectRepository projectRepository, UserRepository userRepository, RoleRepository roleRepository) {
         this.teammateRepository = teammateRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     public TeammatesSummaryResponse getAllTeammatesSummary() {
-        logger.info("Fetching all teammates summary.");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<Teammate> teammatesToConsider;
-        if ("ADMIN".equalsIgnoreCase(userDetails.getRole()) || "HR".equalsIgnoreCase(userDetails.getRole())) {
-            teammatesToConsider = teammateRepository.findAll(Sort.by(Sort.Direction.ASC, "user.fullName"));
-        } else if (userDetails.getProjectIds() != null && !userDetails.getProjectIds().isEmpty()) {
-            // FIX: Calling the corrected repository method
-            teammatesToConsider = teammateRepository.findByProjects_IdIn(userDetails.getProjectIds(), Sort.by(Sort.Direction.ASC, "user.fullName"));
-        } else {
+        List<Long> userProjectIds = userDetails.getProjectIds();
+        String functionalGroup = userDetails.getFunctionalGroup();
+
+        if (userProjectIds == null || userProjectIds.isEmpty()) {
             return new TeammatesSummaryResponse(0, 0, 0, 0, Collections.emptyList());
         }
+
+        List<String> relevantGroups;
+        switch (functionalGroup) {
+            case "DEV_LEAD":
+            case "MANAGER":
+                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD");
+                break;
+            case "TEST_LEAD":
+                relevantGroups = Arrays.asList("TESTER", "TEST_LEAD");
+                break;
+            case "BUSINESS_ANALYST":
+                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST");
+                break;
+            default:
+                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER");
+                break;
+        }
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
+        List<Teammate> teammatesToConsider = teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
 
         long totalMembers = teammatesToConsider.size();
         long availableMembers = teammatesToConsider.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
@@ -78,13 +99,15 @@ public class TeammateService {
 
     @Transactional
     public TeammateResponse updateTeammate(Long teammateId, TeammateCreateRequest request) {
-        logger.info("Received request to update teammate ID: {}", teammateId);
         Teammate existingTeammate = teammateRepository.findById(teammateId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with ID: " + teammateId));
 
+        Role newRole = roleRepository.findById(request.getRoleId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Role ID."));
+
         User user = existingTeammate.getUser();
         user.setFullName(request.getFullName());
-        user.setRole(request.getRole());
+        user.setRole(newRole);
         userRepository.save(user);
 
         existingTeammate.setPhone(request.getPhone());
@@ -102,7 +125,6 @@ public class TeammateService {
 
     @Transactional
     public void deleteTeammate(Long teammateId) {
-        logger.info("Received request to delete teammate ID: {}", teammateId);
         Teammate teammateToDelete = teammateRepository.findById(teammateId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with ID: " + teammateId));
 
@@ -123,7 +145,7 @@ public class TeammateService {
                 if (!teammate.getAvailabilityStatus().equals(newStatus)) {
                     teammate.setAvailabilityStatus(newStatus);
                     teammateRepository.save(teammate);
-                    logger.info("Teammate '{}' availability changed to: {}", teammate.getName(), newStatus);
+                    logger.info("Teammate '{}' availability changed to: {}", teammate.getUser().getFullName(), newStatus);
                 }
             });
         });
@@ -140,8 +162,9 @@ public class TeammateService {
         long activeTasks = teammate.getAssignedTasks().stream().filter(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED).count();
         long completedTasks = teammate.getAssignedTasks().size() - activeTasks;
 
+        User user = teammate.getUser();
         return new TeammateResponse(
-                teammate.getTeammateId(), teammate.getName(), teammate.getEmail(), teammate.getRole(),
+                teammate.getTeammateId(), user.getFullName(), user.getEmail(), user.getRole().getTitle(),
                 teammate.getPhone(), teammate.getDepartment(), teammate.getLocation(), teammate.getAvatar(),
                 teammate.getAvailabilityStatus(), activeTasks, completedTasks, projectIds, projectNames
         );

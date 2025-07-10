@@ -14,11 +14,13 @@ import com.olive.security.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,25 +41,36 @@ public class DashboardService {
     }
 
     public DashboardSummaryResponse getDashboardSummary() {
-        logger.info("Generating dashboard summary.");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        List<Teammate> teammatesForSummary;
-        List<Task> tasksForSummary;
         List<Long> userProjectIds = userDetails.getProjectIds();
-        String userRole = userDetails.getRole();
+        String functionalGroup = userDetails.getFunctionalGroup();
 
-        if ("ADMIN".equalsIgnoreCase(userRole) || "HR".equalsIgnoreCase(userRole)) {
-            teammatesForSummary = teammateRepository.findAll();
-            tasksForSummary = taskRepository.findAll();
-        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
-            teammatesForSummary = teammateRepository.findByProjects_IdIn(userProjectIds);
-            tasksForSummary = taskRepository.findByProjectIdIn(userProjectIds);
-        } else {
-            teammatesForSummary = Collections.emptyList();
-            tasksForSummary = Collections.emptyList();
+        if (userProjectIds == null || userProjectIds.isEmpty()) {
+            return new DashboardSummaryResponse(0, 0, 0, 0, 0, Collections.emptyMap(), Collections.emptyMap(), 0, 0, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         }
+
+        List<String> relevantGroups;
+        switch (functionalGroup) {
+            case "DEV_LEAD":
+            case "MANAGER":
+                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD");
+                break;
+            case "TEST_LEAD":
+                relevantGroups = Arrays.asList("TESTER", "TEST_LEAD");
+                break;
+            case "BUSINESS_ANALYST":
+                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST");
+                break;
+            default:
+                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER");
+                break;
+        }
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
+        List<Teammate> teammatesForSummary = teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
+        List<Task> tasksForSummary = taskRepository.findByProjectIdIn(userProjectIds);
 
         long totalTeammates = teammatesForSummary.size();
         long freeTeammates = teammatesForSummary.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
@@ -100,25 +113,16 @@ public class DashboardService {
 
     private DashboardTaskDTO convertTaskToDashboardTaskDTO(Task task) {
         String assignee = task.getAssignedTeammates().stream()
-                .map(Teammate::getName)
+                .map(teammate -> teammate.getUser().getFullName())
                 .findFirst()
                 .orElse(null);
-
-        // FIX: Simply prepend "TSK-" to the sequence number string. Do not format it as a number.
         String formattedTaskNumber = "TSK-" + task.getSequenceNumber();
-
         String projectName = task.getProject() != null ? task.getProject().getProjectName() : "Unknown Project";
 
         return new DashboardTaskDTO(
-                task.getTaskId(),
-                task.getTaskName(),
-                task.getStatus().getDisplayName(),
-                assignee,
-                task.getDueDate(),
-                task.getPriority(),
-                formattedTaskNumber,
-                task.getProject() != null ? task.getProject().getProjectId() : null,
-                projectName
+                task.getTaskId(), task.getTaskName(), task.getStatus().getDisplayName(), assignee,
+                task.getDueDate(), task.getPriority(), formattedTaskNumber,
+                task.getProject() != null ? task.getProject().getProjectId() : null, projectName
         );
     }
 
@@ -126,29 +130,17 @@ public class DashboardService {
         long tasksAssignedToTeammate = teammate.getAssignedTasks().stream()
                 .filter(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED)
                 .count();
-
-        List<Long> teammateProjectIdsList = new ArrayList<>();
-        List<String> teammateProjectNames = Collections.emptyList();
-        if (teammate.getProjects() != null && !teammate.getProjects().isEmpty()) {
-            teammateProjectIdsList = teammate.getProjects().stream()
-                    .map(Project::getProjectId)
-                    .collect(Collectors.toCollection(ArrayList::new));
-            teammateProjectNames = teammate.getProjects().stream()
-                    .map(Project::getProjectName)
-                    .collect(Collectors.toList());
-        }
+        List<Long> teammateProjectIdsList = teammate.getProjects().stream()
+                .map(Project::getProjectId)
+                .collect(Collectors.toCollection(ArrayList::new));
+        List<String> teammateProjectNames = teammate.getProjects().stream()
+                .map(Project::getProjectName)
+                .collect(Collectors.toList());
 
         return new DashboardTeammateDTO(
-                teammate.getTeammateId(),
-                teammate.getName(),
-                teammate.getRole(),
-                teammate.getEmail(),
-                teammate.getPhone(),
-                teammate.getDepartment(),
-                teammate.getLocation(),
-                tasksAssignedToTeammate,
-                teammateProjectIdsList,
-                teammateProjectNames
+                teammate.getTeammateId(), teammate.getUser().getFullName(), teammate.getUser().getRole().getTitle(),
+                teammate.getUser().getEmail(), teammate.getPhone(), teammate.getDepartment(), teammate.getLocation(),
+                tasksAssignedToTeammate, teammateProjectIdsList, teammateProjectNames
         );
     }
 }

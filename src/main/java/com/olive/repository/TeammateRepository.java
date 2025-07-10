@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,9 +14,8 @@ import java.util.Optional;
 public interface TeammateRepository extends JpaRepository<Teammate, Long> {
 
     Optional<Teammate> findByUser(User user);
-
-    // FIX: Corrected method name from findByProjects_ProjectIdIn to findByProjects_IdIn
-    // This correctly references the 'id' field of the Project entity.
-    List<Teammate> findByProjects_IdIn(List<Long> projectIds);
     List<Teammate> findByProjects_IdIn(List<Long> projectIds, Sort sort);
+
+    // NEW: Find teammates in specific projects who belong to a list of functional groups.
+    List<Teammate> findByProjects_IdInAndUser_Role_FunctionalGroupIn(List<Long> projectIds, Collection<String> functionalGroups, Sort sort);
 }

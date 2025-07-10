@@ -1,4 +1,3 @@
-// backend/src/main/java/com/olive/dto/AuthResponse.java
 package com.olive.dto;
 
 import java.util.List;
@@ -10,81 +9,30 @@ public class AuthResponse {
     private Long id;
     private String email;
     private String fullName;
-    private String role;
+    private String roleTitle;
+    private String functionalGroup; // FIX: Added functionalGroup
     private List<Long> projectIds;
     private List<String> projectNames;
 
-    public AuthResponse(String accessToken, Long id, String email, String fullName, String role, List<Long> projectIds, List<String> projectNames) {
+    public AuthResponse(String accessToken, Long id, String email, String fullName, String roleTitle, String functionalGroup, List<Long> projectIds, List<String> projectNames) {
         this.token = accessToken;
         this.id = id;
         this.email = email;
         this.fullName = fullName;
-        this.role = role;
+        this.roleTitle = roleTitle;
+        this.functionalGroup = functionalGroup; // FIX: Updated constructor
         this.projectIds = (projectIds != null) ? projectIds : Collections.emptyList();
         this.projectNames = (projectNames != null) ? projectNames : Collections.emptyList();
     }
 
-    public String getAccessToken() {
-        return token;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.token = accessToken;
-    }
-
-    public String getTokenType() {
-        return type;
-    }
-
-    public void setTokenType(String tokenType) {
-        this.type = tokenType;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public List<Long> getProjectIds() {
-        return projectIds;
-    }
-
-    public void setProjectIds(List<Long> projectIds) {
-        this.projectIds = (projectIds != null) ? projectIds : Collections.emptyList();
-    }
-
-    public List<String> getProjectNames() {
-        return projectNames;
-    }
-
-    public void setProjectNames(List<String> projectNames) {
-        this.projectNames = (projectNames != null) ? projectNames : Collections.emptyList();
-    }
+    // Getters
+    public String getToken() { return token; }
+    public String getType() { return type; }
+    public Long getId() { return id; }
+    public String getEmail() { return email; }
+    public String getFullName() { return fullName; }
+    public String getRoleTitle() { return roleTitle; }
+    public String getFunctionalGroup() { return functionalGroup; } // FIX: Added getter
+    public List<Long> getProjectIds() { return projectIds; }
+    public List<String> getProjectNames() { return projectNames; }
 }

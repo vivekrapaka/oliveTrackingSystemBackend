@@ -107,7 +107,9 @@ public class UserService {
     }
 
     private UserResponse convertToDto(User user) {
-        List<String> projectNames = user.getProjectIds().stream().map(projectId -> projectRepository.findById(projectId).map(Project::getProjectName).orElse("Unknown Project")).collect(Collectors.toList());
+        List<String> projectNames = user.getProjectIds().stream()
+                .map(projectId -> projectRepository.findById(projectId).map(Project::getProjectName).orElse("Unknown Project"))
+                .collect(Collectors.toList());
         String phone = null;
         String location = null;
         Optional<Teammate> teammateOpt = teammateRepository.findByUser(user);
@@ -116,7 +118,18 @@ public class UserService {
             phone = teammate.getPhone();
             location = teammate.getLocation();
         }
-        return new UserResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole().getTitle(), user.getProjectIds(), projectNames, phone, location);
+        // FIX: Pass the functionalGroup to the UserResponse constructor
+        return new UserResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole().getTitle(),
+                user.getRole().getFunctionalGroup(),
+                user.getProjectIds(),
+                projectNames,
+                phone,
+                location
+        );
     }
 
     @Transactional

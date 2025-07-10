@@ -38,20 +38,11 @@ public class Teammate {
 
     public Teammate() {}
 
+    // Getters and Setters
     public Long getTeammateId() { return id; }
     public void setTeammateId(Long id) { this.id = id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-
-    @Transient
-    public String getName() { return this.user != null ? this.user.getFullName() : null; }
-
-    @Transient
-    public String getEmail() { return this.user != null ? this.user.getEmail() : null; }
-
-    @Transient
-    public String getRole() { return this.user != null ? this.user.getRole() : null; }
-
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
     public String getDepartment() { return department; }

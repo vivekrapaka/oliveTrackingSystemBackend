@@ -36,26 +36,26 @@ public class TaskController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BUSINESS_ANALYST', 'DEVELOPER', 'TESTER', 'TEAM_MEMBER')")
     public ResponseEntity<TasksSummaryResponse> getAllTasks(@RequestParam(required = false) String taskName) {
         return ResponseEntity.ok(taskService.getAllTasks(taskName));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BUSINESS_ANALYST')")
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskCreateUpdateRequest request) {
         TaskResponse response = taskService.createTask(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA', 'TEAMMEMBER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BUSINESS_ANALYST', 'DEVELOPER','TESTER')")
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @Valid @RequestBody TaskCreateUpdateRequest request) {
         return ResponseEntity.ok(taskService.updateTask(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BUSINESS_ANALYST')")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
@@ -63,7 +63,7 @@ public class TaskController {
 
     // FIX: Re-added a smarter endpoint for generating sequence numbers.
     @GetMapping("/nextSequenceNumber")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BA')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD', 'BUSINESS_ANALYST')")
     public ResponseEntity<String> getNextTaskSequenceNumber(@RequestParam(required = false) Long parentId) {
         Task parentTask = null;
         if (parentId != null) {

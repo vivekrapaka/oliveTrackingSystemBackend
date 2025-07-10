@@ -57,7 +57,7 @@ public class WorkLogService {
                 workLog.getLogDate(),
                 workLog.getDescription(),
                 workLog.getTeammate().getTeammateId(),
-                workLog.getTeammate().getName()
+                workLog.getTeammate().getUser().getFullName()
         );
     }
 }

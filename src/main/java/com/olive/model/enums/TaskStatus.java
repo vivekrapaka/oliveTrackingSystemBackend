@@ -4,11 +4,10 @@ public enum TaskStatus {
     BACKLOG("Backlog"),
     ANALYSIS("Analysis"),
     DEVELOPMENT("Development"),
-    CODE_REVIEW("Code Review"), // NEW: Added Code Review stage
-    SIT_TESTING("SIT Testing"),
-    SIT_FAILED("SIT Failed"),
+    CODE_REVIEW("Code Review"),
     UAT_TESTING("UAT Testing"),
     UAT_FAILED("UAT Failed"),
+    READY_FOR_PREPROD("Ready for Pre-Prod"),
     PREPROD("Pre-Production"),
     PROD("Production"),
     COMPLETED("Completed"),

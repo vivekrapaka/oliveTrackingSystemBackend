@@ -24,16 +24,20 @@ public class DataLoader implements CommandLineRunner {
 
     private void createRoles() {
         List<Role> roles = Arrays.asList(
-                // Management Roles
+                // Admin Role
                 new Role("ADMIN", "ADMIN"),
+
+                // Management Roles
                 new Role("SDM1", "MANAGER"),
                 new Role("ASM1", "MANAGER"),
                 new Role("BAM 1", "MANAGER"),
 
-                // Team Lead Roles
-                new Role("SDEIV", "TEAMLEAD"),
-                new Role("SDEIII", "TEAMLEAD"),
-                new Role("ASE 3", "TEAMLEAD"),
+                // Dev Lead Roles
+                new Role("SDEIV", "DEV_LEAD"),
+                new Role("SDEIII", "DEV_LEAD"),
+
+                // Test Lead Role
+                new Role("ASE 3", "TEST_LEAD"),
 
                 // Developer Roles
                 new Role("SDEII", "DEVELOPER"),

@@ -38,38 +38,32 @@ public class AuthService {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private JwtTokenUtil jwtTokenUtil;
-    @Autowired private RoleRepository roleRepository; // Added RoleRepository
+    @Autowired private RoleRepository roleRepository;
 
     @Transactional
     public MessageResponse registerUser(SignupRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: Email is already in use!");
         }
-
-        // Fetch the default role for self-signup
         Role defaultRole = roleRepository.findByTitle("TEAM_MEMBER")
                 .orElseThrow(() -> new RuntimeException("Error: Default Role 'TEAM_MEMBER' not found."));
-
         User user = new User(
                 signUpRequest.getFullName(),
                 signUpRequest.getEmail(),
                 passwordEncoder.encode(signUpRequest.getPassword()),
-                defaultRole, // Assign the Role object
+                defaultRole,
                 Collections.emptyList()
         );
         User savedUser = userRepository.save(user);
-
         Teammate teammate = new Teammate();
         teammate.setUser(savedUser);
         teammate.setPhone(signUpRequest.getPhone());
         teammate.setLocation(signUpRequest.getLocation());
-
         String avatar = "";
         if (signUpRequest.getFullName() != null && !signUpRequest.getFullName().isEmpty()) {
             avatar = signUpRequest.getFullName().substring(0, Math.min(signUpRequest.getFullName().length(), 2)).toUpperCase();
         }
         teammate.setAvatar(avatar);
-
         teammateRepository.save(teammate);
         return new MessageResponse("User registered successfully!");
     }
@@ -88,8 +82,9 @@ public class AuthService {
                         .orElse("Unknown Project"))
                 .collect(Collectors.toList());
 
+        // FIX: Pass the functionalGroup to the AuthResponse constructor
         return new AuthResponse(jwt, userDetails.getId(), userDetails.getEmail(),
-                userDetails.getFullName(), userDetails.getRoleTitle(), // Use getRoleTitle()
+                userDetails.getFullName(), userDetails.getRoleTitle(), userDetails.getFunctionalGroup(),
                 userDetails.getProjectIds(), projectNames);
     }
 }
