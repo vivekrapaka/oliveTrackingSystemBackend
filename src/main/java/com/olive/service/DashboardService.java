@@ -33,17 +33,18 @@ public class DashboardService {
 
     private final TaskRepository taskRepository;
     private final TeammateRepository teammateRepository;
+    private final TaskService taskService;
 
     @Autowired
-    public DashboardService(TaskRepository taskRepository, TeammateRepository teammateRepository) {
+    public DashboardService(TaskRepository taskRepository, TeammateRepository teammateRepository, TaskService taskService) {
         this.taskRepository = taskRepository;
         this.teammateRepository = teammateRepository;
+        this.taskService = taskService;
     }
 
     public DashboardSummaryResponse getDashboardSummary() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
         List<Long> userProjectIds = userDetails.getProjectIds();
         String functionalGroup = userDetails.getFunctionalGroup();
 
@@ -51,27 +52,16 @@ public class DashboardService {
             return new DashboardSummaryResponse(0, 0, 0, 0, 0, Collections.emptyMap(), Collections.emptyMap(), 0, 0, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         }
 
-        List<String> relevantGroups;
-        switch (functionalGroup) {
-            case "DEV_MANAGER":
-            case "DEV_LEAD":
-                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD");
-                break;
-            case "TEST_MANAGER":
-            case "TEST_LEAD":
-                relevantGroups = Arrays.asList("TESTER", "TEST_LEAD");
-                break;
-            case "BUSINESS_ANALYST":
-                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST");
-                break;
-            default: // ADMIN, general MANAGER, etc. see everyone
-                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
-                break;
-        }
-
+        List<String> relevantGroups = getRelevantGroupsForView(functionalGroup);
         Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
-        List<Teammate> teammatesForSummary = teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
-        List<Task> tasksForSummary = taskRepository.findByProjectIdIn(userProjectIds);
+        List<Teammate> teammatesForSummary = relevantGroups.isEmpty()
+                ? Collections.emptyList()
+                : teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
+
+        List<Task> allTasksInProjects = taskRepository.findByProjectIdIn(userProjectIds);
+        List<Task> tasksForSummary = allTasksInProjects.stream()
+                .filter(task -> taskService.isTaskVisibleToRole(task, userDetails))
+                .collect(Collectors.toList());
 
         long totalTeammates = teammatesForSummary.size();
         long freeTeammates = teammatesForSummary.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
@@ -82,34 +72,38 @@ public class DashboardService {
                 .filter(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED)
                 .count();
 
-        Map<String, Long> tasksByStage = tasksForSummary.stream()
-                .collect(Collectors.groupingBy(task -> task.getStatus().getDisplayName(), Collectors.counting()));
+        Map<String, Long> tasksByStage = tasksForSummary.stream().collect(Collectors.groupingBy(task -> task.getStatus().getDisplayName(), Collectors.counting()));
+        Map<TaskType, Long> tasksByTaskType = tasksForSummary.stream().filter(task -> task.getTaskType() != null).collect(Collectors.groupingBy(Task::getTaskType, Collectors.counting()));
 
-        Map<TaskType, Long> tasksByTaskType = tasksForSummary.stream()
-                .filter(task -> task.getTaskType() != null)
-                .collect(Collectors.groupingBy(Task::getTaskType, Collectors.counting()));
+        List<DashboardTaskDTO> recentTasks = tasksForSummary.stream().limit(5).map(this::convertTaskToDashboardTaskDTO).collect(Collectors.toList());
+        List<DashboardTaskDTO> activeTasksList = tasksForSummary.stream().filter(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED).map(this::convertTaskToDashboardTaskDTO).collect(Collectors.toList());
+        List<DashboardTeammateDTO> teamMembersSummary = teammatesForSummary.stream().map(this::convertTeammateToDashboardTeammateDTO).collect(Collectors.toList());
 
-        long tasksPendingCodeReview = 0;
-        long tasksPendingCmcApproval = 0;
+        return new DashboardSummaryResponse(totalTeammates, freeTeammates, occupiedTeammates, totalTasks, activeTasks, tasksByStage, tasksByTaskType, 0, 0, recentTasks, teamMembersSummary, activeTasksList);
+    }
 
-        List<DashboardTaskDTO> recentTasks = taskRepository.findTop5ByOrderByDevelopmentStartDateDesc().stream()
-                .map(this::convertTaskToDashboardTaskDTO)
-                .collect(Collectors.toList());
-
-        List<DashboardTaskDTO> activeTasksList = tasksForSummary.stream()
-                .filter(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED)
-                .map(this::convertTaskToDashboardTaskDTO)
-                .collect(Collectors.toList());
-
-        List<DashboardTeammateDTO> teamMembersSummary = teammatesForSummary.stream()
-                .map(this::convertTeammateToDashboardTeammateDTO)
-                .collect(Collectors.toList());
-
-        return new DashboardSummaryResponse(
-                totalTeammates, freeTeammates, occupiedTeammates, totalTasks, activeTasks,
-                tasksByStage, tasksByTaskType, tasksPendingCodeReview, tasksPendingCmcApproval,
-                recentTasks, teamMembersSummary, activeTasksList
-        );
+    private List<String> getRelevantGroupsForView(String functionalGroup) {
+        switch (functionalGroup) {
+            case "DEV_MANAGER":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
+            case "TEST_MANAGER":
+                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
+            case "DEV_LEAD":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
+            case "TEST_LEAD":
+                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
+            case "TESTER": // A tester should see their own team
+                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
+            case "DEVELOPER": // A developer should see their own team
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
+            case "BUSINESS_ANALYST":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
+            case "ADMIN":
+            case "MANAGER":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
+            default:
+                return Collections.emptyList();
+        }
     }
 
     private DashboardTaskDTO convertTaskToDashboardTaskDTO(Task task) {

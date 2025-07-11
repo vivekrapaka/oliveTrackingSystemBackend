@@ -60,26 +60,11 @@ public class TeammateService {
             return new TeammatesSummaryResponse(0, 0, 0, 0, Collections.emptyList());
         }
 
-        List<String> relevantGroups;
-        switch (functionalGroup) {
-            case "DEV_MANAGER":
-            case "DEV_LEAD":
-                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD");
-                break;
-            case "TEST_MANAGER":
-            case "TEST_LEAD":
-                relevantGroups = Arrays.asList("TESTER", "TEST_LEAD");
-                break;
-            case "BUSINESS_ANALYST":
-                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST");
-                break;
-            default:
-                relevantGroups = Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
-                break;
-        }
-
+        List<String> relevantGroups = getRelevantGroupsForView(functionalGroup);
         Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
-        List<Teammate> teammatesToConsider = teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
+        List<Teammate> teammatesToConsider = relevantGroups.isEmpty()
+                ? Collections.emptyList()
+                : teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
 
         long totalMembers = teammatesToConsider.size();
         long availableMembers = teammatesToConsider.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
@@ -169,5 +154,28 @@ public class TeammateService {
                 teammate.getPhone(), teammate.getDepartment(), teammate.getLocation(), teammate.getAvatar(),
                 teammate.getAvailabilityStatus(), activeTasks, completedTasks, projectIds, projectNames
         );
+    }
+    private List<String> getRelevantGroupsForView(String functionalGroup) {
+        switch (functionalGroup) {
+            case "DEV_MANAGER":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
+            case "TEST_MANAGER":
+                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
+            case "DEV_LEAD":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
+            case "TEST_LEAD":
+                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
+            case "TESTER":
+                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
+            case "DEVELOPER":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
+            case "BUSINESS_ANALYST":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
+            case "ADMIN":
+            case "MANAGER":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
+            default:
+                return Collections.emptyList();
+        }
     }
 }

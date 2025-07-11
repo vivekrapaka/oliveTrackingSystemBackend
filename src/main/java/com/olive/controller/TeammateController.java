@@ -22,13 +22,13 @@ public class TeammateController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'MANAGER', 'TEAMLEAD', 'BUSINESS_ANALYST')")
+    @PreAuthorize("hasAnyRole('ADMIN','DEV_MANAGER','TEST_MANAGER','DEV_LEAD','TEST_LEAD', 'MANAGER','BUSINESS_ANALYST')")
     public ResponseEntity<TeammatesSummaryResponse> getAllTeammatesSummary() {
         return ResponseEntity.ok(teammateService.getAllTeammatesSummary());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'HR', 'MANAGER', 'TEAMLEAD', 'BUSINESS_ANALYST')")
+    @PreAuthorize("hasAnyRole('ADMIN','DEV_MANAGER','TEST_MANAGER','DEV_LEAD','TEST_LEAD', 'MANAGER','BUSINESS_ANALYST')")
     public ResponseEntity<TeammateResponse> getTeammateById(@PathVariable Long id) {
         return ResponseEntity.ok(teammateService.getTeammateById(id));
     }

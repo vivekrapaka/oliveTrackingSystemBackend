@@ -58,7 +58,7 @@ public class UserController {
 
     // NEW: Endpoint to get all available roles for frontend dropdowns
     @GetMapping("/roles")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ResponseEntity<List<Role>> getAllRoles() {
         return ResponseEntity.ok(userService.getAllRoles());
     }

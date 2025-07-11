@@ -54,12 +54,11 @@ public class TaskService {
     public TasksSummaryResponse getAllTasks(String taskNameFilter) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String functionalGroup = userDetails.getFunctionalGroup();
         List<Long> userProjectIds = userDetails.getProjectIds();
 
         List<Task> tasksToReturn;
 
-        if ("ADMIN".equalsIgnoreCase(functionalGroup) || "HR".equalsIgnoreCase(functionalGroup)) {
+        if ("ADMIN".equalsIgnoreCase(userDetails.getFunctionalGroup()) || "HR".equalsIgnoreCase(userDetails.getFunctionalGroup())) {
             tasksToReturn = taskRepository.findAll();
         }
         else if (userProjectIds != null && !userProjectIds.isEmpty()) {
@@ -192,7 +191,7 @@ public class TaskService {
         }
     }
 
-    private boolean isTaskVisibleToRole(Task task, UserDetailsImpl userDetails) {
+    public boolean isTaskVisibleToRole(Task task, UserDetailsImpl userDetails) {
         String functionalGroup = userDetails.getFunctionalGroup();
 
         switch (functionalGroup) {
@@ -214,7 +213,6 @@ public class TaskService {
             case "TEST_MANAGER":
             case "BUSINESS_ANALYST":
                 return true;
-
             default:
                 return false;
         }
@@ -241,10 +239,10 @@ public class TaskService {
                 break;
             case UAT_TESTING:
                 if (oldStatus == TaskStatus.CODE_REVIEW) {
-                    if (!Arrays.asList("MANAGER", "DEV_LEAD", "BUSINESS_ANALYST").contains(functionalGroup))
+                    if (!Arrays.asList("MANAGER", "DEV_LEAD", "BUSINESS_ANALYST",", TEST_LEAD","DEV_MANAGER").contains(functionalGroup))
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Manager, Dev Lead, or BA can approve a Code Review.");
                 } else if (oldStatus == TaskStatus.UAT_FAILED) {
-                    if (!"DEVELOPER".equals(functionalGroup))
+                    if (!("DEVELOPER".equals(functionalGroup) || "DEV_LEAD".equals(functionalGroup)))
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task back to UAT Testing after a fix.");
                 } else {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid transition to UAT Testing.");

@@ -20,14 +20,14 @@ public class WorkLogController {
     private WorkLogService workLogService;
 
     @PostMapping("/tasks/{taskId}/worklogs")
-    @PreAuthorize("hasAnyRole('TEAMMEMBER', 'DEVELOPER', 'TESTER')") // Roles that can log work
+    @PreAuthorize("hasAnyRole('TEAMMEMBER', 'DEVELOPER', 'TESTER','DEV_LEAD','TEST_LEAD',)") // Roles that can log work
     public ResponseEntity<WorkLogResponse> logWork(@PathVariable Long taskId, @Valid @RequestBody WorkLogRequest request) {
         WorkLogResponse response = workLogService.logWork(taskId, request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/tasks/{taskId}/worklogs")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'TEAMLEAD')") // Roles that can view work logs
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'DEV_MANAGER','TEST_MANAGER',)") // Roles that can view work logs
     public ResponseEntity<List<WorkLogResponse>> getWorkLogs(@PathVariable Long taskId) {
         return ResponseEntity.ok(workLogService.getWorkLogsForTask(taskId));
     }
