@@ -31,10 +31,13 @@ public class TaskResponse {
     private String documentPath;
     private String commitId;
 
+    private String developerName; // NEW
+    private String testerName;
+
     public TaskResponse(Long id, String name, String taskNumber, String description, TaskType taskType, TaskStatus status,
                         Long parentId, String parentTaskTitle, String parentTaskFormattedNumber,
                         LocalDate receivedDate, LocalDate developmentStartDate, LocalDate dueDate, String priority,
-                        List<Long> assignedTeammateIds, List<String> assignedTeammateNames,
+                        List<Long> assignedTeammateIds, List<String> assignedTeammateNames,String developerName,String testerName,
                         Long projectId, String projectName, String documentPath, String commitId) {
         this.id = id;
         this.name = name;
@@ -55,6 +58,8 @@ public class TaskResponse {
         this.projectName = projectName;
         this.documentPath = documentPath;
         this.commitId = commitId;
+        this.developerName = developerName;
+        this.testerName = testerName;
     }
 
     public Long getId() { return id; }
@@ -76,4 +81,6 @@ public class TaskResponse {
     public String getProjectName() { return projectName; }
     public String getDocumentPath() { return documentPath; }
     public String getCommitId() { return commitId; }
+    public String getDeveloperName() { return developerName; }
+    public String getTesterName() { return testerName; }
 }

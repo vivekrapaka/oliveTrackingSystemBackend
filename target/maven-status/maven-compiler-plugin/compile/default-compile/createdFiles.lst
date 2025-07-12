@@ -39,6 +39,7 @@ com\olive\model\TaskActivity.class
 com\olive\dto\WorkLogRequest.class
 com\olive\dto\TaskTimeSummaryResponse.class
 com\olive\config\FileStorageProperties.class
+com\olive\dto\TaskLogDetailDTO.class
 com\olive\controller\AuthController.class
 com\olive\dto\TaskCreateRequest.class
 com\olive\controller\UserController.class

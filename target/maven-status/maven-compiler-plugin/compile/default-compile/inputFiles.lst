@@ -51,6 +51,7 @@ C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\oliv
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\service\SharePointService.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TaskTimeSummaryResponse.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TeammatesSummaryResponse.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TaskLogDetailDTO.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\controller\AuthController.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\model\enums\TaskStatus.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\security\JwtAuthEntryPoint.java

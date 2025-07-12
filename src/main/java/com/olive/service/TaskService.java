@@ -14,6 +14,7 @@ import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.repository.UserRepository;
 import com.olive.security.UserDetailsImpl;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,27 +55,40 @@ public class TaskService {
     public TasksSummaryResponse getAllTasks(String taskNameFilter) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String functionalGroup = userDetails.getFunctionalGroup();
         List<Long> userProjectIds = userDetails.getProjectIds();
 
-        List<Task> tasksToReturn;
+        List<Task> tasksToFilter;
 
-        if ("ADMIN".equalsIgnoreCase(userDetails.getFunctionalGroup()) || "HR".equalsIgnoreCase(userDetails.getFunctionalGroup())) {
-            tasksToReturn = taskRepository.findAll();
+        if ("ADMIN".equalsIgnoreCase(functionalGroup) || "HR".equalsIgnoreCase(functionalGroup)) {
+            tasksToFilter = taskRepository.findAll();
         }
         else if (userProjectIds != null && !userProjectIds.isEmpty()) {
-            List<Task> tasksInUserProjects = taskRepository.findByProjectIdIn(userProjectIds);
-
-            tasksToReturn = tasksInUserProjects.stream()
-                    .filter(task -> isTaskVisibleToRole(task, userDetails))
-                    .collect(Collectors.toList());
-
-            if (taskNameFilter != null && !taskNameFilter.trim().isEmpty()) {
-                tasksToReturn = tasksToReturn.stream()
-                        .filter(task -> task.getTaskName().toLowerCase().contains(taskNameFilter.toLowerCase()))
-                        .collect(Collectors.toList());
-            }
+            tasksToFilter = taskRepository.findByProjectIdIn(userProjectIds);
         } else {
-            tasksToReturn = Collections.emptyList();
+            tasksToFilter = Collections.emptyList();
+        }
+
+        // FIX: Explicitly initialize all nested lazy-loaded collections within the transaction.
+        // This is the definitive solution to the LazyInitializationException.
+        tasksToFilter.forEach(task -> {
+            Hibernate.initialize(task.getAssignedTeammates());
+            task.getAssignedTeammates().forEach(teammate -> {
+                Hibernate.initialize(teammate.getUser());
+                if (teammate.getUser() != null) {
+                    Hibernate.initialize(teammate.getUser().getRole());
+                }
+            });
+        });
+
+        List<Task> tasksToReturn = tasksToFilter.stream()
+                .filter(task -> isTaskVisibleToRole(task, userDetails))
+                .collect(Collectors.toList());
+
+        if (taskNameFilter != null && !taskNameFilter.trim().isEmpty()) {
+            tasksToReturn = tasksToReturn.stream()
+                    .filter(task -> task.getTaskName().toLowerCase().contains(taskNameFilter.toLowerCase()))
+                    .collect(Collectors.toList());
         }
 
         List<TaskResponse> taskResponses = tasksToReturn.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -201,18 +215,19 @@ public class TaskService {
 
             case "TESTER":
             case "TEST_LEAD":
-                User currentUser = userRepository.findById(userDetails.getId()).orElse(null);
-                if (currentUser != null) {
-                    Teammate currentTeammate = teammateRepository.findByUser(currentUser).orElse(null);
-                    return currentTeammate != null && task.getAssignedTeammates().contains(currentTeammate);
-                }
-                return false;
+            case "TEST_MANAGER":
+                return task.getStatus() == TaskStatus.UAT_TESTING ||
+                        task.getStatus() == TaskStatus.UAT_FAILED ||
+                        task.getStatus() == TaskStatus.READY_FOR_PREPROD ||
+                        task.getStatus() == TaskStatus.PREPROD ||
+                        task.getStatus() == TaskStatus.PROD;
 
             case "MANAGER":
             case "DEV_MANAGER":
-            case "TEST_MANAGER":
             case "BUSINESS_ANALYST":
+            case "ADMIN":
                 return true;
+
             default:
                 return false;
         }
@@ -314,6 +329,16 @@ public class TaskService {
     private TaskResponse convertToDto(Task task) {
         List<Long> assignedTeammateIds = task.getAssignedTeammates().stream().map(Teammate::getTeammateId).collect(Collectors.toList());
         List<String> assignedTeammateNames = task.getAssignedTeammates().stream().map(teammate -> teammate.getUser().getFullName()).collect(Collectors.toList());
+
+        String developerName = task.getAssignedTeammates().stream()
+                .filter(t -> "DEVELOPER".equals(t.getUser().getRole().getFunctionalGroup()) || "DEV_LEAD".equals(t.getUser().getRole().getFunctionalGroup()))
+                .map(t -> t.getUser().getFullName())
+                .findFirst().orElse(null);
+        String testerName = task.getAssignedTeammates().stream()
+                .filter(t -> "TESTER".equals(t.getUser().getRole().getFunctionalGroup()) || "TEST_LEAD".equals(t.getUser().getRole().getFunctionalGroup()))
+                .map(t -> t.getUser().getFullName())
+                .findFirst().orElse(null);
+
         String formattedTaskNumber = task.getSequenceNumber();
         String projectName = task.getProject() != null ? task.getProject().getProjectName() : "Unknown Project";
         Long parentId = task.getParentTask() != null ? task.getParentTask().getTaskId() : null;
@@ -323,7 +348,9 @@ public class TaskService {
         return new TaskResponse(
                 task.getTaskId(), task.getTaskName(), formattedTaskNumber, task.getDescription(), task.getTaskType(), task.getStatus(),
                 parentId, parentTaskTitle, parentTaskFormattedNumber, task.getReceivedDate(), task.getDevelopmentStartDate(), task.getDueDate(),
-                task.getPriority(), assignedTeammateIds, assignedTeammateNames, task.getProject().getProjectId(), projectName, task.getDocumentPath(), task.getCommitId()
+                task.getPriority(), assignedTeammateIds, assignedTeammateNames,
+                developerName, testerName,
+                task.getProject().getProjectId(), projectName, task.getDocumentPath(), task.getCommitId()
         );
     }
 }

@@ -83,28 +83,26 @@ public class DashboardService {
     }
 
     private List<String> getRelevantGroupsForView(String functionalGroup) {
+        if ("ADMIN".equals(functionalGroup)) {
+            return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
+        }
+
         switch (functionalGroup) {
             case "DEV_MANAGER":
-                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
-            case "TEST_MANAGER":
-                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
             case "DEV_LEAD":
                 return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
+            case "TEST_MANAGER":
             case "TEST_LEAD":
                 return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
-            case "TESTER": // A tester should see their own team
-                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
-            case "DEVELOPER": // A developer should see their own team
-                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
             case "BUSINESS_ANALYST":
                 return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
-            case "ADMIN":
             case "MANAGER":
                 return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
             default:
                 return Collections.emptyList();
         }
     }
+
 
     private DashboardTaskDTO convertTaskToDashboardTaskDTO(Task task) {
         String assignee = task.getAssignedTeammates().stream()
