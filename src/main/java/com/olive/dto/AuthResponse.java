@@ -1,6 +1,7 @@
 package com.olive.dto;
 
 import java.util.List;
+import java.util.Collections;
 
 public class AuthResponse {
     private String token;
@@ -8,85 +9,30 @@ public class AuthResponse {
     private Long id;
     private String email;
     private String fullName;
-    private String role;
-    private List<Long> projectIds; // UPDATED: List of project IDs
-    private List<String> projectNames; // NEW: List of project names
+    private String roleTitle;
+    private String functionalGroup; // FIX: Added functionalGroup
+    private List<Long> projectIds;
+    private List<String> projectNames;
 
-    // Updated constructor to use List<Long> for projectIds and List<String> for projectNames
-    public AuthResponse(String token, Long id, String email, String fullName, String role, List<Long> projectIds, List<String> projectNames) {
-        this.token = token;
+    public AuthResponse(String accessToken, Long id, String email, String fullName, String roleTitle, String functionalGroup, List<Long> projectIds, List<String> projectNames) {
+        this.token = accessToken;
         this.id = id;
         this.email = email;
         this.fullName = fullName;
-        this.role = role;
-        this.projectIds = projectIds;
-        this.projectNames = projectNames;
+        this.roleTitle = roleTitle;
+        this.functionalGroup = functionalGroup; // FIX: Updated constructor
+        this.projectIds = (projectIds != null) ? projectIds : Collections.emptyList();
+        this.projectNames = (projectNames != null) ? projectNames : Collections.emptyList();
     }
 
-    // Getters and Setters
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    // UPDATED: Getter and Setter for projectIds (List<Long>)
-    public List<Long> getProjectIds() {
-        return projectIds;
-    }
-
-    public void setProjectIds(List<Long> projectIds) {
-        this.projectIds = projectIds;
-    }
-
-    // NEW: Getter and Setter for projectNames (List<String>)
-    public List<String> getProjectNames() {
-        return projectNames;
-    }
-
-    public void setProjectNames(List<String> projectNames) {
-        this.projectNames = projectNames;
-    }
+    // Getters
+    public String getToken() { return token; }
+    public String getType() { return type; }
+    public Long getId() { return id; }
+    public String getEmail() { return email; }
+    public String getFullName() { return fullName; }
+    public String getRoleTitle() { return roleTitle; }
+    public String getFunctionalGroup() { return functionalGroup; } // FIX: Added getter
+    public List<Long> getProjectIds() { return projectIds; }
+    public List<String> getProjectNames() { return projectNames; }
 }

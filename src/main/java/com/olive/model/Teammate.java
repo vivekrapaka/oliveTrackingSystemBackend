@@ -1,6 +1,9 @@
 package com.olive.model;
+
 import jakarta.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "teammates")
@@ -8,150 +11,56 @@ public class Teammate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long teammateId;
+    private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String name;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
 
-    @Column(nullable = false, unique = true, length = 100) // Email for login/linking to User, now mandatory
-    private String email;
-
-    @Column(length = 50)
-    private String role; // Role within the team/project (e.g., "Developer", "QA")
-
-    @Column(length = 20)
-    private String phone; // NEW
-
-    @Column(length = 100)
+    private String phone;
     private String department;
+    private String location;
+    private String avatar;
 
-    @Column(length = 100)
-    private String location; // NEW
-
-    @Column(length = 255)
-    private String avatar; // NEW
-
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String availabilityStatus = "Free";
 
-    @Column(name = "project_id") // Teammate still assigned to a single project
-    private Long projectId;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "teammate_projects",
+            joinColumns = @JoinColumn(name = "teammate_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    private Set<Project> projects = new HashSet<>();
 
-    // --- Constructors ---
-    public Teammate() {
-    }
+    @ManyToMany(mappedBy = "assignedTeammates", fetch = FetchType.LAZY)
+    private Set<Task> assignedTasks = new HashSet<>();
 
-    // Updated constructor to include all new fields and allow null projectId
-    public Teammate(String name, String email, String role, String phone, String department, String location, String avatar, Long projectId) {
-        this.name = name;
-        this.email = email;
-        this.role = role;
-        this.phone = phone;
-        this.department = department;
-        this.location = location;
-        this.avatar = avatar;
-        this.projectId = projectId;
-    }
+    public Teammate() {}
 
-    // --- Getters and Setters ---
-    public Long getTeammateId() {
-        return teammateId;
-    }
-
-    public void setTeammateId(Long teammateId) {
-        this.teammateId = teammateId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getAvailabilityStatus() {
-        return availabilityStatus;
-    }
-
-    public void setAvailabilityStatus(String availabilityStatus) {
-        this.availabilityStatus = availabilityStatus;
-    }
-
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-    }
+    // Getters and Setters
+    public Long getTeammateId() { return id; }
+    public void setTeammateId(Long id) { this.id = id; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public String getDepartment() { return department; }
+    public void setDepartment(String department) { this.department = department; }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
+    public String getAvailabilityStatus() { return availabilityStatus; }
+    public void setAvailabilityStatus(String availabilityStatus) { this.availabilityStatus = availabilityStatus; }
+    public Set<Project> getProjects() { return projects; }
+    public void setProjects(Set<Project> projects) { this.projects = projects != null ? projects : new HashSet<>(); }
+    public Set<Task> getAssignedTasks() { return assignedTasks; }
+    public void setAssignedTasks(Set<Task> assignedTasks) { this.assignedTasks = assignedTasks != null ? assignedTasks : new HashSet<>(); }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Teammate teammate = (Teammate) o;
-        return Objects.equals(teammateId, teammate.teammateId);
-    }
+    public boolean equals(Object o) { if (this == o) return true; if (o == null || getClass() != o.getClass()) return false; Teammate teammate = (Teammate) o; return Objects.equals(id, teammate.id); }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(teammateId);
-    }
-
-    @PrePersist
-    @PreUpdate
-    public void convertNameToUppercase() {
-        if (this.name != null) {
-            this.name = this.name.toUpperCase();
-        }
-    }
+    public int hashCode() { return Objects.hash(id); }
 }

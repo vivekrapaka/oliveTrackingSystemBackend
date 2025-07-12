@@ -28,7 +28,7 @@ public class ProjectService {
     }
 
     private ProjectResponse convertToDto(Project project) {
-        return new ProjectResponse(project.getId(), project.getProjectName(), project.getDescription());
+        return new ProjectResponse(project.getProjectId(), project.getProjectName(), project.getDescription());
     }
 
     public List<ProjectResponse> getAllProjects() {
@@ -63,7 +63,7 @@ public class ProjectService {
         project.setDescription(request.getDescription());
 
         Project savedProject = projectRepository.save(project);
-        logger.info("Project created successfully with ID: {}", savedProject.getId());
+        logger.info("Project created successfully with ID: {}", savedProject.getProjectId());
         return convertToDto(savedProject);
     }
 
@@ -90,7 +90,7 @@ public class ProjectService {
         Optional.ofNullable(request.getDescription()).ifPresent(existingProject::setDescription);
 
         Project updatedProject = projectRepository.save(existingProject);
-        logger.info("Project with ID {} updated successfully.", updatedProject.getId());
+        logger.info("Project with ID {} updated successfully.", updatedProject.getProjectId());
         return convertToDto(updatedProject);
     }
 
