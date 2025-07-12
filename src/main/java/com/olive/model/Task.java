@@ -63,6 +63,11 @@ public class Task {
     private String documentPath;
     private String commitId;
 
+    private String bitbucketBranch;
+    private String sharepointUrl;
+
+
+
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<TaskActivity> activities = new HashSet<>();
 
@@ -108,6 +113,12 @@ public class Task {
     public void setActivities(Set<TaskActivity> activities) { this.activities = activities; }
     public Set<WorkLog> getWorkLogs() { return workLogs; }
     public void setWorkLogs(Set<WorkLog> workLogs) { this.workLogs = workLogs; }
+
+    // NEW: Getters and setters for new fields
+    public String getBitbucketBranch() { return bitbucketBranch; }
+    public void setBitbucketBranch(String bitbucketBranch) { this.bitbucketBranch = bitbucketBranch; }
+    public String getSharepointUrl() { return sharepointUrl; }
+    public void setSharepointUrl(String sharepointUrl) { this.sharepointUrl = sharepointUrl; }
 
     @Override
     public boolean equals(Object o) { if (this == o) return true; if (o == null || getClass() != o.getClass()) return false; Task task = (Task) o; return Objects.equals(id, task.id); }

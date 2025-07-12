@@ -4,9 +4,11 @@ import com.olive.dto.WorkLogRequest;
 import com.olive.dto.WorkLogResponse;
 import com.olive.model.Task;
 import com.olive.model.Teammate;
+import com.olive.model.User;
 import com.olive.model.WorkLog;
 import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
+import com.olive.repository.UserRepository;
 import com.olive.repository.WorkLogRepository;
 import com.olive.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +26,19 @@ public class WorkLogService {
     @Autowired private WorkLogRepository workLogRepository;
     @Autowired private TaskRepository taskRepository;
     @Autowired private TeammateRepository teammateRepository;
+    @Autowired private UserRepository userRepository;
 
     public WorkLogResponse logWork(Long taskId, WorkLogRequest request) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Teammate teammate = teammateRepository.findById(userDetails.getId()) // Assuming user ID and teammate ID are linked this way
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found"));
+
+        User currentUser = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Logged in user not found"));
+
+        Teammate teammate = teammateRepository.findByUser(currentUser)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate profile not found for the current user"));
 
         WorkLog workLog = new WorkLog();
         workLog.setTask(task);

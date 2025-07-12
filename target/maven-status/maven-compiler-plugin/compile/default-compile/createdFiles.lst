@@ -1,22 +1,26 @@
 com\olive\dto\TasksSummaryResponse.class
 com\olive\config\CorsConfig$1.class
 com\olive\service\TaskActivityService.class
+com\olive\dto\TimesheetResponse.class
 com\olive\dto\SignupRequest.class
 com\olive\model\WorkLog.class
 com\olive\dto\UserCreateUpdateRequest.class
 com\olive\repository\UserRepository.class
 com\olive\dto\TaskCreateUpdateRequest.class
 com\olive\dto\DashboardSummaryResponse.class
+com\olive\service\PdfGenerationService.class
 com\olive\dto\MessageResponse.class
 com\olive\security\JwtTokenUtil.class
 com\olive\repository\WorkLogRepository.class
 com\olive\config\CorsConfig.class
 com\olive\security\WebSecurityConfig.class
 com\olive\repository\TaskRepository.class
+com\olive\service\BitbucketService.class
 com\olive\model\JpaLongListConverter.class
 com\olive\service\TaskService$1.class
 com\olive\dto\TaskUpdateRequest.class
 com\olive\service\DashboardService.class
+com\olive\dto\TimeLogBreakdownDTO.class
 com\olive\repository\TeammateRepository.class
 com\olive\service\TaskService.class
 com\olive\controller\TaskController.class
@@ -33,6 +37,7 @@ com\olive\model\User.class
 com\olive\service\TeammateService.class
 com\olive\model\TaskActivity.class
 com\olive\dto\WorkLogRequest.class
+com\olive\dto\TaskTimeSummaryResponse.class
 com\olive\config\FileStorageProperties.class
 com\olive\controller\AuthController.class
 com\olive\dto\TaskCreateRequest.class
@@ -44,6 +49,7 @@ com\olive\dto\DashboardTeammateDTO.class
 com\olive\TaskmanagerApplication.class
 com\olive\controller\TeammateController.class
 com\olive\service\FileStorageService.class
+com\olive\service\SharePointService.class
 com\olive\security\JwtAuthEntryPoint.class
 com\olive\exception\FileStorageException.class
 com\olive\controller\ProjectController.class
@@ -55,6 +61,7 @@ com\olive\model\Project.class
 com\olive\model\enums\TaskType.class
 com\olive\model\Teammate.class
 com\olive\dto\TeammateCreateRequest.class
+com\olive\controller\ReportingController.class
 com\olive\security\JwtAuthFilter.class
 com\olive\security\UserDetailsServiceImpl.class
 com\olive\config\DataLoader.class
@@ -63,6 +70,7 @@ com\olive\model\Task.class
 com\olive\exception\MyFileNotFoundException.class
 com\olive\service\ProjectService.class
 com\olive\dto\UserResponse.class
+com\olive\service\ReportingService.class
 com\olive\controller\WorkLogController.class
 com\olive\service\AuthService.class
 com\olive\dto\DashboardTaskDTO.class
@@ -70,6 +78,7 @@ com\olive\dto\ProjectResponse.class
 com\olive\dto\AuthRequest.class
 com\olive\exception\CustomExceptionHandler.class
 com\olive\repository\ProjectRepository.class
+com\olive\dto\DailyLogDTO.class
 com\olive\dto\ProjectCreateRequest.class
 com\olive\controller\DashboardController.class
 com\olive\dto\AuthResponse.class
