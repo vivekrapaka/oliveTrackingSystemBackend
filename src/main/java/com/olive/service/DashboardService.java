@@ -11,6 +11,7 @@ import com.olive.model.enums.TaskType;
 import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.security.UserDetailsImpl;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +44,7 @@ public class DashboardService {
         this.taskService = taskService;
     }
 
+    @Transactional(readOnly = true)
     public DashboardSummaryResponse getDashboardSummary() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -59,6 +62,11 @@ public class DashboardService {
                 : teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
 
         List<Task> allTasksInProjects = taskRepository.findByProjectIdIn(userProjectIds);
+        allTasksInProjects.forEach(task -> {
+            Hibernate.initialize(task.getAssignedDevelopers());
+            Hibernate.initialize(task.getAssignedTesters());
+        });
+
         List<Task> tasksForSummary = allTasksInProjects.stream()
                 .filter(task -> taskService.isTaskVisibleToRole(task, userDetails))
                 .collect(Collectors.toList());
@@ -86,7 +94,6 @@ public class DashboardService {
         if ("ADMIN".equals(functionalGroup)) {
             return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
         }
-
         switch (functionalGroup) {
             case "DEV_MANAGER":
             case "DEV_LEAD":
@@ -103,26 +110,38 @@ public class DashboardService {
         }
     }
 
-
     private DashboardTaskDTO convertTaskToDashboardTaskDTO(Task task) {
-        String assignee = task.getAssignedTeammates().stream()
+        String developerName = task.getAssignedDevelopers().stream()
                 .map(teammate -> teammate.getUser().getFullName())
                 .findFirst()
                 .orElse(null);
+        String testerName = task.getAssignedTesters().stream()
+                .map(teammate -> teammate.getUser().getFullName())
+                .findFirst()
+                .orElse(null);
+
         String formattedTaskNumber = "TSK-" + task.getSequenceNumber();
         String projectName = task.getProject() != null ? task.getProject().getProjectName() : "Unknown Project";
 
         return new DashboardTaskDTO(
-                task.getTaskId(), task.getTaskName(), task.getStatus().getDisplayName(), assignee,
-                task.getDueDate(), task.getPriority(), formattedTaskNumber,
-                task.getProject() != null ? task.getProject().getProjectId() : null, projectName
+                task.getTaskId(),
+                task.getTaskName(),
+                task.getStatus().getDisplayName(),
+                task.getPriority(),
+                formattedTaskNumber,
+                task.getProject() != null ? task.getProject().getProjectId() : null,
+                projectName,
+                developerName,
+                testerName,
+                task.getDevelopmentDueHours(),
+                task.getTestingDueHours()
         );
     }
 
     private DashboardTeammateDTO convertTeammateToDashboardTeammateDTO(Teammate teammate) {
-        long tasksAssignedToTeammate = teammate.getAssignedTasks().stream()
-                .filter(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED)
-                .count();
+        // FIX: Use the new repository method to correctly count assigned tasks.
+        long tasksAssignedToTeammate = taskRepository.countTasksByTeammate(teammate);
+
         List<Long> teammateProjectIdsList = teammate.getProjects().stream()
                 .map(Project::getProjectId)
                 .collect(Collectors.toCollection(ArrayList::new));

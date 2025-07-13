@@ -1,11 +1,17 @@
 package com.olive.service;
 
 import com.olive.dto.*;
-import com.olive.model.*;
-import com.olive.repository.*;
+import com.olive.model.Project;
+import com.olive.model.Task;
+import com.olive.model.Teammate;
+import com.olive.model.WorkLog;
+import com.olive.repository.TaskRepository;
+import com.olive.repository.TeammateRepository;
+import com.olive.repository.WorkLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -23,6 +29,7 @@ public class ReportingService {
     @Autowired private TeammateRepository teammateRepository;
     @Autowired private TaskRepository taskRepository;
 
+    @Transactional(readOnly = true)
     public TimesheetResponse getTeammateTimesheet(Long teammateId, LocalDate startDate, LocalDate endDate) {
         Teammate teammate = teammateRepository.findById(teammateId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found"));
@@ -49,6 +56,7 @@ public class ReportingService {
         return new TimesheetResponse(teammateId, teammate.getUser().getFullName(), totalHoursForPeriod, dailyLogs);
     }
 
+    @Transactional(readOnly = true)
     public TaskTimeSummaryResponse getTaskTimeSummary(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
@@ -83,8 +91,14 @@ public class ReportingService {
             }
         }
 
-        TimeLogBreakdownDTO breakdown = new TimeLogBreakdownDTO(devHours, testHours, otherHours);
-        return new TaskTimeSummaryResponse(taskId, task.getTaskName(), totalHours, breakdown, devManager, testManager, new ArrayList<>(developerNames), new ArrayList<>(testerNames));
+        TimeLogBreakdownDTO breakdown = new TimeLogBreakdownDTO(
+                devHours,
+                task.getDevelopmentDueHours(),
+                testHours,
+                task.getTestingDueHours()
+        );
+
+        return new TaskTimeSummaryResponse(taskId, task.getTaskName(), totalHours, breakdown, devManager, testManager, new ArrayList<>(developerNames), new ArrayList<>(testerNames), task.getDevelopmentDueHours(), task.getTestingDueHours());
     }
 
     private String findManagerForProject(Project project, String functionalGroup) {

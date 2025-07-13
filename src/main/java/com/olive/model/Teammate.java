@@ -33,8 +33,8 @@ public class Teammate {
     )
     private Set<Project> projects = new HashSet<>();
 
-    @ManyToMany(mappedBy = "assignedTeammates", fetch = FetchType.LAZY)
-    private Set<Task> assignedTasks = new HashSet<>();
+    // FIX: The problematic 'assignedTasks' field has been removed.
+    // The relationship is now unidirectional from Task to Teammate.
 
     public Teammate() {}
 
@@ -55,8 +55,6 @@ public class Teammate {
     public void setAvailabilityStatus(String availabilityStatus) { this.availabilityStatus = availabilityStatus; }
     public Set<Project> getProjects() { return projects; }
     public void setProjects(Set<Project> projects) { this.projects = projects != null ? projects : new HashSet<>(); }
-    public Set<Task> getAssignedTasks() { return assignedTasks; }
-    public void setAssignedTasks(Set<Task> assignedTasks) { this.assignedTasks = assignedTasks != null ? assignedTasks : new HashSet<>(); }
 
     @Override
     public boolean equals(Object o) { if (this == o) return true; if (o == null || getClass() != o.getClass()) return false; Teammate teammate = (Teammate) o; return Objects.equals(id, teammate.id); }

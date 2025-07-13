@@ -9,10 +9,12 @@ public class TaskTimeSummaryResponse {
     private TimeLogBreakdownDTO breakdown;
     private String devManagerName;
     private String testManagerName;
-    private List<String> developerNames; // NEW
-    private List<String> testerNames;    // NEW
+    private List<String> developerNames;
+    private List<String> testerNames;
+    private Double developmentDueHours;
+    private Double testingDueHours;
 
-    public TaskTimeSummaryResponse(Long taskId, String taskName, double totalHours, TimeLogBreakdownDTO breakdown, String devManagerName, String testManagerName, List<String> developerNames, List<String> testerNames) {
+    public TaskTimeSummaryResponse(Long taskId, String taskName, double totalHours, TimeLogBreakdownDTO breakdown, String devManagerName, String testManagerName, List<String> developerNames, List<String> testerNames, Double developmentDueHours, Double testingDueHours) {
         this.taskId = taskId;
         this.taskName = taskName;
         this.totalHours = totalHours;
@@ -21,9 +23,11 @@ public class TaskTimeSummaryResponse {
         this.testManagerName = testManagerName;
         this.developerNames = developerNames;
         this.testerNames = testerNames;
+        this.developmentDueHours = developmentDueHours;
+        this.testingDueHours = testingDueHours;
     }
 
-    // Getters
+    // Getters...
     public Long getTaskId() { return taskId; }
     public String getTaskName() { return taskName; }
     public double getTotalHours() { return totalHours; }
@@ -32,4 +36,6 @@ public class TaskTimeSummaryResponse {
     public String getTestManagerName() { return testManagerName; }
     public List<String> getDeveloperNames() { return developerNames; }
     public List<String> getTesterNames() { return testerNames; }
+    public Double getDevelopmentDueHours() { return developmentDueHours; }
+    public Double getTestingDueHours() { return testingDueHours; }
 }

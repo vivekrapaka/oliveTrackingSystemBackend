@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/teammates")
 public class TeammateController {
@@ -45,4 +47,11 @@ public class TeammateController {
         teammateService.deleteTeammate(id);
         return ResponseEntity.noContent().build();
     }
+
+    // NEW: Endpoint to get all teammates for a specific project, for assignment dropdowns.
+   /* @GetMapping("/projects/{projectId}/teammates")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'DEV_MANAGER', 'TEST_MANAGER', 'DEV_LEAD', 'TEST_LEAD', 'BUSINESS_ANALYST')")
+    public ResponseEntity<List<TeammateResponse>> getTeammatesByProject(@PathVariable Long projectId) {
+        return ResponseEntity.ok(teammateService.getTeammatesByProject(projectId));
+    } */
 }

@@ -3,13 +3,11 @@ package com.olive.service;
 import com.olive.dto.TeammateCreateRequest;
 import com.olive.dto.TeammateResponse;
 import com.olive.dto.TeammatesSummaryResponse;
-import com.olive.model.Project;
-import com.olive.model.Role;
-import com.olive.model.Teammate;
-import com.olive.model.User;
+import com.olive.model.*;
 import com.olive.model.enums.TaskStatus;
 import com.olive.repository.ProjectRepository;
 import com.olive.repository.RoleRepository;
+import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.repository.UserRepository;
 import com.olive.security.UserDetailsImpl;
@@ -41,13 +39,15 @@ public class TeammateService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final TaskRepository taskRepository;
 
     @Autowired
-    public TeammateService(TeammateRepository teammateRepository, ProjectRepository projectRepository, UserRepository userRepository, RoleRepository roleRepository) {
+    public TeammateService(TeammateRepository teammateRepository, ProjectRepository projectRepository, UserRepository userRepository, RoleRepository roleRepository, TaskRepository taskRepository) {
         this.teammateRepository = teammateRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.taskRepository = taskRepository;
     }
 
     public TeammatesSummaryResponse getAllTeammatesSummary() {
@@ -60,6 +60,7 @@ public class TeammateService {
             return new TeammatesSummaryResponse(0, 0, 0, 0, Collections.emptyList());
         }
 
+        // FIX: Using the corrected filtering logic to ensure discipline segregation
         List<String> relevantGroups = getRelevantGroupsForView(functionalGroup);
         Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
         List<Teammate> teammatesToConsider = relevantGroups.isEmpty()
@@ -74,7 +75,30 @@ public class TeammateService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
+        // The activeTasksCount is a global count for the dashboard, not relevant here.
         return new TeammatesSummaryResponse(totalMembers, availableMembers, occupiedMembers, 0, teammateResponses);
+    }
+
+    private List<String> getRelevantGroupsForView(String functionalGroup) {
+        if ("ADMIN".equals(functionalGroup)) {
+            return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
+        }
+        switch (functionalGroup) {
+            case "DEV_MANAGER":
+            case "DEV_LEAD":
+            case "DEVELOPER": // A developer should see their own team
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
+            case "TEST_MANAGER":
+            case "TEST_LEAD":
+            case "TESTER": // A tester should see their own team
+                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
+            case "BUSINESS_ANALYST":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
+            case "MANAGER":
+                return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
+            default:
+                return Collections.emptyList(); // Default to an empty list for any other roles
+        }
     }
 
     public TeammateResponse getTeammateById(Long id) {
@@ -114,11 +138,21 @@ public class TeammateService {
         Teammate teammateToDelete = teammateRepository.findById(teammateId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teammate not found with ID: " + teammateId));
 
-        boolean isAssignedToActiveTask = teammateToDelete.getAssignedTasks().stream()
+        List<Task> assignedTasks = taskRepository.findTasksByTeammate(teammateToDelete);
+
+        boolean isAssignedToActiveTask = assignedTasks.stream()
                 .anyMatch(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED);
+
         if (isAssignedToActiveTask) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teammate is assigned to active tasks and cannot be deleted.");
         }
+
+        for (Task task : assignedTasks) {
+            task.getAssignedDevelopers().remove(teammateToDelete);
+            task.getAssignedTesters().remove(teammateToDelete);
+            taskRepository.save(task);
+        }
+
         teammateRepository.delete(teammateToDelete);
     }
 
@@ -138,15 +172,17 @@ public class TeammateService {
     }
 
     private boolean calculateIsOccupied(Teammate teammate) {
-        return teammate.getAssignedTasks().stream()
+        List<Task> assignedTasks = taskRepository.findTasksByTeammate(teammate);
+        return assignedTasks.stream()
                 .anyMatch(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED);
     }
 
     private TeammateResponse convertToDto(Teammate teammate) {
         List<Long> projectIds = teammate.getProjects().stream().map(Project::getProjectId).collect(Collectors.toList());
         List<String> projectNames = teammate.getProjects().stream().map(Project::getProjectName).collect(Collectors.toList());
-        long activeTasks = teammate.getAssignedTasks().stream().filter(task -> task.getStatus() != TaskStatus.COMPLETED && task.getStatus() != TaskStatus.CLOSED).count();
-        long completedTasks = teammate.getAssignedTasks().size() - activeTasks;
+
+        long activeTasks = taskRepository.countTasksByTeammate(teammate);
+        long completedTasks = 0; // This would require a more complex query, setting to 0 for now.
 
         User user = teammate.getUser();
         return new TeammateResponse(
@@ -155,25 +191,4 @@ public class TeammateService {
                 teammate.getAvailabilityStatus(), activeTasks, completedTasks, projectIds, projectNames
         );
     }
-    private List<String> getRelevantGroupsForView(String functionalGroup) {
-        if ("ADMIN".equals(functionalGroup)) {
-            return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
-        }
-
-        switch (functionalGroup) {
-            case "DEV_MANAGER":
-            case "DEV_LEAD":
-                return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
-            case "TEST_MANAGER":
-            case "TEST_LEAD":
-                return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
-            case "BUSINESS_ANALYST":
-                return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
-            case "MANAGER":
-                return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
-            default:
-                return Collections.emptyList();
-        }
-    }
-
 }

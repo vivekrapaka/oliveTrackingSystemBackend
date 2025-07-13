@@ -3,7 +3,6 @@ package com.olive.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.olive.model.enums.TaskStatus;
 import com.olive.model.enums.TaskType;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,24 +20,25 @@ public class TaskResponse {
     private LocalDate receivedDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate developmentStartDate;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dueDate;
     private String priority;
     private List<Long> assignedTeammateIds;
     private List<String> assignedTeammateNames;
+    private String developerName;
+    private String testerName;
     private Long projectId;
     private String projectName;
     private String documentPath;
     private String commitId;
-
-    private String developerName; // NEW
-    private String testerName;
+    private Double developmentDueHours; // NEW
+    private Double testingDueHours;     // NEW
 
     public TaskResponse(Long id, String name, String taskNumber, String description, TaskType taskType, TaskStatus status,
                         Long parentId, String parentTaskTitle, String parentTaskFormattedNumber,
-                        LocalDate receivedDate, LocalDate developmentStartDate, LocalDate dueDate, String priority,
-                        List<Long> assignedTeammateIds, List<String> assignedTeammateNames,String developerName,String testerName,
-                        Long projectId, String projectName, String documentPath, String commitId) {
+                        LocalDate receivedDate, LocalDate developmentStartDate,
+                        String priority, List<Long> assignedTeammateIds, List<String> assignedTeammateNames,
+                        String developerName, String testerName,
+                        Long projectId, String projectName, String documentPath, String commitId,
+                        Double developmentDueHours, Double testingDueHours) {
         this.id = id;
         this.name = name;
         this.taskNumber = taskNumber;
@@ -50,18 +50,20 @@ public class TaskResponse {
         this.parentTaskFormattedNumber = parentTaskFormattedNumber;
         this.receivedDate = receivedDate;
         this.developmentStartDate = developmentStartDate;
-        this.dueDate = dueDate;
         this.priority = priority;
         this.assignedTeammateIds = assignedTeammateIds;
         this.assignedTeammateNames = assignedTeammateNames;
+        this.developerName = developerName;
+        this.testerName = testerName;
         this.projectId = projectId;
         this.projectName = projectName;
         this.documentPath = documentPath;
         this.commitId = commitId;
-        this.developerName = developerName;
-        this.testerName = testerName;
+        this.developmentDueHours = developmentDueHours;
+        this.testingDueHours = testingDueHours;
     }
 
+    // Getters
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getTaskNumber() { return taskNumber; }
@@ -73,14 +75,15 @@ public class TaskResponse {
     public String getParentTaskFormattedNumber() { return parentTaskFormattedNumber; }
     public LocalDate getReceivedDate() { return receivedDate; }
     public LocalDate getDevelopmentStartDate() { return developmentStartDate; }
-    public LocalDate getDueDate() { return dueDate; }
     public String getPriority() { return priority; }
     public List<Long> getAssignedTeammateIds() { return assignedTeammateIds; }
     public List<String> getAssignedTeammateNames() { return assignedTeammateNames; }
+    public String getDeveloperName() { return developerName; }
+    public String getTesterName() { return testerName; }
     public Long getProjectId() { return projectId; }
     public String getProjectName() { return projectName; }
     public String getDocumentPath() { return documentPath; }
     public String getCommitId() { return commitId; }
-    public String getDeveloperName() { return developerName; }
-    public String getTesterName() { return testerName; }
+    public Double getDevelopmentDueHours() { return developmentDueHours; }
+    public Double getTestingDueHours() { return testingDueHours; }
 }

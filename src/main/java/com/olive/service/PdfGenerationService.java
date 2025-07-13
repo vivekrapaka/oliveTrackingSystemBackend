@@ -7,7 +7,6 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.olive.dto.DailyLogDTO;
@@ -60,7 +59,6 @@ public class PdfGenerationService {
         document.add(new Paragraph("Dev Manager: " + summary.getDevManagerName()));
         document.add(new Paragraph("Test Manager: " + summary.getTestManagerName()));
 
-        // Add contributor names
         if (summary.getDeveloperNames() != null && !summary.getDeveloperNames().isEmpty()) {
             document.add(new Paragraph("Contributing Developers: " + String.join(", ", summary.getDeveloperNames())));
         }
@@ -70,17 +68,19 @@ public class PdfGenerationService {
 
         document.add(new Paragraph("\n"));
 
-        Table table = new Table(UnitValue.createPercentArray(new float[]{2, 1}));
+        Table table = new Table(UnitValue.createPercentArray(new float[]{2, 1, 1}));
         table.setWidth(UnitValue.createPercentValue(100));
         table.addHeaderCell(new Cell().add(new Paragraph("Discipline").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Hours Logged").setBold()));
+        table.addHeaderCell(new Cell().add(new Paragraph("Actual Hours").setBold()));
+        table.addHeaderCell(new Cell().add(new Paragraph("Estimated Hours").setBold()));
 
-        table.addCell("Development Hours");
+        table.addCell("Development");
         table.addCell(String.valueOf(summary.getBreakdown().getDevelopmentHours()));
-        table.addCell("Testing Hours");
+        table.addCell(String.valueOf(summary.getDevelopmentDueHours()));
+
+        table.addCell("Testing");
         table.addCell(String.valueOf(summary.getBreakdown().getTestingHours()));
-        table.addCell("Other Hours");
-        table.addCell(String.valueOf(summary.getBreakdown().getOtherHours()));
+        table.addCell(String.valueOf(summary.getTestingDueHours()));
 
         document.add(table);
         document.close();
