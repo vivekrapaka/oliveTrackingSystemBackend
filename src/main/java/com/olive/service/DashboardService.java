@@ -6,6 +6,7 @@ import com.olive.dto.DashboardTeammateDTO;
 import com.olive.model.Project;
 import com.olive.model.Task;
 import com.olive.model.Teammate;
+import com.olive.model.User;
 import com.olive.model.enums.TaskStatus;
 import com.olive.model.enums.TaskType;
 import com.olive.repository.TaskRepository;
@@ -148,10 +149,10 @@ public class DashboardService {
         List<String> teammateProjectNames = teammate.getProjects().stream()
                 .map(Project::getProjectName)
                 .collect(Collectors.toList());
-
+        User user = teammate.getUser();
         return new DashboardTeammateDTO(
                 teammate.getTeammateId(), teammate.getUser().getFullName(), teammate.getUser().getRole().getTitle(),
-                teammate.getUser().getEmail(), teammate.getPhone(), teammate.getDepartment(), teammate.getLocation(),
+                teammate.getUser().getEmail(), teammate.getPhone(), user.getRole().getFunctionalGroup(), teammate.getLocation(),
                 tasksAssignedToTeammate, teammateProjectIdsList, teammateProjectNames
         );
     }

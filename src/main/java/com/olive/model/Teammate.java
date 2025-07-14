@@ -18,7 +18,7 @@ public class Teammate {
     private User user;
 
     private String phone;
-    private String department;
+    // FIX: Removed the unused 'department' field.
     private String location;
     private String avatar;
 
@@ -33,9 +33,6 @@ public class Teammate {
     )
     private Set<Project> projects = new HashSet<>();
 
-    // FIX: The problematic 'assignedTasks' field has been removed.
-    // The relationship is now unidirectional from Task to Teammate.
-
     public Teammate() {}
 
     // Getters and Setters
@@ -45,8 +42,6 @@ public class Teammate {
     public void setUser(User user) { this.user = user; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-    public String getDepartment() { return department; }
-    public void setDepartment(String department) { this.department = department; }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
     public String getAvatar() { return avatar; }

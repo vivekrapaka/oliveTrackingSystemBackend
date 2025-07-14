@@ -121,7 +121,7 @@ public class TeammateService {
         userRepository.save(user);
 
         existingTeammate.setPhone(request.getPhone());
-        existingTeammate.setDepartment(request.getDepartment());
+        // FIX: Removed logic for setting department
         existingTeammate.setLocation(request.getLocation());
 
         if (request.getProjectIds() != null) {
@@ -187,7 +187,7 @@ public class TeammateService {
         User user = teammate.getUser();
         return new TeammateResponse(
                 teammate.getTeammateId(), user.getFullName(), user.getEmail(), user.getRole().getTitle(),
-                teammate.getPhone(), teammate.getDepartment(), teammate.getLocation(), teammate.getAvatar(),
+                teammate.getPhone(), user.getRole().getFunctionalGroup(), teammate.getLocation(), teammate.getAvatar(),
                 teammate.getAvailabilityStatus(), activeTasks, completedTasks, projectIds, projectNames
         );
     }
