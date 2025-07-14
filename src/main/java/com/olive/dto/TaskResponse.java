@@ -21,22 +21,22 @@ public class TaskResponse {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate developmentStartDate;
     private String priority;
-    private List<Long> assignedTeammateIds;
-    private List<String> assignedTeammateNames;
-    private String developerName;
-    private String testerName;
+    private List<Long> assignedDeveloperIds;
+    private List<String> assignedDeveloperNames;
+    private List<Long> assignedTesterIds;
+    private List<String> assignedTesterNames;
     private Long projectId;
     private String projectName;
     private String documentPath;
     private String commitId;
-    private Double developmentDueHours; // NEW
-    private Double testingDueHours;     // NEW
+    private Double developmentDueHours;
+    private Double testingDueHours;
 
     public TaskResponse(Long id, String name, String taskNumber, String description, TaskType taskType, TaskStatus status,
                         Long parentId, String parentTaskTitle, String parentTaskFormattedNumber,
                         LocalDate receivedDate, LocalDate developmentStartDate,
-                        String priority, List<Long> assignedTeammateIds, List<String> assignedTeammateNames,
-                        String developerName, String testerName,
+                        String priority, List<Long> assignedDeveloperIds, List<String> assignedDeveloperNames,
+                        List<Long> assignedTesterIds, List<String> assignedTesterNames,
                         Long projectId, String projectName, String documentPath, String commitId,
                         Double developmentDueHours, Double testingDueHours) {
         this.id = id;
@@ -51,10 +51,10 @@ public class TaskResponse {
         this.receivedDate = receivedDate;
         this.developmentStartDate = developmentStartDate;
         this.priority = priority;
-        this.assignedTeammateIds = assignedTeammateIds;
-        this.assignedTeammateNames = assignedTeammateNames;
-        this.developerName = developerName;
-        this.testerName = testerName;
+        this.assignedDeveloperIds = assignedDeveloperIds;
+        this.assignedDeveloperNames = assignedDeveloperNames;
+        this.assignedTesterIds = assignedTesterIds;
+        this.assignedTesterNames = assignedTesterNames;
         this.projectId = projectId;
         this.projectName = projectName;
         this.documentPath = documentPath;
@@ -76,10 +76,10 @@ public class TaskResponse {
     public LocalDate getReceivedDate() { return receivedDate; }
     public LocalDate getDevelopmentStartDate() { return developmentStartDate; }
     public String getPriority() { return priority; }
-    public List<Long> getAssignedTeammateIds() { return assignedTeammateIds; }
-    public List<String> getAssignedTeammateNames() { return assignedTeammateNames; }
-    public String getDeveloperName() { return developerName; }
-    public String getTesterName() { return testerName; }
+    public List<Long> getAssignedDeveloperIds() { return assignedDeveloperIds; }
+    public List<String> getAssignedDeveloperNames() { return assignedDeveloperNames; }
+    public List<Long> getAssignedTesterIds() { return assignedTesterIds; }
+    public List<String> getAssignedTesterNames() { return assignedTesterNames; }
     public Long getProjectId() { return projectId; }
     public String getProjectName() { return projectName; }
     public String getDocumentPath() { return documentPath; }
