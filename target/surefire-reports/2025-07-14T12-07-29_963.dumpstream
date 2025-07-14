@@ -1,0 +1,5 @@
+# Created at 2025-07-14T12:07:30.438
+Boot Manifest-JAR contains absolute paths in classpath 'D:\workspace\oliveTrackingSystemBackend\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+
