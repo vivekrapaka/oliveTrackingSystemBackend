@@ -4920,3 +4920,223 @@ org.springframework.security.authentication.BadCredentialsException: Bad credent
 2025-07-14T14:49:24.037+05:30  INFO 30568 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-07-14T14:49:24.143+05:30  INFO 30568 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2025-07-14T14:49:24.174+05:30  INFO 30568 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-07-14T15:21:44.365+05:30  INFO 32440 --- [restartedMain] com.olive.TaskmanagerApplication         : Starting TaskmanagerApplication using Java 17.0.15 with PID 32440 (D:\workspace\oliveTrackingSystemBackend\target\classes started by VivekKumarRapaka in D:\workspace\oliveTrackingSystemBackend)
+2025-07-14T15:21:44.379+05:30  INFO 32440 --- [restartedMain] com.olive.TaskmanagerApplication         : No active profile set, falling back to 1 default profile: "default"
+2025-07-14T15:21:44.473+05:30  INFO 32440 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-07-14T15:21:44.473+05:30  INFO 32440 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-07-14T15:21:47.040+05:30  INFO 32440 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-14T15:21:47.200+05:30  INFO 32440 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 148 ms. Found 7 JPA repository interfaces.
+2025-07-14T15:21:49.131+05:30  INFO 32440 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8085 (http)
+2025-07-14T15:21:49.230+05:30  INFO 32440 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-07-14T15:21:49.249+05:30  INFO 32440 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-07-14T15:21:49.507+05:30  INFO 32440 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-07-14T15:21:49.520+05:30  INFO 32440 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 5046 ms
+2025-07-14T15:21:50.315+05:30  INFO 32440 --- [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-14T15:21:50.488+05:30  INFO 32440 --- [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-07-14T15:21:50.583+05:30  INFO 32440 --- [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-14T15:21:51.145+05:30  INFO 32440 --- [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-14T15:21:51.206+05:30  INFO 32440 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-14T15:21:52.257+05:30  INFO 32440 --- [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: c8ee6be0-5b6a-423f-a0ea-b1756e7bf07d
+2025-07-14T15:21:52.267+05:30  INFO 32440 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-14T15:21:52.353+05:30  WARN 32440 --- [restartedMain] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-07-14T15:21:54.429+05:30  INFO 32440 --- [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-14T15:22:02.258+05:30  INFO 32440 --- [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-14T15:22:02.968+05:30  INFO 32440 --- [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-14T15:22:03.968+05:30  INFO 32440 --- [restartedMain] com.olive.service.FileStorageService     : File storage location initialized to: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-14T15:22:03.968+05:30  INFO 32440 --- [restartedMain] com.olive.service.FileStorageService     : Created upload directory: D:\workspace\oliveTrackingSystemBackend\uploads
+2025-07-14T15:22:04.239+05:30  WARN 32440 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-14T15:22:04.720+05:30  INFO 32440 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@684403ab, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2fc6a40, org.springframework.security.web.context.SecurityContextHolderFilter@3d608d87, org.springframework.security.web.header.HeaderWriterFilter@4416062c, org.springframework.web.filter.CorsFilter@34e4efca, org.springframework.security.web.authentication.logout.LogoutFilter@56f41ba7, com.olive.security.JwtAuthFilter@4fc59b58, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@620a9dbe, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@391382d3, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@26a3fd0e, org.springframework.security.web.session.SessionManagementFilter@367e4832, org.springframework.security.web.access.ExceptionTranslationFilter@113c2860, org.springframework.security.web.access.intercept.AuthorizationFilter@4ea49ed5]
+2025-07-14T15:22:05.081+05:30  INFO 32440 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2025-07-14T15:22:05.134+05:30  INFO 32440 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8085 (http) with context path ''
+2025-07-14T15:22:05.148+05:30  INFO 32440 --- [restartedMain] com.olive.TaskmanagerApplication         : Started TaskmanagerApplication in 21.847 seconds (process running for 23.085)
+2025-07-14T15:22:09.517+05:30  INFO 32440 --- [http-nio-8085-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-07-14T15:22:09.517+05:30  INFO 32440 --- [http-nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-07-14T15:22:09.517+05:30  INFO 32440 --- [http-nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2025-07-14T15:22:09.641+05:30 ERROR 32440 --- [http-nio-8085-exec-1] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-14T15:22:09.676+05:30 ERROR 32440 --- [http-nio-8085-exec-1] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-14T15:22:23.746+05:30 ERROR 32440 --- [http-nio-8085-exec-4] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-14T15:22:23.775+05:30 ERROR 32440 --- [http-nio-8085-exec-4] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-14T15:22:25.820+05:30 ERROR 32440 --- [http-nio-8085-exec-5] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-14T15:22:25.820+05:30 ERROR 32440 --- [http-nio-8085-exec-5] com.olive.security.JwtAuthEntryPoint     : Unauthorized error: Full authentication is required to access this resource
+2025-07-14T15:22:40.372+05:30  INFO 32440 --- [http-nio-8085-exec-9] com.olive.controller.AuthController      : Received sign-in request for email: admin@olivecrypto.com
+2025-07-14T15:22:41.120+05:30  INFO 32440 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:22:41.125+05:30  INFO 32440 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:23:12.400+05:30  INFO 32440 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:23:12.404+05:30  INFO 32440 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:23:28.360+05:30  INFO 32440 --- [http-nio-8085-exec-1] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-14T15:23:28.654+05:30  INFO 32440 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:23:28.986+05:30  INFO 32440 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:27:59.090+05:30  INFO 32440 --- [http-nio-8085-exec-7] com.olive.controller.AuthController      : Received sign-in request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-14T15:27:59.439+05:30  INFO 32440 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:27:59.574+05:30  INFO 32440 --- [http-nio-8085-exec-6] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:28:01.800+05:30  WARN 32440 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:01.836+05:30  WARN 32440 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:02.871+05:30  WARN 32440 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:02.871+05:30  WARN 32440 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:02.973+05:30  WARN 32440 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:02.973+05:30  WARN 32440 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:04.009+05:30  WARN 32440 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:04.026+05:30  WARN 32440 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:05.059+05:30  WARN 32440 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:05.059+05:30  WARN 32440 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:06.079+05:30  WARN 32440 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:06.083+05:30  WARN 32440 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:09.113+05:30  WARN 32440 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:09.115+05:30  WARN 32440 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:10.113+05:30  WARN 32440 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:10.113+05:30  WARN 32440 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:16.789+05:30  INFO 32440 --- [http-nio-8085-exec-5] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Free
+2025-07-14T15:28:33.569+05:30  WARN 32440 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:33.584+05:30  WARN 32440 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:34.659+05:30  WARN 32440 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:34.663+05:30  WARN 32440 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:36.726+05:30  WARN 32440 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:28:36.729+05:30  WARN 32440 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:28:44.378+05:30  INFO 32440 --- [http-nio-8085-exec-4] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-14T15:28:44.636+05:30  INFO 32440 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:28:45.126+05:30  INFO 32440 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:39:40.655+05:30  INFO 32440 --- [http-nio-8085-exec-8] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Occupied
+2025-07-14T15:41:30.510+05:30  INFO 32440 --- [http-nio-8085-exec-9] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-14T15:41:30.669+05:30  INFO 32440 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:41:30.806+05:30  INFO 32440 --- [http-nio-8085-exec-3] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:41:45.779+05:30  INFO 32440 --- [http-nio-8085-exec-8] com.olive.controller.AuthController      : Received sign-in request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-14T15:41:45.990+05:30  INFO 32440 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:41:46.133+05:30  INFO 32440 --- [http-nio-8085-exec-5] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:41:48.132+05:30  WARN 32440 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:48.134+05:30  WARN 32440 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:49.211+05:30  WARN 32440 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:49.211+05:30  WARN 32440 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:50.480+05:30  WARN 32440 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:50.480+05:30  WARN 32440 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:51.277+05:30  WARN 32440 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:51.277+05:30  WARN 32440 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:51.584+05:30  WARN 32440 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:51.589+05:30  WARN 32440 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:53.689+05:30  WARN 32440 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:53.689+05:30  WARN 32440 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:55.310+05:30  WARN 32440 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:55.310+05:30  WARN 32440 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:56.868+05:30  WARN 32440 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:56.871+05:30  WARN 32440 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:57.905+05:30  WARN 32440 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:57.907+05:30  WARN 32440 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:41:59.946+05:30  WARN 32440 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:41:59.949+05:30  WARN 32440 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:42:03.979+05:30  WARN 32440 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:42:03.992+05:30  WARN 32440 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:42:06.730+05:30  WARN 32440 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:42:06.733+05:30  WARN 32440 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:42:07.756+05:30  WARN 32440 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:42:07.757+05:30  WARN 32440 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:42:08.034+05:30  WARN 32440 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:42:08.037+05:30  WARN 32440 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:42:09.158+05:30  WARN 32440 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:42:09.166+05:30  WARN 32440 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:42:11.312+05:30  WARN 32440 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:42:11.317+05:30  WARN 32440 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:42:12.464+05:30  INFO 32440 --- [http-nio-8085-exec-3] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Free
+2025-07-14T15:42:34.084+05:30  INFO 32440 --- [http-nio-8085-exec-6] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-14T15:42:34.280+05:30  INFO 32440 --- [http-nio-8085-exec-4] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:42:34.500+05:30  INFO 32440 --- [http-nio-8085-exec-4] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:42:54.012+05:30  INFO 32440 --- [http-nio-8085-exec-3] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Occupied
+2025-07-14T15:43:03.481+05:30  INFO 32440 --- [http-nio-8085-exec-6] com.olive.controller.AuthController      : Received sign-in request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-14T15:43:03.655+05:30  INFO 32440 --- [http-nio-8085-exec-4] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:43:03.748+05:30  INFO 32440 --- [http-nio-8085-exec-4] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T15:43:05.375+05:30  WARN 32440 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:05.378+05:30  WARN 32440 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:06.436+05:30  WARN 32440 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:06.438+05:30  WARN 32440 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:07.411+05:30  WARN 32440 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:07.412+05:30  WARN 32440 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:08.521+05:30  WARN 32440 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:08.521+05:30  WARN 32440 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:08.532+05:30  WARN 32440 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:08.532+05:30  WARN 32440 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:10.630+05:30  WARN 32440 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:10.630+05:30  WARN 32440 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:12.619+05:30  WARN 32440 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:12.619+05:30  WARN 32440 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:14.652+05:30  WARN 32440 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:14.658+05:30  WARN 32440 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:27.955+05:30  WARN 32440 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:27.955+05:30  WARN 32440 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:28.979+05:30  WARN 32440 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:28.979+05:30  WARN 32440 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:31.139+05:30  WARN 32440 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:31.145+05:30  WARN 32440 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:43:35.173+05:30  WARN 32440 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:43:35.173+05:30  WARN 32440 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:44:15.292+05:30  WARN 32440 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:44:15.292+05:30  WARN 32440 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:44:16.372+05:30  WARN 32440 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:44:16.382+05:30  WARN 32440 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:44:18.435+05:30  WARN 32440 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:44:18.435+05:30  WARN 32440 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:44:22.467+05:30  WARN 32440 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T15:44:22.467+05:30  WARN 32440 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T15:44:36.236+05:30  INFO 32440 --- [http-nio-8085-exec-9] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Free
+2025-07-14T15:45:12.813+05:30  INFO 32440 --- [http-nio-8085-exec-2] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-14T15:45:12.979+05:30  INFO 32440 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T15:45:13.451+05:30  INFO 32440 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T16:06:59.700+05:30  WARN 32440 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m36s703ms867탎).
+2025-07-14T16:14:09.089+05:30  INFO 32440 --- [http-nio-8085-exec-9] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Occupied
+2025-07-14T16:14:18.615+05:30  INFO 32440 --- [http-nio-8085-exec-2] com.olive.controller.AuthController      : Received sign-in request for email: vivekkumar.rapaka@olivecrypto.com
+2025-07-14T16:14:18.840+05:30  INFO 32440 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T16:14:18.916+05:30  INFO 32440 --- [http-nio-8085-exec-7] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T16:14:22.646+05:30  WARN 32440 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:22.658+05:30  WARN 32440 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:23.714+05:30  WARN 32440 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:23.714+05:30  WARN 32440 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:24.576+05:30  WARN 32440 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:24.583+05:30  WARN 32440 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:25.689+05:30  WARN 32440 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:25.700+05:30  WARN 32440 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:25.768+05:30  WARN 32440 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:25.770+05:30  WARN 32440 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:27.825+05:30  WARN 32440 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:27.830+05:30  WARN 32440 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:29.864+05:30  WARN 32440 --- [http-nio-8085-exec-7] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:29.869+05:30  WARN 32440 --- [http-nio-8085-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:31.875+05:30  WARN 32440 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:31.875+05:30  WARN 32440 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:34.306+05:30  INFO 32440 --- [http-nio-8085-exec-3] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Free
+2025-07-14T16:14:40.523+05:30  WARN 32440 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:40.525+05:30  WARN 32440 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:14:41.571+05:30  WARN 32440 --- [http-nio-8085-exec-6] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:14:41.576+05:30  WARN 32440 --- [http-nio-8085-exec-6] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:16:57.853+05:30  WARN 32440 --- [http-nio-8085-exec-4] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:16:57.860+05:30  WARN 32440 --- [http-nio-8085-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:17:01.905+05:30  WARN 32440 --- [http-nio-8085-exec-3] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:17:01.908+05:30  WARN 32440 --- [http-nio-8085-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:17:18.844+05:30  WARN 32440 --- [http-nio-8085-exec-1] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:17:18.850+05:30  WARN 32440 --- [http-nio-8085-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:34:58.987+05:30  WARN 32440 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:34:59.006+05:30  WARN 32440 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:35:06.672+05:30  WARN 32440 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m36s542ms664탎700ns).
+2025-07-14T16:47:14.472+05:30  WARN 32440 --- [http-nio-8085-exec-9] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:47:14.489+05:30  WARN 32440 --- [http-nio-8085-exec-9] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:47:18.648+05:30  WARN 32440 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=8m41s915ms447탎300ns).
+2025-07-14T16:52:00.765+05:30  WARN 32440 --- [http-nio-8085-exec-2] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:52:00.825+05:30  WARN 32440 --- [http-nio-8085-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:52:02.892+05:30  WARN 32440 --- [http-nio-8085-exec-10] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:52:02.896+05:30  WARN 32440 --- [http-nio-8085-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:58:19.701+05:30  WARN 32440 --- [http-nio-8085-exec-5] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:58:19.707+05:30  WARN 32440 --- [http-nio-8085-exec-5] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:58:25.092+05:30  WARN 32440 --- [http-nio-8085-exec-8] c.o.exception.CustomExceptionHandler     : Access Denied: Access Denied
+2025-07-14T16:58:25.092+05:30  WARN 32440 --- [http-nio-8085-exec-8] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-07-14T16:58:33.293+05:30  INFO 32440 --- [http-nio-8085-exec-3] com.olive.controller.AuthController      : Received sign-in request for email: shabeer@olivecrypto.com
+2025-07-14T16:58:33.563+05:30  INFO 32440 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Received request for dashboard summary.
+2025-07-14T16:58:33.862+05:30  INFO 32440 --- [http-nio-8085-exec-1] c.olive.controller.DashboardController   : Returning dashboard summary.
+2025-07-14T17:41:45.856+05:30  WARN 32440 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=20m26s714ms34탎200ns).
+2025-07-14T17:43:06.319+05:30  INFO 32440 --- [http-nio-8085-exec-5] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Occupied
+2025-07-14T17:43:13.647+05:30  INFO 32440 --- [http-nio-8085-exec-4] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Free
+2025-07-14T17:46:38.051+05:30  INFO 32440 --- [http-nio-8085-exec-3] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Occupied
+2025-07-14T17:48:21.246+05:30  INFO 32440 --- [http-nio-8085-exec-8] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Free
+2025-07-14T18:02:30.336+05:30  INFO 32440 --- [http-nio-8085-exec-1] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Occupied
+2025-07-14T18:02:43.469+05:30  INFO 32440 --- [http-nio-8085-exec-6] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Free
+2025-07-14T18:07:40.155+05:30  INFO 32440 --- [http-nio-8085-exec-9] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Occupied
+2025-07-14T18:07:51.115+05:30  INFO 32440 --- [http-nio-8085-exec-1] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Free
+2025-07-14T18:09:41.391+05:30  INFO 32440 --- [http-nio-8085-exec-2] com.olive.service.TeammateService        : Teammate 'vivek rapaka' availability changed to: Occupied
+2025-07-14T19:13:21.655+05:30  INFO 32440 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-14T19:13:21.758+05:30  INFO 32440 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-07-14T19:13:21.779+05:30  INFO 32440 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
