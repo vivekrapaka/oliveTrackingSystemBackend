@@ -16,10 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,43 +59,32 @@ public class ReportingService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
-        // FIX: Get assigned developer and tester names directly from the Task entity.
-        List<String> developerNames = task.getAssignedDevelopers().stream()
-                .map(dev -> dev.getUser().getFullName())
-                .collect(Collectors.toList());
-        List<String> testerNames = task.getAssignedTesters().stream()
-                .map(tester -> tester.getUser().getFullName())
-                .collect(Collectors.toList());
+        List<WorkLog> workLogs = workLogRepository.findByTaskIdOrderByLogDateDesc(taskId);
 
         String devManager = findManagerForProject(task.getProject(), "DEV_MANAGER");
         String testManager = findManagerForProject(task.getProject(), "TEST_MANAGER");
 
-        List<WorkLog> workLogs = workLogRepository.findByTaskIdOrderByLogDateDesc(taskId);
-
         double totalHours = workLogs.stream().mapToDouble(WorkLog::getHoursSpent).sum();
-        double devHours = 0;
-        double testHours = 0;
-        double otherHours = 0;
 
-        for (WorkLog log : workLogs) {
-            String group = log.getTeammate().getUser().getRole().getFunctionalGroup();
+        // Group logs by teammate to sum up individual efforts
+        Map<Teammate, Double> effortByTeammate = workLogs.stream()
+                .collect(Collectors.groupingBy(WorkLog::getTeammate, Collectors.summingDouble(WorkLog::getHoursSpent)));
+
+        // Classify each teammate's effort into developer or tester lists
+        List<TeammateEffortDTO> developerEffort = new ArrayList<>();
+        List<TeammateEffortDTO> testerEffort = new ArrayList<>();
+
+        effortByTeammate.forEach((teammate, hours) -> {
+            String group = teammate.getUser().getRole().getFunctionalGroup();
+            String name = teammate.getUser().getFullName();
             if ("DEVELOPER".equals(group) || "DEV_LEAD".equals(group)) {
-                devHours += log.getHoursSpent();
+                developerEffort.add(new TeammateEffortDTO(name, hours));
             } else if ("TESTER".equals(group) || "TEST_LEAD".equals(group)) {
-                testHours += log.getHoursSpent();
-            } else {
-                otherHours += log.getHoursSpent();
+                testerEffort.add(new TeammateEffortDTO(name, hours));
             }
-        }
+        });
 
-        TimeLogBreakdownDTO breakdown = new TimeLogBreakdownDTO(
-                devHours,
-                task.getDevelopmentDueHours(),
-                testHours,
-                task.getTestingDueHours()
-        );
-
-        return new TaskTimeSummaryResponse(taskId, task.getTaskName(), totalHours, breakdown, devManager, testManager, developerNames, testerNames, task.getDevelopmentDueHours(), task.getTestingDueHours());
+        return new TaskTimeSummaryResponse(taskId, task.getTaskName(), totalHours, devManager, testManager, task.getDevelopmentDueHours(), task.getTestingDueHours(), developerEffort, testerEffort);
     }
 
     private String findManagerForProject(Project project, String functionalGroup) {
