@@ -2,37 +2,23 @@ package com.olive.dto;
 
 public class TimeLogBreakdownDTO {
     private double developmentHours;
+    private Double developmentDueHours;
     private double testingHours;
-    private double otherHours;
+    private Double testingDueHours;
 
-    public TimeLogBreakdownDTO(double developmentHours, double testingHours, double otherHours) {
+    public TimeLogBreakdownDTO(double developmentHours, Double developmentDueHours, double testingHours, Double testingDueHours) {
         this.developmentHours = developmentHours;
+        this.developmentDueHours = developmentDueHours;
         this.testingHours = testingHours;
-        this.otherHours = otherHours;
-    }
-    // Getters and Setters...
-
-    public double getDevelopmentHours() {
-        return developmentHours;
+        this.testingDueHours = testingDueHours;
     }
 
-    public void setDevelopmentHours(double developmentHours) {
-        this.developmentHours = developmentHours;
-    }
-
-    public double getTestingHours() {
-        return testingHours;
-    }
-
-    public void setTestingHours(double testingHours) {
-        this.testingHours = testingHours;
-    }
-
-    public double getOtherHours() {
-        return otherHours;
-    }
-
-    public void setOtherHours(double otherHours) {
-        this.otherHours = otherHours;
-    }
+    public double getDevelopmentHours() { return developmentHours; }
+    public void setDevelopmentHours(double developmentHours) { this.developmentHours = developmentHours; }
+    public Double getDevelopmentDueHours() { return developmentDueHours; }
+    public void setDevelopmentDueHours(Double developmentDueHours) { this.developmentDueHours = developmentDueHours; }
+    public double getTestingHours() { return testingHours; }
+    public void setTestingHours(double testingHours) { this.testingHours = testingHours; }
+    public Double getTestingDueHours() { return testingDueHours; }
+    public void setTestingDueHours(Double testingDueHours) { this.testingDueHours = testingDueHours; }
 }

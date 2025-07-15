@@ -14,6 +14,7 @@ import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.repository.UserRepository;
 import com.olive.security.UserDetailsImpl;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,27 +55,28 @@ public class TaskService {
     public TasksSummaryResponse getAllTasks(String taskNameFilter) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String functionalGroup = userDetails.getFunctionalGroup();
         List<Long> userProjectIds = userDetails.getProjectIds();
 
-        List<Task> tasksToReturn;
+        List<Task> tasksToFilter;
 
-        if ("ADMIN".equalsIgnoreCase(userDetails.getFunctionalGroup()) || "HR".equalsIgnoreCase(userDetails.getFunctionalGroup())) {
-            tasksToReturn = taskRepository.findAll();
+        if ("ADMIN".equalsIgnoreCase(functionalGroup) || "HR".equalsIgnoreCase(functionalGroup)) {
+            tasksToFilter = taskRepository.findAllWithTeammates();
         }
         else if (userProjectIds != null && !userProjectIds.isEmpty()) {
-            List<Task> tasksInUserProjects = taskRepository.findByProjectIdIn(userProjectIds);
-
-            tasksToReturn = tasksInUserProjects.stream()
-                    .filter(task -> isTaskVisibleToRole(task, userDetails))
-                    .collect(Collectors.toList());
-
-            if (taskNameFilter != null && !taskNameFilter.trim().isEmpty()) {
-                tasksToReturn = tasksToReturn.stream()
-                        .filter(task -> task.getTaskName().toLowerCase().contains(taskNameFilter.toLowerCase()))
-                        .collect(Collectors.toList());
-            }
+            tasksToFilter = taskRepository.findByProjectIdInWithTeammates(userProjectIds);
         } else {
-            tasksToReturn = Collections.emptyList();
+            tasksToFilter = Collections.emptyList();
+        }
+
+        List<Task> tasksToReturn = tasksToFilter.stream()
+                .filter(task -> isTaskVisibleToRole(task, userDetails))
+                .collect(Collectors.toList());
+
+        if (taskNameFilter != null && !taskNameFilter.trim().isEmpty()) {
+            tasksToReturn = tasksToReturn.stream()
+                    .filter(task -> task.getTaskName().toLowerCase().contains(taskNameFilter.toLowerCase()))
+                    .collect(Collectors.toList());
         }
 
         List<TaskResponse> taskResponses = tasksToReturn.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -83,18 +85,14 @@ public class TaskService {
 
     @Transactional
     public TaskResponse createTask(TaskCreateUpdateRequest request) {
-        Project project = projectRepository.findById(request.getProjectId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project not found with ID: " + request.getProjectId()));
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project not found with ID: " + request.getProjectId()));
         authorizeAccessOrThrow(project.getProjectId(), "You can only create tasks within projects you are assigned to.");
-        if (request.getTaskType() == TaskType.EPIC && request.getParentId() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EPIC tasks cannot have a parent task.");
-        }
+
         Task parentTask = null;
         if (request.getParentId() != null) {
             parentTask = taskRepository.findById(request.getParentId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parent task not found with ID: " + request.getParentId()));
         }
-        taskRepository.findByProjectIdAndTaskNameIgnoreCase(project.getProjectId(), request.getTaskName()).ifPresent(t -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Task with this name already exists in this project.");
-        });
 
         Task task = new Task();
         task.setTaskName(request.getTaskName());
@@ -104,15 +102,22 @@ public class TaskService {
         task.setStatus(request.getStatus());
         task.setReceivedDate(request.getReceivedDate());
         task.setDevelopmentStartDate(request.getDevelopmentStartDate());
-        task.setDueDate(request.getDueDate());
+        task.setDevelopmentDueHours(request.getDevelopmentDueHours());
+        task.setTestingDueHours(request.getTestingDueHours());
         task.setPriority(request.getPriority());
         task.setProject(project);
         task.setParentTask(parentTask);
         task.setCommitId(request.getCommitId());
-        Set<Teammate> assignedTeammates = findAndValidateTeammates(request.getAssignedTeammateIds(), project);
-        task.setAssignedTeammates(assignedTeammates);
+
+        Set<Teammate> developers = findAndValidateTeammates(request.getDeveloperIds(), project);
+        Set<Teammate> testers = findAndValidateTeammates(request.getTesterIds(), project);
+        task.setAssignedDevelopers(developers);
+        task.setAssignedTesters(testers);
+
         Task savedTask = taskRepository.save(task);
-        updateTeammateAvailabilityFor(savedTask.getAssignedTeammates());
+        updateTeammateAvailabilityFor(developers);
+        updateTeammateAvailabilityFor(testers);
+
         return convertToDto(savedTask);
     }
 
@@ -127,52 +132,92 @@ public class TaskService {
 
         authorizeAccessOrThrow(existingTask.getProject().getProjectId(), "You can only update tasks within your assigned projects.");
 
-        validateTaskStatusTransition(existingTask.getStatus(), request.getStatus(), functionalGroup, request.getComment());
-        validateMandatoryFieldsForStatus(request.getStatus(), request.getCommitId());
+        // --- FIX: Conditional updates to prevent overwriting with null ---
+
+        // Handle status transition first, as it has special validation
+        if (request.getStatus() != null && request.getStatus() != existingTask.getStatus()) {
+            validateTaskStatusTransition(existingTask.getStatus(), request.getStatus(), functionalGroup, request.getComment());
+            logFieldChange(existingTask, currentUser, "status", existingTask.getStatus(), request.getStatus());
+            existingTask.setStatus(request.getStatus());
+        }
 
         if (StringUtils.hasText(request.getComment())) {
             taskActivityService.addComment(existingTask, currentUser, request.getComment());
         }
 
-        Set<Teammate> oldAssignedTeammates = new HashSet<>(existingTask.getAssignedTeammates());
+        validateMandatoryFieldsForStatus(existingTask.getStatus(), request.getCommitId());
 
-        logFieldChange(existingTask, currentUser, "status", existingTask.getStatus(), request.getStatus());
-        logFieldChange(existingTask, currentUser, "taskName", existingTask.getTaskName(), request.getTaskName());
-        logFieldChange(existingTask, currentUser, "description", existingTask.getDescription(), request.getDescription());
-        logFieldChange(existingTask, currentUser, "priority", existingTask.getPriority(), request.getPriority());
-        logFieldChange(existingTask, currentUser, "dueDate", existingTask.getDueDate(), request.getDueDate());
-        logFieldChange(existingTask, currentUser, "taskType", existingTask.getTaskType(), request.getTaskType());
+        if (request.getTaskName() != null) {
+            logFieldChange(existingTask, currentUser, "taskName", existingTask.getTaskName(), request.getTaskName());
+            existingTask.setTaskName(request.getTaskName());
+        }
+        if (request.getDescription() != null) {
+            logFieldChange(existingTask, currentUser, "description", existingTask.getDescription(), request.getDescription());
+            existingTask.setDescription(request.getDescription());
+        }
+        if (request.getTaskType() != null) {
+            logFieldChange(existingTask, currentUser, "taskType", existingTask.getTaskType(), request.getTaskType());
+            existingTask.setTaskType(request.getTaskType());
+        }
+        if (request.getPriority() != null) {
+            logFieldChange(existingTask, currentUser, "priority", existingTask.getPriority(), request.getPriority());
+            existingTask.setPriority(request.getPriority());
+        }
+        if (request.getReceivedDate() != null) {
+            existingTask.setReceivedDate(request.getReceivedDate());
+        }
+        if (request.getDevelopmentStartDate() != null) {
+            existingTask.setDevelopmentStartDate(request.getDevelopmentStartDate());
+        }
+        if (request.getDevelopmentDueHours() != null) {
+            existingTask.setDevelopmentDueHours(request.getDevelopmentDueHours());
+        }
+        if (request.getTestingDueHours() != null) {
+            existingTask.setTestingDueHours(request.getTestingDueHours());
+        }
+        if (request.getCommitId() != null) {
+            existingTask.setCommitId(request.getCommitId());
+        }
 
-        existingTask.setTaskName(request.getTaskName());
-        existingTask.setDescription(request.getDescription());
-        existingTask.setTaskType(request.getTaskType());
-        existingTask.setStatus(request.getStatus());
-        existingTask.setReceivedDate(request.getReceivedDate());
-        existingTask.setDevelopmentStartDate(request.getDevelopmentStartDate());
-        existingTask.setDueDate(request.getDueDate());
-        existingTask.setPriority(request.getPriority());
-        existingTask.setCommitId(request.getCommitId());
+        Set<Teammate> oldDevelopers = new HashSet<>(existingTask.getAssignedDevelopers());
+        Set<Teammate> oldTesters = new HashSet<>(existingTask.getAssignedTesters());
 
-        Set<Teammate> newAssignedTeammates = findAndValidateTeammates(request.getAssignedTeammateIds(), existingTask.getProject());
-        existingTask.setAssignedTeammates(newAssignedTeammates);
+        if (request.getDeveloperIds() != null && !request.getDeveloperIds().isEmpty()) {
+            Set<Teammate> newDevelopers = findAndValidateTeammates(request.getDeveloperIds(), existingTask.getProject());
+            existingTask.setAssignedDevelopers(newDevelopers);
+        }
+        if (request.getTesterIds() != null && !request.getTesterIds().isEmpty()) {
+            Set<Teammate> newTesters = findAndValidateTeammates(request.getTesterIds(), existingTask.getProject());
+            existingTask.setAssignedTesters(newTesters);
+        }
 
         Task updatedTask = taskRepository.save(existingTask);
 
-        Set<Teammate> allAffectedTeammates = new HashSet<>(oldAssignedTeammates);
-        allAffectedTeammates.addAll(newAssignedTeammates);
-        updateTeammateAvailabilityFor(allAffectedTeammates);
+        Set<Teammate> allAffected = new HashSet<>();
+        allAffected.addAll(oldDevelopers);
+        allAffected.addAll(oldTesters);
+        allAffected.addAll(updatedTask.getAssignedDevelopers());
+        allAffected.addAll(updatedTask.getAssignedTesters());
+        updateTeammateAvailabilityFor(allAffected);
 
         return convertToDto(updatedTask);
     }
+
 
     @Transactional
     public void deleteTask(Long taskId) {
         Task taskToDelete = taskRepository.findById(taskId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + taskId));
         authorizeAccessOrThrow(taskToDelete.getProject().getProjectId(), "You can only delete tasks within your assigned projects.");
-        Set<Teammate> affectedTeammates = new HashSet<>(taskToDelete.getAssignedTeammates());
+
+        // FIX: Combine both developer and tester lists to get all affected teammates.
+        Set<Teammate> affectedTeammates = new HashSet<>();
+        affectedTeammates.addAll(taskToDelete.getAssignedDevelopers());
+        affectedTeammates.addAll(taskToDelete.getAssignedTesters());
+
         taskRepository.delete(taskToDelete);
         updateTeammateAvailabilityFor(affectedTeammates);
     }
+
 
     public String generateNextSequenceNumber(Task parentTask) {
         if (parentTask != null) {
@@ -201,18 +246,19 @@ public class TaskService {
 
             case "TESTER":
             case "TEST_LEAD":
-                User currentUser = userRepository.findById(userDetails.getId()).orElse(null);
-                if (currentUser != null) {
-                    Teammate currentTeammate = teammateRepository.findByUser(currentUser).orElse(null);
-                    return currentTeammate != null && task.getAssignedTeammates().contains(currentTeammate);
-                }
-                return false;
+            case "TEST_MANAGER":
+                return task.getStatus() == TaskStatus.UAT_TESTING ||
+                        task.getStatus() == TaskStatus.UAT_FAILED ||
+                        task.getStatus() == TaskStatus.READY_FOR_PREPROD ||
+                        task.getStatus() == TaskStatus.PREPROD ||
+                        task.getStatus() == TaskStatus.PROD;
 
             case "MANAGER":
             case "DEV_MANAGER":
-            case "TEST_MANAGER":
             case "BUSINESS_ANALYST":
+            case "ADMIN":
                 return true;
+
             default:
                 return false;
         }
@@ -312,8 +358,13 @@ public class TaskService {
     }
 
     private TaskResponse convertToDto(Task task) {
-        List<Long> assignedTeammateIds = task.getAssignedTeammates().stream().map(Teammate::getTeammateId).collect(Collectors.toList());
-        List<String> assignedTeammateNames = task.getAssignedTeammates().stream().map(teammate -> teammate.getUser().getFullName()).collect(Collectors.toList());
+        // FIX: Collect the full list of IDs and names for both developers and testers.
+        List<Long> developerIds = task.getAssignedDevelopers().stream().map(Teammate::getTeammateId).collect(Collectors.toList());
+        List<String> developerNames = task.getAssignedDevelopers().stream().map(teammate -> teammate.getUser().getFullName()).collect(Collectors.toList());
+
+        List<Long> testerIds = task.getAssignedTesters().stream().map(Teammate::getTeammateId).collect(Collectors.toList());
+        List<String> testerNames = task.getAssignedTesters().stream().map(teammate -> teammate.getUser().getFullName()).collect(Collectors.toList());
+
         String formattedTaskNumber = task.getSequenceNumber();
         String projectName = task.getProject() != null ? task.getProject().getProjectName() : "Unknown Project";
         Long parentId = task.getParentTask() != null ? task.getParentTask().getTaskId() : null;
@@ -322,8 +373,12 @@ public class TaskService {
 
         return new TaskResponse(
                 task.getTaskId(), task.getTaskName(), formattedTaskNumber, task.getDescription(), task.getTaskType(), task.getStatus(),
-                parentId, parentTaskTitle, parentTaskFormattedNumber, task.getReceivedDate(), task.getDevelopmentStartDate(), task.getDueDate(),
-                task.getPriority(), assignedTeammateIds, assignedTeammateNames, task.getProject().getProjectId(), projectName, task.getDocumentPath(), task.getCommitId()
+                parentId, parentTaskTitle, parentTaskFormattedNumber,
+                task.getReceivedDate(), task.getDevelopmentStartDate(),
+                task.getPriority(), developerIds, developerNames,
+                testerIds, testerNames,
+                task.getProject().getProjectId(), projectName, task.getDocumentPath(), task.getCommitId(),
+                task.getDevelopmentDueHours(), task.getTestingDueHours()
         );
     }
 }

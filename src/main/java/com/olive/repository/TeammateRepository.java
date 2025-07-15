@@ -15,7 +15,8 @@ public interface TeammateRepository extends JpaRepository<Teammate, Long> {
 
     Optional<Teammate> findByUser(User user);
     List<Teammate> findByProjects_IdIn(List<Long> projectIds, Sort sort);
-
-    // NEW: Find teammates in specific projects who belong to a list of functional groups.
     List<Teammate> findByProjects_IdInAndUser_Role_FunctionalGroupIn(List<Long> projectIds, Collection<String> functionalGroups, Sort sort);
+
+    // NEW: Find all teammates for a single project.
+    List<Teammate> findByProjects_Id(Long projectId);
 }

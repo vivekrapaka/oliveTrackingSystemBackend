@@ -18,7 +18,7 @@ public class Teammate {
     private User user;
 
     private String phone;
-    private String department;
+    // FIX: Removed the unused 'department' field.
     private String location;
     private String avatar;
 
@@ -33,9 +33,6 @@ public class Teammate {
     )
     private Set<Project> projects = new HashSet<>();
 
-    @ManyToMany(mappedBy = "assignedTeammates", fetch = FetchType.LAZY)
-    private Set<Task> assignedTasks = new HashSet<>();
-
     public Teammate() {}
 
     // Getters and Setters
@@ -45,8 +42,6 @@ public class Teammate {
     public void setUser(User user) { this.user = user; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-    public String getDepartment() { return department; }
-    public void setDepartment(String department) { this.department = department; }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
     public String getAvatar() { return avatar; }
@@ -55,8 +50,6 @@ public class Teammate {
     public void setAvailabilityStatus(String availabilityStatus) { this.availabilityStatus = availabilityStatus; }
     public Set<Project> getProjects() { return projects; }
     public void setProjects(Set<Project> projects) { this.projects = projects != null ? projects : new HashSet<>(); }
-    public Set<Task> getAssignedTasks() { return assignedTasks; }
-    public void setAssignedTasks(Set<Task> assignedTasks) { this.assignedTasks = assignedTasks != null ? assignedTasks : new HashSet<>(); }
 
     @Override
     public boolean equals(Object o) { if (this == o) return true; if (o == null || getClass() != o.getClass()) return false; Teammate teammate = (Teammate) o; return Objects.equals(id, teammate.id); }

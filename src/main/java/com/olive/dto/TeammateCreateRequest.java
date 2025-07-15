@@ -3,23 +3,22 @@ package com.olive.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public class TeammateCreateRequest {
 
-    @NotBlank(message = "Full name cannot be empty")
+    @NotBlank
     private String fullName;
 
-    @NotBlank(message = "Email cannot be empty")
+    @NotBlank
     @Email
     private String email;
 
-    @NotNull(message = "Role ID cannot be empty")
+    @NotNull
     private Long roleId;
 
     private String phone;
-    private String department;
+    // FIX: Removed the unused 'department' field.
     private String location;
     private String avatar;
     private List<Long> projectIds;
@@ -33,8 +32,6 @@ public class TeammateCreateRequest {
     public void setRoleId(Long roleId) { this.roleId = roleId; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-    public String getDepartment() { return department; }
-    public void setDepartment(String department) { this.department = department; }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
     public String getAvatar() { return avatar; }

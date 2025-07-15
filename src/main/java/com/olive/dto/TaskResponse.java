@@ -3,7 +3,6 @@ package com.olive.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.olive.model.enums.TaskStatus;
 import com.olive.model.enums.TaskType;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,21 +20,25 @@ public class TaskResponse {
     private LocalDate receivedDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate developmentStartDate;
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dueDate;
     private String priority;
-    private List<Long> assignedTeammateIds;
-    private List<String> assignedTeammateNames;
+    private List<Long> assignedDeveloperIds;
+    private List<String> assignedDeveloperNames;
+    private List<Long> assignedTesterIds;
+    private List<String> assignedTesterNames;
     private Long projectId;
     private String projectName;
     private String documentPath;
     private String commitId;
+    private Double developmentDueHours;
+    private Double testingDueHours;
 
     public TaskResponse(Long id, String name, String taskNumber, String description, TaskType taskType, TaskStatus status,
                         Long parentId, String parentTaskTitle, String parentTaskFormattedNumber,
-                        LocalDate receivedDate, LocalDate developmentStartDate, LocalDate dueDate, String priority,
-                        List<Long> assignedTeammateIds, List<String> assignedTeammateNames,
-                        Long projectId, String projectName, String documentPath, String commitId) {
+                        LocalDate receivedDate, LocalDate developmentStartDate,
+                        String priority, List<Long> assignedDeveloperIds, List<String> assignedDeveloperNames,
+                        List<Long> assignedTesterIds, List<String> assignedTesterNames,
+                        Long projectId, String projectName, String documentPath, String commitId,
+                        Double developmentDueHours, Double testingDueHours) {
         this.id = id;
         this.name = name;
         this.taskNumber = taskNumber;
@@ -47,16 +50,20 @@ public class TaskResponse {
         this.parentTaskFormattedNumber = parentTaskFormattedNumber;
         this.receivedDate = receivedDate;
         this.developmentStartDate = developmentStartDate;
-        this.dueDate = dueDate;
         this.priority = priority;
-        this.assignedTeammateIds = assignedTeammateIds;
-        this.assignedTeammateNames = assignedTeammateNames;
+        this.assignedDeveloperIds = assignedDeveloperIds;
+        this.assignedDeveloperNames = assignedDeveloperNames;
+        this.assignedTesterIds = assignedTesterIds;
+        this.assignedTesterNames = assignedTesterNames;
         this.projectId = projectId;
         this.projectName = projectName;
         this.documentPath = documentPath;
         this.commitId = commitId;
+        this.developmentDueHours = developmentDueHours;
+        this.testingDueHours = testingDueHours;
     }
 
+    // Getters
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getTaskNumber() { return taskNumber; }
@@ -68,12 +75,15 @@ public class TaskResponse {
     public String getParentTaskFormattedNumber() { return parentTaskFormattedNumber; }
     public LocalDate getReceivedDate() { return receivedDate; }
     public LocalDate getDevelopmentStartDate() { return developmentStartDate; }
-    public LocalDate getDueDate() { return dueDate; }
     public String getPriority() { return priority; }
-    public List<Long> getAssignedTeammateIds() { return assignedTeammateIds; }
-    public List<String> getAssignedTeammateNames() { return assignedTeammateNames; }
+    public List<Long> getAssignedDeveloperIds() { return assignedDeveloperIds; }
+    public List<String> getAssignedDeveloperNames() { return assignedDeveloperNames; }
+    public List<Long> getAssignedTesterIds() { return assignedTesterIds; }
+    public List<String> getAssignedTesterNames() { return assignedTesterNames; }
     public Long getProjectId() { return projectId; }
     public String getProjectName() { return projectName; }
     public String getDocumentPath() { return documentPath; }
     public String getCommitId() { return commitId; }
+    public Double getDevelopmentDueHours() { return developmentDueHours; }
+    public Double getTestingDueHours() { return testingDueHours; }
 }

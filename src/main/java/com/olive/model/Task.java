@@ -19,11 +19,10 @@ public class Task {
     @Column(nullable = false)
     private String taskName;
 
-    // CRITICAL CHANGE: Changed from Long to String to support "1.1" style sub-task numbering
     @Column(nullable = false, unique = true)
     private String sequenceNumber;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -43,18 +42,28 @@ public class Task {
 
     private LocalDate receivedDate;
     private LocalDate developmentStartDate;
-    private LocalDate dueDate;
+
+    private Double developmentDueHours;
+    private Double testingDueHours;
 
     @Column(nullable = false)
     private String priority;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "task_teammate_assignments",
+            name = "task_developer_assignments",
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "teammate_id")
     )
-    private Set<Teammate> assignedTeammates = new HashSet<>();
+    private Set<Teammate> assignedDevelopers = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "task_tester_assignments",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "teammate_id")
+    )
+    private Set<Teammate> assignedTesters = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
@@ -62,11 +71,8 @@ public class Task {
 
     private String documentPath;
     private String commitId;
-
     private String bitbucketBranch;
     private String sharepointUrl;
-
-
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<TaskActivity> activities = new HashSet<>();
@@ -76,7 +82,6 @@ public class Task {
 
     public Task() {}
 
-    // Getters and Setters
     public Long getTaskId() { return id; }
     public void setTaskId(Long id) { this.id = id; }
     public String getTaskName() { return taskName; }
@@ -92,40 +97,39 @@ public class Task {
     public Task getParentTask() { return parentTask; }
     public void setParentTask(Task parentTask) { this.parentTask = parentTask; }
     public Set<Task> getSubTasks() { return subTasks; }
-    public void setSubTasks(Set<Task> subTasks) { this.subTasks = subTasks != null ? subTasks : new HashSet<>(); }
+    public void setSubTasks(Set<Task> subTasks) { this.subTasks = subTasks; }
     public LocalDate getReceivedDate() { return receivedDate; }
     public void setReceivedDate(LocalDate receivedDate) { this.receivedDate = receivedDate; }
     public LocalDate getDevelopmentStartDate() { return developmentStartDate; }
     public void setDevelopmentStartDate(LocalDate developmentStartDate) { this.developmentStartDate = developmentStartDate; }
-    public LocalDate getDueDate() { return dueDate; }
-    public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
+    public Double getDevelopmentDueHours() { return developmentDueHours; }
+    public void setDevelopmentDueHours(Double developmentDueHours) { this.developmentDueHours = developmentDueHours; }
+    public Double getTestingDueHours() { return testingDueHours; }
+    public void setTestingDueHours(Double testingDueHours) { this.testingDueHours = testingDueHours; }
     public String getPriority() { return priority; }
     public void setPriority(String priority) { this.priority = priority; }
-    public Set<Teammate> getAssignedTeammates() { return assignedTeammates; }
-    public void setAssignedTeammates(Set<Teammate> assignedTeammates) { this.assignedTeammates = assignedTeammates != null ? assignedTeammates : new HashSet<>(); }
+    public Set<Teammate> getAssignedDevelopers() { return assignedDevelopers; }
+    public void setAssignedDevelopers(Set<Teammate> assignedDevelopers) { this.assignedDevelopers = assignedDevelopers; }
+    public Set<Teammate> getAssignedTesters() { return assignedTesters; }
+    public void setAssignedTesters(Set<Teammate> assignedTesters) { this.assignedTesters = assignedTesters; }
     public Project getProject() { return project; }
     public void setProject(Project project) { this.project = project; }
     public String getDocumentPath() { return documentPath; }
     public void setDocumentPath(String documentPath) { this.documentPath = documentPath; }
     public String getCommitId() { return commitId; }
     public void setCommitId(String commitId) { this.commitId = commitId; }
-    public Set<TaskActivity> getActivities() { return activities; }
-    public void setActivities(Set<TaskActivity> activities) { this.activities = activities; }
-    public Set<WorkLog> getWorkLogs() { return workLogs; }
-    public void setWorkLogs(Set<WorkLog> workLogs) { this.workLogs = workLogs; }
-
-    // NEW: Getters and setters for new fields
     public String getBitbucketBranch() { return bitbucketBranch; }
     public void setBitbucketBranch(String bitbucketBranch) { this.bitbucketBranch = bitbucketBranch; }
     public String getSharepointUrl() { return sharepointUrl; }
     public void setSharepointUrl(String sharepointUrl) { this.sharepointUrl = sharepointUrl; }
+    public Set<TaskActivity> getActivities() { return activities; }
+    public void setActivities(Set<TaskActivity> activities) { this.activities = activities; }
+    public Set<WorkLog> getWorkLogs() { return workLogs; }
+    public void setWorkLogs(Set<WorkLog> workLogs) { this.workLogs = workLogs; }
 
     @Override
     public boolean equals(Object o) { if (this == o) return true; if (o == null || getClass() != o.getClass()) return false; Task task = (Task) o; return Objects.equals(id, task.id); }
 
     @Override
     public int hashCode() { return Objects.hash(id); }
-
-    @PrePersist @PreUpdate
-    public void convertTaskNameToUpper() { if (this.taskName != null) { this.taskName = this.taskName.toUpperCase(); } }
 }
