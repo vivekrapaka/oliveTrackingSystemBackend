@@ -61,33 +61,32 @@ public class ReportingService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
-        List<WorkLog> workLogs = workLogRepository.findByTaskIdOrderByLogDateDesc(taskId);
+        // FIX: Get assigned developer and tester names directly from the Task entity.
+        List<String> developerNames = task.getAssignedDevelopers().stream()
+                .map(dev -> dev.getUser().getFullName())
+                .collect(Collectors.toList());
+        List<String> testerNames = task.getAssignedTesters().stream()
+                .map(tester -> tester.getUser().getFullName())
+                .collect(Collectors.toList());
 
         String devManager = findManagerForProject(task.getProject(), "DEV_MANAGER");
         String testManager = findManagerForProject(task.getProject(), "TEST_MANAGER");
 
-        double totalHours = 0;
+        List<WorkLog> workLogs = workLogRepository.findByTaskIdOrderByLogDateDesc(taskId);
+
+        double totalHours = workLogs.stream().mapToDouble(WorkLog::getHoursSpent).sum();
         double devHours = 0;
         double testHours = 0;
         double otherHours = 0;
 
-        Set<String> developerNames = new HashSet<>();
-        Set<String> testerNames = new HashSet<>();
-
         for (WorkLog log : workLogs) {
-            double hours = log.getHoursSpent();
-            totalHours += hours;
             String group = log.getTeammate().getUser().getRole().getFunctionalGroup();
-            String name = log.getTeammate().getUser().getFullName();
-
             if ("DEVELOPER".equals(group) || "DEV_LEAD".equals(group)) {
-                devHours += hours;
-                developerNames.add(name);
+                devHours += log.getHoursSpent();
             } else if ("TESTER".equals(group) || "TEST_LEAD".equals(group)) {
-                testHours += hours;
-                testerNames.add(name);
+                testHours += log.getHoursSpent();
             } else {
-                otherHours += hours;
+                otherHours += log.getHoursSpent();
             }
         }
 
@@ -98,7 +97,7 @@ public class ReportingService {
                 task.getTestingDueHours()
         );
 
-        return new TaskTimeSummaryResponse(taskId, task.getTaskName(), totalHours, breakdown, devManager, testManager, new ArrayList<>(developerNames), new ArrayList<>(testerNames), task.getDevelopmentDueHours(), task.getTestingDueHours());
+        return new TaskTimeSummaryResponse(taskId, task.getTaskName(), totalHours, breakdown, devManager, testManager, developerNames, testerNames, task.getDevelopmentDueHours(), task.getTestingDueHours());
     }
 
     private String findManagerForProject(Project project, String functionalGroup) {
