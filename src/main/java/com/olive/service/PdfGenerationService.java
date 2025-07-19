@@ -11,6 +11,7 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.olive.dto.DailyLogDTO;
 import com.olive.dto.TaskTimeSummaryResponse;
+import com.olive.dto.TeammateEffortDTO;
 import com.olive.dto.TimesheetResponse;
 import org.springframework.stereotype.Service;
 
@@ -58,31 +59,35 @@ public class PdfGenerationService {
         document.add(new Paragraph("Total Hours Logged: " + summary.getTotalHours()));
         document.add(new Paragraph("Dev Manager: " + summary.getDevManagerName()));
         document.add(new Paragraph("Test Manager: " + summary.getTestManagerName()));
-
-        if (summary.getDeveloperNames() != null && !summary.getDeveloperNames().isEmpty()) {
-            document.add(new Paragraph("Contributing Developers: " + String.join(", ", summary.getDeveloperNames())));
-        }
-        if (summary.getTesterNames() != null && !summary.getTesterNames().isEmpty()) {
-            document.add(new Paragraph("Contributing Testers: " + String.join(", ", summary.getTesterNames())));
-        }
-
         document.add(new Paragraph("\n"));
 
-        Table table = new Table(UnitValue.createPercentArray(new float[]{2, 1, 1}));
-        table.setWidth(UnitValue.createPercentValue(100));
-        table.addHeaderCell(new Cell().add(new Paragraph("Discipline").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Actual Hours").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Estimated Hours").setBold()));
+        // Development Effort Table
+        document.add(new Paragraph("Development Effort").setBold());
+        Table devTable = new Table(UnitValue.createPercentArray(new float[]{3, 1}));
+        devTable.setWidth(UnitValue.createPercentValue(100));
+        devTable.addHeaderCell(new Cell().add(new Paragraph("Developer").setBold()));
+        devTable.addHeaderCell(new Cell().add(new Paragraph("Hours Logged").setBold()));
+        for (TeammateEffortDTO effort : summary.getDeveloperEffort()) {
+            devTable.addCell(effort.getTeammateName());
+            devTable.addCell(String.valueOf(effort.getHoursLogged()));
+        }
+        document.add(devTable);
+        document.add(new Paragraph("Total Estimated Development Hours: " + summary.getDevelopmentDueHours()));
+        document.add(new Paragraph("\n"));
 
-        table.addCell("Development");
-        table.addCell(String.valueOf(summary.getBreakdown().getDevelopmentHours()));
-        table.addCell(String.valueOf(summary.getDevelopmentDueHours()));
+        // Testing Effort Table
+        document.add(new Paragraph("Testing Effort").setBold());
+        Table testTable = new Table(UnitValue.createPercentArray(new float[]{3, 1}));
+        testTable.setWidth(UnitValue.createPercentValue(100));
+        testTable.addHeaderCell(new Cell().add(new Paragraph("Tester").setBold()));
+        testTable.addHeaderCell(new Cell().add(new Paragraph("Hours Logged").setBold()));
+        for (TeammateEffortDTO effort : summary.getTesterEffort()) {
+            testTable.addCell(effort.getTeammateName());
+            testTable.addCell(String.valueOf(effort.getHoursLogged()));
+        }
+        document.add(testTable);
+        document.add(new Paragraph("Total Estimated Testing Hours: " + summary.getTestingDueHours()));
 
-        table.addCell("Testing");
-        table.addCell(String.valueOf(summary.getBreakdown().getTestingHours()));
-        table.addCell(String.valueOf(summary.getTestingDueHours()));
-
-        document.add(table);
         document.close();
         return new ByteArrayInputStream(out.toByteArray());
     }
