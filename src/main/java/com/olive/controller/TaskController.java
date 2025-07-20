@@ -79,4 +79,11 @@ public class TaskController {
     public ResponseEntity<List<TaskActivityResponse>> getTaskHistory(@PathVariable Long taskId) {
         return ResponseEntity.ok(taskActivityService.getTaskHistory(taskId));
     }
+
+    @GetMapping("/general-activities")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'DEV_MANAGER', 'TEST_MANAGER', 'DEV_LEAD', 'TEST_LEAD', 'BUSINESS_ANALYST', 'DEVELOPER', 'TESTER', 'TEAM_MEMBER')")
+    public ResponseEntity<List<TaskResponse>> getGeneralActivityTasks() {
+        return ResponseEntity.ok(taskService.getGeneralActivityTasks());
+    }
+
 }

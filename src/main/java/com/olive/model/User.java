@@ -2,6 +2,8 @@ package com.olive.model;
 
 import com.olive.converter.JpaLongListConverter;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +38,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<TaskActivity> activities;
 
+    private String resetPasswordToken;
+    private LocalDateTime resetPasswordTokenExpiry;
+
     public User() {}
 
     public User(String fullName, String email, String password, Role role, List<Long> projectIds) {
@@ -67,6 +72,11 @@ public class User {
 
     @Override
     public int hashCode() { return Objects.hash(id); }
+    public String getResetPasswordToken() { return resetPasswordToken; }
+    public void setResetPasswordToken(String resetPasswordToken) { this.resetPasswordToken = resetPasswordToken; }
+    public LocalDateTime getResetPasswordTokenExpiry() { return resetPasswordTokenExpiry; }
+    public void setResetPasswordTokenExpiry(LocalDateTime resetPasswordTokenExpiry) { this.resetPasswordTokenExpiry = resetPasswordTokenExpiry; }
+
 
     @PrePersist @PreUpdate
     public void convertEmailToLowerCase() { if (this.email != null) { this.email = this.email.toLowerCase(); } }

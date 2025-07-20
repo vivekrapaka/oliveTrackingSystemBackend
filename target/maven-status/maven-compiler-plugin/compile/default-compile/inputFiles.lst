@@ -17,6 +17,7 @@ C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\oliv
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\controller\ProjectController.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\exception\MyFileNotFoundException.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\ProjectResponse.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\ResetPasswordRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\CommentRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\SignupRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\exception\CustomExceptionHandler.java
@@ -29,6 +30,7 @@ C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\oliv
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\model\Task.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\model\TaskActivity.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\DailyLogDTO.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\ForgotPasswordRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\RegisterRequest.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\service\PdfGenerationService.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\service\TeammateService.java
@@ -70,6 +72,7 @@ C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\oliv
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\controller\FileController.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TimeLogBreakdownDTO.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\security\UserDetailsImpl.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\DailyEffortBreakdownDTO.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\repository\RoleRepository.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\DashboardTaskDTO.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\UserCreateUpdateRequest.java
@@ -81,4 +84,6 @@ C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\oliv
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\AuthResponse.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TaskActivityResponse.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\model\Project.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\service\EmailService.java
+C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\dto\TeammateEffortDTO.java
 C:\Users\itviv\Desktop\project\oliveTrackingSystemBackend\src\main\java\com\olive\service\AuthService.java

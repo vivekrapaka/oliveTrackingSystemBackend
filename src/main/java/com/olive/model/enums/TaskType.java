@@ -7,7 +7,8 @@ public enum TaskType {
     TASK("Task"),
     BUG("Bug"),
     SUB_TASK("Sub-Task"),
-    ANALYSIS_TASK("Analysis Task"); // NEW: Added Analysis-Only task type
+    ANALYSIS_TASK("Analysis Task"),
+    GENERAL_ACTIVITY("General Activity"); // NEW
 
     private final String displayName;
 

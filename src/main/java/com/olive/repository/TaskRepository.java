@@ -2,6 +2,7 @@ package com.olive.repository;
 
 import com.olive.model.Task;
 import com.olive.model.Teammate;
+import com.olive.model.enums.TaskType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,4 +38,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findTasksByTeammate(@Param("teammate") Teammate teammate);
 
     List<Task> findByProjectIdIn(List<Long> userProjectIds);
+
+    List<Task> findByProjectIdInAndTaskType(List<Long> projectIds, TaskType taskType);
+
+    List<Task> findByTaskTypeNot(TaskType taskType);
+
 }

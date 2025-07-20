@@ -4,6 +4,7 @@ com\olive\service\TaskActivityService.class
 com\olive\dto\TimesheetResponse.class
 com\olive\dto\SignupRequest.class
 com\olive\model\WorkLog.class
+com\olive\service\EmailService.class
 com\olive\dto\UserCreateUpdateRequest.class
 com\olive\repository\UserRepository.class
 com\olive\dto\TaskCreateUpdateRequest.class
@@ -11,6 +12,7 @@ com\olive\dto\DashboardSummaryResponse.class
 com\olive\service\PdfGenerationService.class
 com\olive\dto\MessageResponse.class
 com\olive\security\JwtTokenUtil.class
+com\olive\dto\ForgotPasswordRequest.class
 com\olive\repository\WorkLogRepository.class
 com\olive\config\CorsConfig.class
 com\olive\security\WebSecurityConfig.class
@@ -24,6 +26,7 @@ com\olive\dto\TimeLogBreakdownDTO.class
 com\olive\repository\TeammateRepository.class
 com\olive\service\TaskService.class
 com\olive\controller\TaskController.class
+com\olive\dto\ResetPasswordRequest.class
 com\olive\repository\RoleRepository.class
 com\olive\dto\TeammatesSummaryResponse.class
 com\olive\converter\JpaLongListConverter.class
@@ -44,6 +47,7 @@ com\olive\controller\AuthController.class
 com\olive\dto\TaskCreateRequest.class
 com\olive\controller\UserController.class
 com\olive\security\UserDetailsImpl.class
+com\olive\dto\TeammateEffortDTO.class
 com\olive\service\UserService.class
 com\olive\dto\TaskActivityResponse.class
 com\olive\dto\DashboardTeammateDTO.class
@@ -77,6 +81,7 @@ com\olive\service\AuthService.class
 com\olive\dto\DashboardTaskDTO.class
 com\olive\dto\ProjectResponse.class
 com\olive\dto\AuthRequest.class
+com\olive\dto\DailyEffortBreakdownDTO.class
 com\olive\exception\CustomExceptionHandler.class
 com\olive\repository\ProjectRepository.class
 com\olive\dto\DailyLogDTO.class

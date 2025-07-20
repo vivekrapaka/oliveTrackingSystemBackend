@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project,Long> {
     Optional<Project> findByProjectNameIgnoreCase(String projectName);
+
+    boolean existsByProjectNameIgnoreCase(String newProjectNameToSave);
 }

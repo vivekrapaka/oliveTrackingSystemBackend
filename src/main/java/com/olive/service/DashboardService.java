@@ -6,7 +6,6 @@ import com.olive.dto.DashboardTeammateDTO;
 import com.olive.model.Project;
 import com.olive.model.Task;
 import com.olive.model.Teammate;
-import com.olive.model.User;
 import com.olive.model.enums.TaskStatus;
 import com.olive.model.enums.TaskType;
 import com.olive.repository.TaskRepository;
@@ -52,25 +51,31 @@ public class DashboardService {
         List<Long> userProjectIds = userDetails.getProjectIds();
         String functionalGroup = userDetails.getFunctionalGroup();
 
-        if (userProjectIds == null || userProjectIds.isEmpty()) {
+        List<Teammate> teammatesForSummary;
+        List<Task> tasksForSummary;
+        Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
+
+        if ("ADMIN".equalsIgnoreCase(functionalGroup)) {
+            teammatesForSummary = teammateRepository.findAll(sort);
+            tasksForSummary = taskRepository.findByTaskTypeNot(TaskType.GENERAL_ACTIVITY);
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            List<String> relevantGroups = getRelevantGroupsForView(functionalGroup);
+            teammatesForSummary = relevantGroups.isEmpty()
+                    ? Collections.emptyList()
+                    : teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
+
+            List<Task> allTasksInProjects = taskRepository.findByProjectIdIn(userProjectIds);
+            allTasksInProjects.forEach(task -> {
+                Hibernate.initialize(task.getAssignedDevelopers());
+                Hibernate.initialize(task.getAssignedTesters());
+            });
+            tasksForSummary = allTasksInProjects.stream()
+                    .filter(task -> task.getTaskType() != TaskType.GENERAL_ACTIVITY)
+                    .filter(task -> taskService.isTaskVisibleToRole(task, userDetails))
+                    .collect(Collectors.toList());
+        } else {
             return new DashboardSummaryResponse(0, 0, 0, 0, 0, Collections.emptyMap(), Collections.emptyMap(), 0, 0, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         }
-
-        List<String> relevantGroups = getRelevantGroupsForView(functionalGroup);
-        Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
-        List<Teammate> teammatesForSummary = relevantGroups.isEmpty()
-                ? Collections.emptyList()
-                : teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
-
-        List<Task> allTasksInProjects = taskRepository.findByProjectIdIn(userProjectIds);
-        allTasksInProjects.forEach(task -> {
-            Hibernate.initialize(task.getAssignedDevelopers());
-            Hibernate.initialize(task.getAssignedTesters());
-        });
-
-        List<Task> tasksForSummary = allTasksInProjects.stream()
-                .filter(task -> taskService.isTaskVisibleToRole(task, userDetails))
-                .collect(Collectors.toList());
 
         long totalTeammates = teammatesForSummary.size();
         long freeTeammates = teammatesForSummary.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
@@ -98,9 +103,11 @@ public class DashboardService {
         switch (functionalGroup) {
             case "DEV_MANAGER":
             case "DEV_LEAD":
+            case "DEVELOPER":
                 return Arrays.asList("DEVELOPER", "DEV_LEAD", "DEV_MANAGER");
             case "TEST_MANAGER":
             case "TEST_LEAD":
+            case "TESTER":
                 return Arrays.asList("TESTER", "TEST_LEAD", "TEST_MANAGER");
             case "BUSINESS_ANALYST":
                 return Arrays.asList("DEVELOPER", "DEV_LEAD", "TESTER", "TEST_LEAD", "BUSINESS_ANALYST", "MANAGER", "DEV_MANAGER", "TEST_MANAGER");
@@ -140,7 +147,6 @@ public class DashboardService {
     }
 
     private DashboardTeammateDTO convertTeammateToDashboardTeammateDTO(Teammate teammate) {
-        // FIX: Use the new repository method to correctly count assigned tasks.
         long tasksAssignedToTeammate = taskRepository.countTasksByTeammate(teammate);
 
         List<Long> teammateProjectIdsList = teammate.getProjects().stream()
@@ -149,10 +155,10 @@ public class DashboardService {
         List<String> teammateProjectNames = teammate.getProjects().stream()
                 .map(Project::getProjectName)
                 .collect(Collectors.toList());
-        User user = teammate.getUser();
+
         return new DashboardTeammateDTO(
                 teammate.getTeammateId(), teammate.getUser().getFullName(), teammate.getUser().getRole().getTitle(),
-                teammate.getUser().getEmail(), teammate.getPhone(), user.getRole().getFunctionalGroup(), teammate.getLocation(),
+                teammate.getUser().getEmail(), teammate.getPhone(), teammate.getUser().getRole().getFunctionalGroup(), teammate.getLocation(),
                 tasksAssignedToTeammate, teammateProjectIdsList, teammateProjectNames
         );
     }

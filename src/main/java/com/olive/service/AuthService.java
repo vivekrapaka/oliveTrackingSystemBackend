@@ -1,9 +1,6 @@
 package com.olive.service;
 
-import com.olive.dto.AuthResponse;
-import com.olive.dto.LoginRequest;
-import com.olive.dto.MessageResponse;
-import com.olive.dto.SignupRequest;
+import com.olive.dto.*;
 import com.olive.model.Project;
 import com.olive.model.Role;
 import com.olive.model.Teammate;
@@ -25,8 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +38,8 @@ public class AuthService {
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private JwtTokenUtil jwtTokenUtil;
     @Autowired private RoleRepository roleRepository;
+
+    @Autowired private EmailService emailService;
 
     @Transactional
     public MessageResponse registerUser(SignupRequest signUpRequest) {
@@ -86,5 +87,35 @@ public class AuthService {
         return new AuthResponse(jwt, userDetails.getId(), userDetails.getEmail(),
                 userDetails.getFullName(), userDetails.getRoleTitle(), userDetails.getFunctionalGroup(),
                 userDetails.getProjectIds(), projectNames);
+    }
+
+    @Transactional
+    public void handleForgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this email not found."));
+
+        String token = UUID.randomUUID().toString();
+        user.setResetPasswordToken(token);
+        user.setResetPasswordTokenExpiry(LocalDateTime.now().plusHours(1)); // Token is valid for 1 hour
+        userRepository.save(user);
+
+        emailService.sendPasswordResetEmail(user.getEmail(), token);
+    }
+
+    @Transactional
+    public MessageResponse handleResetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByResetPasswordToken(request.getToken())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired token."));
+
+        if (user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired token.");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiry(null);
+        userRepository.save(user);
+
+        return new MessageResponse("Password has been reset successfully.");
     }
 }

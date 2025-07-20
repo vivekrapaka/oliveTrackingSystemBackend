@@ -39,8 +39,6 @@ public class TaskService {
     private final TaskActivityService taskActivityService;
     private final UserRepository userRepository;
 
-    private static final Set<TaskStatus> COMPLETED_OR_CLOSED_STATUSES = Set.of(TaskStatus.COMPLETED, TaskStatus.CLOSED);
-
     @Autowired
     public TaskService(TaskRepository taskRepository, TeammateRepository teammateRepository, ProjectRepository projectRepository, TeammateService teammateService, TaskActivityService taskActivityService, UserRepository userRepository) {
         this.taskRepository = taskRepository;
@@ -60,16 +58,24 @@ public class TaskService {
 
         List<Task> tasksToFilter;
 
-        if ("ADMIN".equalsIgnoreCase(functionalGroup) || "HR".equalsIgnoreCase(functionalGroup)) {
-            tasksToFilter = taskRepository.findAllWithTeammates();
+        if ("ADMIN".equalsIgnoreCase(functionalGroup)) {
+            tasksToFilter = taskRepository.findByTaskTypeNot(TaskType.GENERAL_ACTIVITY);
         }
         else if (userProjectIds != null && !userProjectIds.isEmpty()) {
-            tasksToFilter = taskRepository.findByProjectIdInWithTeammates(userProjectIds);
+            tasksToFilter = taskRepository.findByProjectIdIn(userProjectIds);
         } else {
             tasksToFilter = Collections.emptyList();
         }
 
+        tasksToFilter.forEach(task -> {
+            Hibernate.initialize(task.getAssignedDevelopers());
+            Hibernate.initialize(task.getAssignedTesters());
+            task.getAssignedDevelopers().forEach(dev -> Hibernate.initialize(dev.getUser().getRole()));
+            task.getAssignedTesters().forEach(tester -> Hibernate.initialize(tester.getUser().getRole()));
+        });
+
         List<Task> tasksToReturn = tasksToFilter.stream()
+                .filter(task -> task.getTaskType() != TaskType.GENERAL_ACTIVITY)
                 .filter(task -> isTaskVisibleToRole(task, userDetails))
                 .collect(Collectors.toList());
 
@@ -81,6 +87,19 @@ public class TaskService {
 
         List<TaskResponse> taskResponses = tasksToReturn.stream().map(this::convertToDto).collect(Collectors.toList());
         return new TasksSummaryResponse(taskResponses.size(), taskResponses);
+    }
+
+    @Transactional(readOnly = true)
+    public TaskResponse getTaskById(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + taskId));
+
+        Hibernate.initialize(task.getAssignedDevelopers());
+        Hibernate.initialize(task.getAssignedTesters());
+        task.getAssignedDevelopers().forEach(dev -> Hibernate.initialize(dev.getUser().getRole()));
+        task.getAssignedTesters().forEach(tester -> Hibernate.initialize(tester.getUser().getRole()));
+
+        return convertToDto(task);
     }
 
     @Transactional
@@ -132,9 +151,6 @@ public class TaskService {
 
         authorizeAccessOrThrow(existingTask.getProject().getProjectId(), "You can only update tasks within your assigned projects.");
 
-        // --- FIX: Conditional updates to prevent overwriting with null ---
-
-        // Handle status transition first, as it has special validation
         if (request.getStatus() != null && request.getStatus() != existingTask.getStatus()) {
             validateTaskStatusTransition(existingTask.getStatus(), request.getStatus(), functionalGroup, request.getComment());
             logFieldChange(existingTask, currentUser, "status", existingTask.getStatus(), request.getStatus());
@@ -182,11 +198,11 @@ public class TaskService {
         Set<Teammate> oldDevelopers = new HashSet<>(existingTask.getAssignedDevelopers());
         Set<Teammate> oldTesters = new HashSet<>(existingTask.getAssignedTesters());
 
-        if (request.getDeveloperIds() != null && !request.getDeveloperIds().isEmpty()) {
+        if (request.getDeveloperIds() != null) {
             Set<Teammate> newDevelopers = findAndValidateTeammates(request.getDeveloperIds(), existingTask.getProject());
             existingTask.setAssignedDevelopers(newDevelopers);
         }
-        if (request.getTesterIds() != null && !request.getTesterIds().isEmpty()) {
+        if (request.getTesterIds() != null) {
             Set<Teammate> newTesters = findAndValidateTeammates(request.getTesterIds(), existingTask.getProject());
             existingTask.setAssignedTesters(newTesters);
         }
@@ -203,13 +219,11 @@ public class TaskService {
         return convertToDto(updatedTask);
     }
 
-
     @Transactional
     public void deleteTask(Long taskId) {
         Task taskToDelete = taskRepository.findById(taskId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found with ID: " + taskId));
         authorizeAccessOrThrow(taskToDelete.getProject().getProjectId(), "You can only delete tasks within your assigned projects.");
 
-        // FIX: Combine both developer and tester lists to get all affected teammates.
         Set<Teammate> affectedTeammates = new HashSet<>();
         affectedTeammates.addAll(taskToDelete.getAssignedDevelopers());
         affectedTeammates.addAll(taskToDelete.getAssignedTesters());
@@ -217,7 +231,6 @@ public class TaskService {
         taskRepository.delete(taskToDelete);
         updateTeammateAvailabilityFor(affectedTeammates);
     }
-
 
     public String generateNextSequenceNumber(Task parentTask) {
         if (parentTask != null) {
@@ -237,6 +250,10 @@ public class TaskService {
     }
 
     public boolean isTaskVisibleToRole(Task task, UserDetailsImpl userDetails) {
+        if (task.getTaskType() == TaskType.GENERAL_ACTIVITY) {
+            return true;
+        }
+
         String functionalGroup = userDetails.getFunctionalGroup();
 
         switch (functionalGroup) {
@@ -267,9 +284,9 @@ public class TaskService {
     private void validateTaskStatusTransition(TaskStatus oldStatus, TaskStatus newStatus, String functionalGroup, String comment) {
         if (oldStatus == newStatus) return;
 
-        if (COMPLETED_OR_CLOSED_STATUSES.contains(oldStatus) && newStatus != TaskStatus.REOPENED) {
+       /* if (COMPLETED_OR_CLOSED_STATUSES.contains(oldStatus) && newStatus != TaskStatus.REOPENED) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A " + oldStatus.getDisplayName() + " task can only be Reopened.");
-        }
+        } */
 
         if ((oldStatus == TaskStatus.CODE_REVIEW) ||
                 (oldStatus == TaskStatus.UAT_TESTING && newStatus == TaskStatus.UAT_FAILED) ||
@@ -280,15 +297,18 @@ public class TaskService {
         }
 
         switch (newStatus) {
+            case ANALYSIS:
+                if (!"DEVELOPER".equals(functionalGroup)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task to Analysis.");
+                break;
             case CODE_REVIEW:
                 if (!"DEVELOPER".equals(functionalGroup)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task to Code Review.");
                 break;
             case UAT_TESTING:
                 if (oldStatus == TaskStatus.CODE_REVIEW) {
-                    if (!Arrays.asList("MANAGER", "DEV_LEAD", "BUSINESS_ANALYST",", TEST_LEAD","DEV_MANAGER").contains(functionalGroup))
+                    if (!Arrays.asList("MANAGER","DEV_MANAGER", "DEV_LEAD", "BUSINESS_ANALYST").contains(functionalGroup))
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a Manager, Dev Lead, or BA can approve a Code Review.");
                 } else if (oldStatus == TaskStatus.UAT_FAILED) {
-                    if (!("DEVELOPER".equals(functionalGroup) || "DEV_LEAD".equals(functionalGroup)))
+                    if (!"DEVELOPER".equals(functionalGroup))
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only a DEVELOPER can move a task back to UAT Testing after a fix.");
                 } else {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid transition to UAT Testing.");
@@ -358,7 +378,6 @@ public class TaskService {
     }
 
     private TaskResponse convertToDto(Task task) {
-        // FIX: Collect the full list of IDs and names for both developers and testers.
         List<Long> developerIds = task.getAssignedDevelopers().stream().map(Teammate::getTeammateId).collect(Collectors.toList());
         List<String> developerNames = task.getAssignedDevelopers().stream().map(teammate -> teammate.getUser().getFullName()).collect(Collectors.toList());
 
@@ -379,6 +398,35 @@ public class TaskService {
                 testerIds, testerNames,
                 task.getProject().getProjectId(), projectName, task.getDocumentPath(), task.getCommitId(),
                 task.getDevelopmentDueHours(), task.getTestingDueHours()
+        );
+    }
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getGeneralActivityTasks() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<Long> userProjectIds = userDetails.getProjectIds();
+
+        if (userProjectIds == null || userProjectIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Task> generalTasks = taskRepository.findByProjectIdInAndTaskType(userProjectIds, TaskType.GENERAL_ACTIVITY);
+
+        return generalTasks.stream()
+                .map(this::convertToDtoSimple) // Use a simpler DTO conversion
+                .collect(Collectors.toList());
+    }
+
+    // NEW: A simpler DTO conversion method for the general activities list.
+    // It doesn't need to calculate developer/tester names, which makes it more efficient.
+    private TaskResponse convertToDtoSimple(Task task) {
+        return new TaskResponse(
+                task.getTaskId(), task.getTaskName(), task.getSequenceNumber(), task.getDescription(), task.getTaskType(), task.getStatus(),
+                null, null, null, null, null,
+                task.getPriority(), Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(),
+                task.getProject().getProjectId(), task.getProject().getProjectName(), null, null,
+                null, null
         );
     }
 }

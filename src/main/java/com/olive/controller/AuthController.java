@@ -1,11 +1,8 @@
 package com.olive.controller;
 
 
-import com.olive.dto.AuthResponse;
-import com.olive.dto.LoginRequest;
+import com.olive.dto.*;
 
-import com.olive.dto.MessageResponse;
-import com.olive.dto.SignupRequest;
 import com.olive.model.User;
 import com.olive.repository.UserRepository;
 import com.olive.security.JwtTokenUtil;
@@ -49,5 +46,16 @@ public class AuthController {
         logger.info("Received sign-up request for email: {}", signUpRequest.getEmail());
         MessageResponse response = authService.registerUser(signUpRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<MessageResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.handleForgotPassword(request);
+        return ResponseEntity.ok(new MessageResponse("Password reset link has been sent to your email."));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<MessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        return ResponseEntity.ok(authService.handleResetPassword(request));
     }
 }

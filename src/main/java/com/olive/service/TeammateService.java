@@ -56,16 +56,20 @@ public class TeammateService {
         List<Long> userProjectIds = userDetails.getProjectIds();
         String functionalGroup = userDetails.getFunctionalGroup();
 
-        if (userProjectIds == null || userProjectIds.isEmpty()) {
+        List<Teammate> teammatesToConsider;
+        Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
+
+        // FIX: Add special case for ADMIN to see all teammates.
+        if ("ADMIN".equalsIgnoreCase(functionalGroup)) {
+            teammatesToConsider = teammateRepository.findAll(sort);
+        } else if (userProjectIds != null && !userProjectIds.isEmpty()) {
+            List<String> relevantGroups = getRelevantGroupsForView(functionalGroup);
+            teammatesToConsider = relevantGroups.isEmpty()
+                    ? Collections.emptyList()
+                    : teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
+        } else {
             return new TeammatesSummaryResponse(0, 0, 0, 0, Collections.emptyList());
         }
-
-        // FIX: Using the corrected filtering logic to ensure discipline segregation
-        List<String> relevantGroups = getRelevantGroupsForView(functionalGroup);
-        Sort sort = Sort.by(Sort.Direction.ASC, "user.fullName");
-        List<Teammate> teammatesToConsider = relevantGroups.isEmpty()
-                ? Collections.emptyList()
-                : teammateRepository.findByProjects_IdInAndUser_Role_FunctionalGroupIn(userProjectIds, relevantGroups, sort);
 
         long totalMembers = teammatesToConsider.size();
         long availableMembers = teammatesToConsider.stream().filter(t -> "Free".equals(t.getAvailabilityStatus())).count();
@@ -75,7 +79,6 @@ public class TeammateService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
-        // The activeTasksCount is a global count for the dashboard, not relevant here.
         return new TeammatesSummaryResponse(totalMembers, availableMembers, occupiedMembers, 0, teammateResponses);
     }
 

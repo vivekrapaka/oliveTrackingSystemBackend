@@ -6,6 +6,7 @@ import com.olive.model.Task;
 import com.olive.model.Teammate;
 import com.olive.model.User;
 import com.olive.model.WorkLog;
+import com.olive.model.enums.TaskType;
 import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.repository.UserRepository;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -28,9 +31,17 @@ public class WorkLogService {
     @Autowired private TeammateRepository teammateRepository;
     @Autowired private UserRepository userRepository;
 
+    @Transactional
     public WorkLogResponse logWork(Long taskId, WorkLogRequest request) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
+
+        // FIX: Simplified mandatory comment logic.
+        if (task.getTaskType() == TaskType.GENERAL_ACTIVITY) {
+            if (!StringUtils.hasText(request.getDescription())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A description is required when logging time for a general activity.");
+            }
+        }
 
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

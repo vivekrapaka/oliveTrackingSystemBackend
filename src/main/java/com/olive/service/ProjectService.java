@@ -3,7 +3,11 @@ package com.olive.service;
 import com.olive.dto.ProjectCreateRequest;
 import com.olive.dto.ProjectResponse;
 import com.olive.model.Project;
+import com.olive.model.Task;
+import com.olive.model.enums.TaskStatus;
+import com.olive.model.enums.TaskType;
 import com.olive.repository.ProjectRepository;
+import com.olive.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,31 +25,14 @@ public class ProjectService {
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
     private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, TaskRepository taskRepository, TaskService taskService) {
         this.projectRepository = projectRepository;
-    }
-
-    private ProjectResponse convertToDto(Project project) {
-        return new ProjectResponse(project.getProjectId(), project.getProjectName(), project.getDescription());
-    }
-
-    public List<ProjectResponse> getAllProjects() {
-        logger.info("Fetching all projects.");
-        return projectRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
-    public ProjectResponse getProjectById(Long id) {
-        logger.info("Attempting to retrieve project with ID: {}", id);
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.warn("Project not found with ID: {}", id);
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with ID: " + id);
-                });
-        return convertToDto(project);
+        this.taskRepository = taskRepository;
+        this.taskService = taskService;
     }
 
     @Transactional
@@ -53,8 +40,7 @@ public class ProjectService {
         logger.info("Received request to create project: {}", request.getProjectName());
         String projectNameToSave = request.getProjectName().trim().toUpperCase();
 
-        if (projectRepository.findByProjectNameIgnoreCase(projectNameToSave).isPresent()) {
-            logger.warn("Attempted to create project with duplicate name: {}", projectNameToSave);
+        if (projectRepository.existsByProjectNameIgnoreCase(projectNameToSave)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Project with this name already exists.");
         }
 
@@ -64,46 +50,69 @@ public class ProjectService {
 
         Project savedProject = projectRepository.save(project);
         logger.info("Project created successfully with ID: {}", savedProject.getProjectId());
+
+        createGeneralActivityTasksForProject(savedProject);
+
         return convertToDto(savedProject);
+    }
+
+    private void createGeneralActivityTasksForProject(Project project) {
+        // FIX: Simplified to only the two required general tasks.
+        String[] generalTaskNames = {
+                "General - Analysis",
+                "General - Other Work"
+        };
+
+        for (String taskName : generalTaskNames) {
+            Task activityTask = new Task();
+            activityTask.setTaskName(taskName);
+            activityTask.setProject(project);
+            activityTask.setTaskType(TaskType.GENERAL_ACTIVITY);
+            activityTask.setStatus(TaskStatus.BACKLOG);
+            activityTask.setPriority("Low");
+            activityTask.setSequenceNumber(taskService.generateNextSequenceNumber(null));
+            taskRepository.save(activityTask);
+            logger.info("Created general activity task '{}' for project '{}'", taskName, project.getProjectName());
+        }
+    }
+
+    public List<ProjectResponse> getAllProjects() {
+        return projectRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public ProjectResponse getProjectById(Long id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with ID: " + id));
+        return convertToDto(project);
     }
 
     @Transactional
     public ProjectResponse updateProject(Long id, ProjectCreateRequest request) {
-        logger.info("Received request to update project with ID: {}", id);
         Project existingProject = projectRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.warn("Project not found for update with ID: {}", id);
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with ID: " + id);
-                });
-
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with ID: " + id));
         String newProjectNameToSave = request.getProjectName().trim().toUpperCase();
-
         if (!newProjectNameToSave.equalsIgnoreCase(existingProject.getProjectName())) {
-            if (projectRepository.findByProjectNameIgnoreCase(newProjectNameToSave).isPresent()) {
-                logger.warn("Attempted to update project name to a duplicate: {}", newProjectNameToSave);
+            if (projectRepository.existsByProjectNameIgnoreCase(newProjectNameToSave)) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Project with new name '" + request.getProjectName() + "' already exists.");
             }
             existingProject.setProjectName(newProjectNameToSave);
-            logger.info("Project name updated to: {}", newProjectNameToSave);
         }
-
         Optional.ofNullable(request.getDescription()).ifPresent(existingProject::setDescription);
-
         Project updatedProject = projectRepository.save(existingProject);
-        logger.info("Project with ID {} updated successfully.", updatedProject.getProjectId());
         return convertToDto(updatedProject);
     }
 
     @Transactional
     public void deleteProject(Long id) {
-        logger.info("Received request to delete project with ID: {}", id);
         if (!projectRepository.existsById(id)) {
-            logger.warn("Project not found for deletion with ID: {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found with ID: " + id);
         }
-        // TODO: Add checks for associated tasks and teammates before deleting a project
-        // For now, it will likely fail on FK constraint. Implement logic here to disassociate or prevent deletion.
         projectRepository.deleteById(id);
-        logger.info("Project with ID {} deleted successfully.", id);
+    }
+
+    private ProjectResponse convertToDto(Project project) {
+        return new ProjectResponse(project.getProjectId(), project.getProjectName(), project.getDescription());
     }
 }

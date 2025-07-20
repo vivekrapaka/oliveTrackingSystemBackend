@@ -5,6 +5,7 @@ import com.olive.model.Project;
 import com.olive.model.Task;
 import com.olive.model.Teammate;
 import com.olive.model.WorkLog;
+import com.olive.model.enums.TaskType;
 import com.olive.repository.TaskRepository;
 import com.olive.repository.TeammateRepository;
 import com.olive.repository.WorkLogRepository;
@@ -40,12 +41,23 @@ public class ReportingService {
         List<DailyLogDTO> dailyLogs = groupedByDate.entrySet().stream()
                 .map(entry -> {
                     double dailyTotal = entry.getValue().stream().mapToDouble(WorkLog::getHoursSpent).sum();
-                    List<TaskLogDetailDTO> taskDetails = entry.getValue().stream()
-                            .collect(Collectors.groupingBy(log -> log.getTask().getTaskName(), Collectors.summingDouble(WorkLog::getHoursSpent)))
-                            .entrySet().stream()
-                            .map(taskEntry -> new TaskLogDetailDTO(taskEntry.getKey(), taskEntry.getValue()))
-                            .collect(Collectors.toList());
-                    return new DailyLogDTO(entry.getKey(), dailyTotal, taskDetails);
+
+                    double taskHours = 0;
+                    double generalHours = 0;
+
+                    List<TaskLogDetailDTO> taskDetails = new ArrayList<>();
+
+                    for (WorkLog log : entry.getValue()) {
+                        if (log.getTask().getTaskType() == TaskType.GENERAL_ACTIVITY) {
+                            generalHours += log.getHoursSpent();
+                        } else {
+                            taskHours += log.getHoursSpent();
+                        }
+                        taskDetails.add(new TaskLogDetailDTO(log.getTask().getTaskName(), log.getHoursSpent(), log.getDescription()));
+                    }
+
+                    DailyEffortBreakdownDTO breakdown = new DailyEffortBreakdownDTO(taskHours, generalHours, taskDetails);
+                    return new DailyLogDTO(entry.getKey(), dailyTotal, breakdown);
                 })
                 .sorted((d1, d2) -> d1.getDate().compareTo(d2.getDate()))
                 .collect(Collectors.toList());
@@ -53,6 +65,7 @@ public class ReportingService {
         double totalHoursForPeriod = dailyLogs.stream().mapToDouble(DailyLogDTO::getTotalHours).sum();
         return new TimesheetResponse(teammateId, teammate.getUser().getFullName(), totalHoursForPeriod, dailyLogs);
     }
+
 
     @Transactional(readOnly = true)
     public TaskTimeSummaryResponse getTaskTimeSummary(Long taskId) {
